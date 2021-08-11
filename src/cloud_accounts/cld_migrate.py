@@ -1,4 +1,4 @@
-from cloud_accounts import cld_get, cld_add, cld_azure_keys, cld_compare, cld_gcp_keys
+from cloud_accounts import cld_get, cld_add, cld_keys, cld_compare
 
 def migrate(tenant_sessions: list):
     '''Gets the full info of every cloud account from the first (source) tenant and
@@ -11,8 +11,8 @@ def migrate(tenant_sessions: list):
         tenant_cloud_account_names.append(accounts)
 
     #Get private cloud keys from user
-    gcp_account_keys = cld_gcp_keys.get_credentials(tenant_cloud_account_names[0])
-    azure_account_keys = cld_azure_keys.get_credentials(tenant_cloud_account_names[0])
+    gcp_account_keys = cld_keys.get_gcp_credentials(tenant_cloud_account_names[0])
+    azure_account_keys = cld_keys.get_azure_credentials(tenant_cloud_account_names[0])
 
     #Compare cloud accounts to determine which accounts to add to new tenant
     tenant_cloud_accounts_to_add = cld_compare.get_accounts_to_add(tenant_sessions, tenant_cloud_account_names)
