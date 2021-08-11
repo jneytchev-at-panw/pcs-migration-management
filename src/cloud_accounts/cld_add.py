@@ -76,7 +76,7 @@ def add_aws(session: object, account: dict, redlock_ignore: list=None) -> bool:
 
     querystring = {"skipStatusChecks":1}
 
-    #FIXME Groups are removed since they are auto created but this might not be correct
+    #Account Groups are not specified here as they do not exists yet.
     if 'groupIds' in account:
         account.update(groupIds=[])
     if 'accountGroupInfos' in account:
@@ -98,7 +98,7 @@ def add_azure(session: object, account: dict, azure_keys: dict, redlock_ignore: 
 
     account['cloudAccount'].update(groupIds=[])
 
-    #FIXME Groups are removed
+    #Account Groups are not specified here as they do not exists yet.
     if 'groupIds' in account['cloudAccount']:
         account['cloudAccount'].update(groupIds=[])
     if 'accountGroupInfos' in account['cloudAccount']:
@@ -129,7 +129,7 @@ def add_gcp(session: object, account: dict, gcp_keys: dict, redlock_ignore: list
 
     account['cloudAccount'].update(enabled=False)#FIXME
 
-    #FIXME Groups are removed
+    #Account Groups are not specified here as they do not exists yet.
     if 'groupIds' in account['cloudAccount']:
         account['cloudAccount'].update(groupIds=[])
     if 'accountGroupInfos' in account['cloudAccount']:
