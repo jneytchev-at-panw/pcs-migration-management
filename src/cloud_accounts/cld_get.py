@@ -16,3 +16,33 @@ def get_names(session: object):
     print()
 
     return data
+
+def get_info(session: object, account: dict) -> dict:
+    '''
+    Gets all cloud account info for all cloud accounts that are NOT children of organizations.
+    The endpoint that returns all cloud accounts does not return enough details about
+    each cloud account to onboard it to a new tenant.
+    '''
+
+    #Does this only Ignore GCP Child accounts?
+
+    #Ignore GCP Child accounts
+    if 'parentAccountName' in account:
+        if account.get('name') != account.get('parentAccountName'):
+            return ""
+
+    #Gets all details for a specific cloud accounts
+    cloud_type = account.get('cloudType')
+    account_id = account.get('id')
+    name = account.get('name')
+    endpoint_url = f"/cloud/{cloud_type}/{account_id}"
+
+    querystring = {"includeGroupInfo":1}
+
+    print(f'API - Getting {cloud_type} cloud account info for \'{name}\' - \'{account_id}\'')
+    response = session.request("GET", endpoint_url, params=querystring)
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return ""

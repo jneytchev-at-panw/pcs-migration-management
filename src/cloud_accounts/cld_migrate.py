@@ -1,4 +1,4 @@
-from cloud_accounts import cld_get, cld_info, cld_add, cld_azure_keys, cld_compare, cld_gcp_keys
+from cloud_accounts import cld_get, cld_add, cld_azure_keys, cld_compare, cld_gcp_keys
 
 def migrate(tenant_sessions: list):
     '''Gets the full info of every cloud account from the first (source) tenant and
@@ -23,7 +23,7 @@ def migrate(tenant_sessions: list):
         cloud_accounts_to_upload = []
         for j in range(len(tenant_cloud_accounts_to_add[i])):
             account = tenant_cloud_accounts_to_add[i][j]
-            ret = cld_info.get_main_cld_acc_info(tenant_sessions[0], account, False)#get info from original tenant
+            ret = cld_get.get_info(tenant_sessions[0], account)#get cloud account info from original tenant
             if ret != '':
                 cloud_accounts_to_upload.append(ret)
         clone_tenants_cloud_accounts_to_upload.append(cloud_accounts_to_upload)
