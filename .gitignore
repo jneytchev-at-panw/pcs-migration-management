@@ -2,8 +2,9 @@
 env
 
 .vscode
-src/*/__pycache__
 .VSCodeCounter 
+
+src/*/__pycache__
 
 cloud_credentials/gcp/*
 cloud_credentials/azure/*
