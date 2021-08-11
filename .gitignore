@@ -1,0 +1,14 @@
+# Directories 
+env
+
+.vscode
+*/__pycache__
+.VSCodeCounter 
+
+cloud_credentials/gcp/*
+cloud_credentials/azure/*
+
+
+# Files
+config.yml
+
