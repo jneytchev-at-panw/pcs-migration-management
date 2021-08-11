@@ -1,5 +1,9 @@
 import os
 def c_print(*args, **kwargs):
+    '''
+    Uses ascii codes to enable colored print statements. Works on Mac, Linux and Windows terminals
+    '''
+
     #Magic that makes colors work on windows terminals
     os.system('')
     
