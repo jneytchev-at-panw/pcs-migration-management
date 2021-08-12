@@ -8,7 +8,7 @@ from user_roles import role_sync
 from user_profiles import users_sync_main
 from ip_allow_lists import ip_sync
 from compliance_standards import cmp_sync
-from saved_search import search_sync
+from saved_searches import search_sync
 from policies import plc_sync
 from alert_rules import ar_main
 from anomaly_settings import ano_sync
