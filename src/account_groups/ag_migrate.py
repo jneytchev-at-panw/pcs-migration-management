@@ -1,0 +1,39 @@
+from account_groups import ag_get, ag_compare, ag_add
+from sdk.color_print import c_print
+
+def migrate(tenant_sessions: list):
+    '''
+    Accepts a list of tenant sessions objects and will
+    migrate all account groups from the first tenant, (source tenant)
+    to all other tenants (clone tenants).
+    '''
+
+    #Get all account groups
+    tenant_acc_grps = []
+    for session in tenant_sessions:
+        data = ag_get.get_account_groups(session)
+        tenant_acc_grps.append(data)
+
+    #Get account groups to add
+    cln_tenant_acc_grps_to_add = []
+    src_acc_grps = tenant_acc_grps[0]
+    cln_tenant_acc_grps = tenant_acc_grps[1:]
+    for cln_acc_grps in cln_tenant_acc_grps:
+        acc_grps = ag_compare.compare_account_groups(src_acc_grps, cln_acc_grps)
+        cln_tenant_acc_grps_to_add.append(acc_grps)
+
+    #Add account groups
+    for index, cln_acc_groups in enumerate(cln_tenant_acc_grps_to_add):
+        session = tenant_sessions[index + 1]
+        ag_add.add_account_groups(session, cln_acc_groups)
+
+    c_print('Finished migrating Account Groups', color='blue')
+    print()
+
+if __name__ =='__main__':
+    from sdk.load_config import load_config_create_sessions
+
+    tenant_session = load_config_create_sessions()
+
+    migrate(tenant_session)
+    
