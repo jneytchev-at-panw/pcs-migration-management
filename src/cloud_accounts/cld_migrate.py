@@ -1,4 +1,5 @@
 from cloud_accounts import cld_get, cld_add, cld_keys, cld_compare
+from sdk.color_print import c_print
 
 def migrate(tenant_sessions: list):
     '''Gets the full info of every cloud account from the first (source) tenant and
@@ -32,6 +33,8 @@ def migrate(tenant_sessions: list):
     for i in range(len(clone_tenants_cloud_accounts_to_upload)):
         cld_add.add_accounts(tenant_sessions[i+1], clone_tenants_cloud_accounts_to_upload[i],
                                               azure_account_keys, gcp_account_keys)
+
+    c_print('Finished migrating Cloud Accounts', color='blue')
 
 if __name__ == '__main__':
     from sdk import load_config
