@@ -2,8 +2,12 @@ from cloud_accounts import cld_get, cld_add, cld_keys, cld_compare
 from sdk.color_print import c_print
 
 def migrate(tenant_sessions: list):
-    '''Gets the full info of every cloud account from the first (source) tenant and
-    then onboards those cloud accounts to all clone tenants.'''
+    '''
+    Accepts a list of tenant session objects.
+
+    Migrates all cloud accounts from the first tenant, (source tenant)
+    to all other tenants (clone tenants).
+    '''
 
     #Get all cloud accounts names from both tenants
     tenant_cloud_account_names = []

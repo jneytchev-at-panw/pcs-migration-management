@@ -3,8 +3,9 @@ from sdk.color_print import c_print
 
 def migrate(tenant_sessions: list):
     '''
-    Accepts a list of tenant sessions objects and will
-    migrate all account groups from the first tenant, (source tenant)
+    Accepts a list of tenant sessions objects.
+
+    Migrates all account groups from the first tenant, (source tenant)
     to all other tenants (clone tenants).
     '''
 
