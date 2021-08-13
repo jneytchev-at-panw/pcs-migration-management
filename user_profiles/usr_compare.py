@@ -7,18 +7,15 @@ def compare_users(source_users: list, clone_users: list, clone_roles: list):
     for src_usr in source_users:
         # check whether if the key 'email' values are in both src_user and dst_user
         if src_usr['email'] not in [cln_user['email'] for cln_user in clone_users]:
+            
+            #Translate the UUIDs of the roles
+            for index in range(len(src_usr['roles'])):
+                for cln_role in clone_roles:
+                    if src_usr['roles'][index].get('name') == cln_role.get('name'):
+                        src_usr['roles'][index].update(id=cln_role.get('id'))
+                        src_usr['roleIds'][index] = cln_role.get('id')
+                        #FIXME NEEDS TO UPDATE DEFAULT ROLEEEE
 
-            #Translate the UUID of the roles a user is associated with
-            for cln_role in clone_roles:
-                for src_role in src_usr['roles']:
-
-                    if src_role['name'] == cln_role['name']:
-                        if src_role['id'] != cln_role['id'] :
-                            src_usr['roleIds'].append(cln_role['id'])
-                            src_role['id'] = cln_role['id']
-
-
-            # appends the missing values from users_one into users_two
             users_to_add.append(src_usr)
 
     return users_to_add
