@@ -6,7 +6,11 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
     #List of redlock errors to manually handle and have ignored by session.request
     redlock_ignore = ['not_account_owner', 'project_id_credential_mismatch', 'data_security_not_enabled_for_tenant', 'organization_viewer_permission_required', 'project_viewer_permission_required']
 
+    tenant_name = session.tenant
+
     if accounts:
+        print('Adding Cloud Accounts to tenant: \'{}\'')
+        print()
         for account in accounts:
             res = object()
             cloud_type = ''
@@ -69,7 +73,8 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
             except:
                 c_print(account, color='red')
     else:
-        c_print('No Cloud Accounts to migrate', color='yellow')
+        c_print('No Cloud Accounts to add for tenant: \'{}\'', color='yellow')
+        print()
         
 
 #==============================================================================

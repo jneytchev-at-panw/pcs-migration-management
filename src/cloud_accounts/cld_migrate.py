@@ -39,6 +39,7 @@ def migrate(tenant_sessions: list):
                                               azure_account_keys, gcp_account_keys)
 
     c_print('Finished migrating Cloud Accounts', color='blue')
+    print()
 
 if __name__ == '__main__':
     from sdk import load_config
