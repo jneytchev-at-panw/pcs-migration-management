@@ -14,8 +14,13 @@ from alert_rules import ar_main
 from anomaly_settings import ano_sync
 from enterprise_settings import settings_migrate
 
-def sync(modes: dict):
-    tenant_sessions = load_config_create_sessions()
+def sync(modes: dict, tenant_sessions: list):
+    '''
+    Accepts the enabled sync modes dictionary and a list of tenant_session objects.
+    
+    Depending on what sync modes are enabled, calls the sync functions while 
+    specifying the operations that are enabled.
+    '''
 
     if 'cloud' in modes:
         cld_sync.sync_cloud_accounts(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('up', True), modes['cloud'].get('del', True))

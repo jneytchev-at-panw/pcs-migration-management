@@ -26,8 +26,15 @@ from anomaly_settings import ano_sync
 #Policy
 #Alert Rules
 
-def migrate(modes: dict):
-    tenant_sessions = load_config_create_sessions()
+def migrate(modes: dict, tenant_sessions: list):
+    '''
+    Accepts a dictionary of the migrate modes that are enabled and list of tenant session objects.
+
+    Depending on what modes are enabled, call those sync functions.
+    '''
+
+    #Checks if element is in the dictionary instead of for a value to keep the data structure
+    # similar to the sync modes dictionary.
 
     #CLOUD ACCOUNT MIGRATE
     if 'cloud' in modes:
