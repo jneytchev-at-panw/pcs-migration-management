@@ -1,4 +1,4 @@
-from account_groups import ag_get, ag_compare, ag_add
+from account_groups import acc_get, acc_compare, acc_add
 from sdk.color_print import c_print
 
 def migrate(tenant_sessions: list):
@@ -11,7 +11,7 @@ def migrate(tenant_sessions: list):
     #Get all account groups
     tenant_acc_grps = []
     for session in tenant_sessions:
-        data = ag_get.get_account_groups(session)
+        data = acc_get.get_account_groups(session)
         tenant_acc_grps.append(data)
 
     #Get account groups to add
@@ -19,13 +19,13 @@ def migrate(tenant_sessions: list):
     src_acc_grps = tenant_acc_grps[0]
     cln_tenant_acc_grps = tenant_acc_grps[1:]
     for cln_acc_grps in cln_tenant_acc_grps:
-        acc_grps = ag_compare.compare_account_groups(src_acc_grps, cln_acc_grps)
+        acc_grps = acc_compare.compare_account_groups(src_acc_grps, cln_acc_grps)
         cln_tenant_acc_grps_to_add.append(acc_grps)
 
     #Add account groups
     for index, cln_acc_groups in enumerate(cln_tenant_acc_grps_to_add):
         session = tenant_sessions[index + 1]
-        ag_add.add_account_groups(session, cln_acc_groups)
+        acc_add.add_account_groups(session, cln_acc_groups)
 
     c_print('Finished migrating Account Groups', color='blue')
     print()
