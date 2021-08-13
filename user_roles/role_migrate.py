@@ -9,6 +9,7 @@ def migrate_roles(tenant_sessions: list):
         roles_lists.append(roles)
 
     #Compare roles
+    #FIXME role compare needs to not have the for loop. it should be here
     roles_lists_delta = role_compare.compare_added_roles(roles_lists)
 
     #upload roles to tenants
