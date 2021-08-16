@@ -68,7 +68,7 @@ def migrate(tenant_sessions):
         tenant_session = tenant_sessions[index + 1]
         ip_add.add_login_ips(tenant_session, cln_ips)
 
-    c_print('Finished Migrated Trusted IPs', color='blue')
+    c_print('Finished Migrating Trusted IPs', color='blue')
     print()
 
 if __name__ == '__main__':
