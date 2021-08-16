@@ -33,6 +33,17 @@ def add_network_cidrs(session, network, cidrs):
         c_print(f'API - Adding cidr blocks to network{name}')
         session.request('POST', f'/network/{networkUuid}/cidr', json=cidr, redlock_ignore=['duplicate_public_network'])
 
+def add_network_allow_list_cidrs(session, net_uuid, cidrs):
+    '''
+    Accepts a tenant session, the network uuid, and a list of cidrs.
+
+    Adds all cidr blocks to the network with the provided UUID.
+    '''
+    
+    for cidr in cidrs:
+        print('API Adding CIDRs to network')
+        session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
+
 
 def add_login_ips(session, ips):
     '''
@@ -49,3 +60,4 @@ def add_login_ips(session, ips):
             session.request('POST', '/ip_allow_list_login', json=ip)
     else:
         c_print('No Login IPs to add', color='yellow')
+        print()
