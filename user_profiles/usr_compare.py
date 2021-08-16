@@ -1,7 +1,6 @@
 #compares the tenants to find the missing user/s
 from sdk.color_print import c_print
 
-#FIXME
 def compare_users(source_users: list, clone_users: list, clone_roles: list):
     users_to_add = []
     for src_usr in source_users:
@@ -10,11 +9,15 @@ def compare_users(source_users: list, clone_users: list, clone_roles: list):
             
             #Translate the UUIDs of the roles
             for index in range(len(src_usr['roles'])):
+                cur_id = src_usr['roles'][index].get('id')
                 for cln_role in clone_roles:
                     if src_usr['roles'][index].get('name') == cln_role.get('name'):
                         src_usr['roles'][index].update(id=cln_role.get('id'))
                         src_usr['roleIds'][index] = cln_role.get('id')
-                        #FIXME NEEDS TO UPDATE DEFAULT ROLEEEE
+                        
+                        #Update Default Role
+                        if src_usr['defaultRoleId'] == cur_id:
+                            src_usr.update(defaultRoleId=cln_role.get('id'))
 
             users_to_add.append(src_usr)
 

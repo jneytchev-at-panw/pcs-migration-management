@@ -1,6 +1,4 @@
-from yaml import load
-
-
+from sdk.color_print import c_print
 from user_profiles import usr_get, usr_add, usr_compare
 
 def migrate(tenant_sessions: list):
@@ -36,8 +34,8 @@ def migrate(tenant_sessions: list):
     for index in range(len(tenant_users_to_add)):
         usr_add.add_users(tenant_sessions[index + 1], tenant_users_to_add[index])
 
-
-
+    c_print('Finished migrating User Profiles', color='blue')
+    
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions
 
