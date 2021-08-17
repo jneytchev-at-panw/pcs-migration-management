@@ -2,9 +2,17 @@
 
 ## Conditions for Use / Caveats
 
+### Name Changes
+
 In all but a few cases, the name of an entity is its only cross tenant identifier. Changing the name of entities and then running this script in sync mode, will result in that entity from being deleted from the clone tenant, and then added back with the new name. This will disrupt any other entities on the Prisma Cloud tenant that depend on it. Using this script means in most cases you will not be able to change the name of entities that you are trying to sync/update across all the tenants you are managing. A fix to this problem is in the works but for now, please understand this limitation.
 
+### Cloud Accounts
+
 GCP and Azure Cloud Accounts can not be migrated without the user supplying the credentials. For security reasons, the Prisma Cloud API does not return GCP or Azure credentials. To overcome this, please supply the Terraform JSON file to the ‘cloud_credentials/gcp’ or the ‘cloud_credentials/azure’ and name the terraform file to be the exact same name of the Cloud Accounts name in Prisma Cloud, spaces included. For best results, copy and paste the cloud accounts name into the filename to ensure sameness.
+
+Oracle Cloud (OCI) Accounts are not supported by this script at this time.
+
+### Alert Rules
 
 Integrations can not be migrated by this script. All Alert Rules that rely on external integrations will be migrated but will not be configured to use the external integrations. These alert rules will be migrated and disabled. The user will have to manually configure these alert rules to use the integrations.
 
