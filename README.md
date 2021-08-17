@@ -8,7 +8,7 @@ In all but a few cases, the name of an entity is its only cross tenant identifie
 
 ### Cloud Accounts
 
-GCP and Azure Cloud Accounts can not be migrated without the user supplying the credentials. For security reasons, the Prisma Cloud API does not return GCP or Azure credentials. To overcome this, please supply the Terraform JSON file to the ‘cloud_credentials/gcp’ or the ‘cloud_credentials/azure’ and name the terraform file to be the exact same name of the Cloud Accounts name in Prisma Cloud, spaces included. For best results, copy and paste the cloud accounts name into the filename to ensure sameness.
+GCP and Azure Cloud Accounts can not be migrated without the user supplying the credentials. For security reasons, the Prisma Cloud API does not return GCP or Azure credentials. To overcome this, please supply the Terraform JSON file to the ‘cloud_credentials/gcp’ or the ‘cloud_credentials/azure’ folder and name the terraform file to be the exact same name of the Cloud Accounts name in Prisma Cloud, spaces included. For best results, copy and paste the cloud accounts name into the filename to ensure sameness.
 
 Oracle Cloud (OCI) Accounts are not supported by this script at this time.
 
@@ -40,7 +40,7 @@ This script relies on these two external Python libraries:
 Requests. An installation guide can be found here: https://docs.python-requests.org/en/master/
 PyYAML. An installation guide can be found here: https://pyyaml.org/
 
-You can also install the dependencies quickly by using Python’s package manager and the requirements file.
+You can also install the dependencies quickly by using Python’s package manager and the supplied requirements file.
 
 `pip3 install -r requirements.txt`
 
