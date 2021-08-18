@@ -47,7 +47,7 @@ def migrate_builtin_policies(tenant_sessions: list):
                     #If there is a difference between the source tenant policy and the destination tenant policy, then update the policy
                     # if plc['severity'] != old_plc['severity'] or plc['labels'] != old_plc['labels'] or plc['rule'] != old_plc['rule'] or compFlag:
                     if plc['severity'] != old_plc['severity'] or labels != o_labels or plc['rule'] != old_plc['rule'] or compFlag:
-                        plc_add.update_default_policy(tenant_sessions[index + 1], tenant_sessions[0], old_plc)
+                        plc_add.update_default_policy(tenant_sessions[index + 1], old_plc)
 
     c_print('Finished migrated Default Policies')
     print()

@@ -1,18 +1,18 @@
-from sdk.load_config import load_config_create_sessions
-from sdk.color_print import c_print
+# from sdk.load_config import load_config_create_sessions
+# from sdk.color_print import c_print
 
-from cloud_accounts import cld_sync
-from account_groups import ag_sync_main
-from resource_lists import rl_sync_main
-from user_roles import role_sync
-from user_profiles import users_sync_main
-from ip_allow_lists import ip_sync
-from compliance_standards import cmp_sync
-from saved_searches import search_sync
-from policies import plc_sync
-from alert_rules import ar_main
-from anomaly_settings import ano_sync
-from enterprise_settings import settings_migrate
+# from cloud_accounts import cld_sync
+# from account_groups import ag_sync_main
+# from resource_lists import rl_sync_main
+# from user_roles import role_sync
+# from user_profiles import users_sync_main
+# from ip_allow_lists import ip_sync
+# from compliance_standards import cmp_sync
+# from saved_searches import search_sync
+# from policies import plc_sync
+# from alert_rules import ar_main
+# from anomaly_settings import ano_sync
+# from enterprise_settings import settings_migrate
 
 def sync(modes: dict, tenant_sessions: list):
     '''

@@ -1,7 +1,7 @@
 from compliance_standards import cmp_compare, cmp_get, cmp_add
 from sdk.color_print import c_print
 
-def migrate_compliance_standards(tenant_sessions: list):
+def migrate(tenant_sessions: list):
     '''
     Accepts a list of tenant session objects.
 
@@ -87,7 +87,8 @@ def migrate_compliance_standards(tenant_sessions: list):
             for requirement in requirements:
                 req_id = requirement['requirement']['id']
                 sections = requirement['sections']
-                cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, sections)
+                for section in sections:
+                    cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, section)
     
     c_print('Finished migrating compliance standards')
 
@@ -97,7 +98,7 @@ if __name__ == '__main__':
     from sdk import load_config
     tenant_sessions = load_config.load_config_create_sessions()
 
-    migrate_compliance_standards(tenant_sessions)
+    migrate(tenant_sessions)
 
         
 

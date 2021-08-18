@@ -1,6 +1,6 @@
 from sdk.color_print import c_print
 
-def migrate_settings(tenant_sessions):
+def sync(tenant_sessions):
     c_print('API - Getting enterprise settings')
     res = tenant_sessions[0].request('GET', '/settings/enterprise')
     
@@ -14,7 +14,7 @@ def migrate_settings(tenant_sessions):
         c_print('API - Updating enterprise settings')
         session.request('POST', '/settings/enterprise', json=settings)
 
-    c_print('Finished syncing Enterprise Settings', color='yellow')
+    c_print('Finished syncing Enterprise Settings', color='blue')
     print()
 
 if __name__ == '__main__':
@@ -22,4 +22,4 @@ if __name__ == '__main__':
 
     tenant_sessions = load_config_create_sessions()
 
-    migrate_settings(tenant_sessions)
+    sync(tenant_sessions)

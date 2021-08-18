@@ -1,7 +1,7 @@
 from sdk.color_print import c_print
 from user_roles import role_add, role_compare, role_get
 
-def migrate_roles(tenant_sessions: list):
+def migrate(tenant_sessions: list):
     #Get roles
     roles_lists = []
     for session in tenant_sessions:
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions
 
     tenant_sessions = load_config_create_sessions()
-    migrate_roles(tenant_sessions)
+    migrate(tenant_sessions)
 
 
     

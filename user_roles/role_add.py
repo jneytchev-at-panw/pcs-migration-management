@@ -43,5 +43,5 @@ def add_roles(session, old_session, roles):
             session.request('POST', '/user/role', json=role)
 
     else:
-        print(f'No User Roles to add for tenant: \'{tenant_name}\'')
+        c_print(f'No User Roles to add for tenant: \'{tenant_name}\'', color='yellow')
         print()

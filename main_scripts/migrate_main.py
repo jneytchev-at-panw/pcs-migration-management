@@ -2,16 +2,16 @@ from sdk.load_config import load_config_create_sessions
 from sdk.color_print import c_print
 
 from cloud_accounts import cld_migrate
-from account_groups import ag_main
-from resource_lists import rl_main
-from user_roles import role_sync
-from user_profiles import users_main
+from account_groups import acc_migrate
+from resource_lists import rsc_migrate
+from user_roles import role_migrate
+from user_profiles import usr_migrate
 from ip_allow_lists import ip_migrate
 from compliance_standards import cmp_migrate
 from policies import plc_migrate_custom
 from policies import plc_migrate_default
-from alert_rules import ar_main
-from enterprise_settings import settings_migrate
+from alert_rules import alr_migrate
+from enterprise_settings import set_sync
 from anomaly_settings import ano_sync
 
 #PROPER ORDER
@@ -26,7 +26,7 @@ from anomaly_settings import ano_sync
 #Policy
 #Alert Rules
 
-def migrate(modes: dict, tenant_sessions: list):
+def migrate(tenant_sessions: list, modes: dict):
     '''
     Accepts a dictionary of the migrate modes that are enabled and list of tenant session objects.
 
@@ -38,37 +38,37 @@ def migrate(modes: dict, tenant_sessions: list):
 
     #CLOUD ACCOUNT MIGRATE
     if 'cloud' in modes:
-        cld_migrate.migrate_cloud_accounts(tenant_sessions)
+        cld_migrate.migrate(tenant_sessions)
     #ACCOUNT GROUPS MIGRATE
     if 'account' in modes:
-        ag_main.acc_groups(tenant_sessions)
+        acc_migrate.migrate(tenant_sessions)
     #RESOURCE LIST MIGRATE
     if 'resource' in modes:
-        rl_main.rl_main(tenant_sessions)
+        rsc_migrate.migrate(tenant_sessions)
     #USER ROLES MIGRATE
     if 'role' in modes:
-        role_sync.sync_roles(tenant_sessions, True, False, False)
+        role_migrate.migrate(tenant_sessions)
     #USERS MIGRATE
     if 'user' in modes:
-        users_main.users_main(tenant_sessions)
+        usr_migrate.migrate(tenant_sessions)
     #TRUSTED IP MIGRATE
     if 'ip' in modes:
-        ip_migrate.migrate_trusted_ips(tenant_sessions)
+        ip_migrate.migrate(tenant_sessions)
     #COMPLIANCE MIGRATE
     if 'compliance' in modes:
-        cmp_migrate.migrate_compliance_standards(tenant_sessions)
+        cmp_migrate.migrate(tenant_sessions)
     #POLICY MIGRATE
     if 'policy' in modes:
         plc_migrate_custom.migrate_custom_policies(tenant_sessions)
         plc_migrate_default.migrate_builtin_policies(tenant_sessions)
     #ALERT RULES MIGRATE
     if 'alert' in modes:
-        ar_main.alert_rules(tenant_sessions)
+        alr_migrate.migrate(tenant_sessions)
     if 'anomaly' in modes:
-        ano_sync.sync_anomaly_settings(tenant_sessions, True, False, False)
+        ano_sync.sync(tenant_sessions, True, False, False)
     if 'settings' in modes:
         #Enterprise settings
-        settings_migrate.migrate_settings(tenant_sessions)
+        set_sync.sync(tenant_sessions)
 
 
 if __name__ == '__main__':

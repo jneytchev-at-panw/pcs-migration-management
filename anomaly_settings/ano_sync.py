@@ -1,7 +1,7 @@
 from anomaly_settings import ano_get, ano_update, ano_compare
 from sdk.color_print import c_print
 
-def sync_anomaly_settings(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         #Get network settings----
     network_settings_list = []
     for session in tenant_sessions:
@@ -58,7 +58,7 @@ def sync_anomaly_settings(tenant_sessions: list, addMode: bool, upMode: bool, de
         for t_list in tenant:
             ano_update.delete_trusted_list(tenant_sessions[index + 1], t_list)
 
-    c_print('Finished syncing Anomaly Settings', color='yellow')
+    c_print('Finished syncing Anomaly Settings', color='blue')
     print()
 
 
@@ -67,4 +67,4 @@ if __name__ == '__main__':
 
     tenant_sessions = load_config_create_sessions()
 
-    sync_anomaly_settings(tenant_sessions, True, True, True)
+    sync(tenant_sessions, True, True, True)
