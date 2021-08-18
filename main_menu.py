@@ -160,6 +160,8 @@ if __name__ == '__main__':
             migrate_main.migrate(migrate_modes)
 
     else:#---------------------------------------------------------------------------------
+        #FIXME LATER
+        exit()#FIXME 
         migrate_type = input('Do you want to do a full Sync? (Y/N): ')
         print()
         migrate_type = migrate_type.lower()
