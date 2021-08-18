@@ -53,3 +53,4 @@ if __name__ == '__main__':
 
 # DELETION ORDER
 # Users - Roles - Resource Lists - Cloud Accounts - Account Groups
+# Cant delete an account group that is still linked to a cloud account so cloud accounts must be synced/updated first.
