@@ -83,7 +83,7 @@ def compare_settings(network_settings_list):
                         settings_to_update.append(src_setting)
                         break
                     if 'trainingModelThreshold' in src_setting[1]:
-                        if src_setting[1]['trainingModelThreshold'] != cln_setting[1]['trainingModelThreshold']:
+                        if src_setting[1]['trainingModelThreshold'] != cln_setting[1].get('trainingModelThreshold'):
                             settings_to_update.append(src_setting)
                             break
                     
