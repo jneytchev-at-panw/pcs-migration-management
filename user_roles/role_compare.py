@@ -46,37 +46,41 @@ def compare_each_role(roles_list, tenant_sessions=None):
     clone_tenant_roles_delta = []
     for index, tenant in enumerate(clone_tenants):
         roles_delta = []
-        for role in tenant:
-            if role['name'] in [o_role['name'] for o_role in original_tenant]:
-                #Get the o_role
-                o_role = [o_role for o_role in original_tenant if o_role['name'] == role['name']][0]
+        for cln_role in tenant:
+            if cln_role['name'] in [o_role['name'] for o_role in original_tenant]:
+                #Get the source role
+                src_role = [o_role for o_role in original_tenant if o_role['name'] == cln_role['name']][0]
+
+                acc_grps = [grp['name'] for grp in src_role.get('accountGroups')]
+                acc_grps.sort()
+                rsc_lists = [rsc['name'] for rsc in src_role.get('resourceLists')]
+                rsc_lists.sort()
+                src_data = {
+                    'roleType': src_role.get('roleType'),
+                    'accountGroup': acc_grps,
+                    'resourceLists': rsc_lists
+                }
+
+                acc_grps = [grp['name'] for grp in cln_role.get('accountGroups')]
+                acc_grps.sort()
+                rsc_lists = [rsc['name'] for rsc in cln_role.get('resourceLists')]
+                rsc_lists.sort()
+                cln_data = {
+                    'roleType': cln_role.get('roleType'),
+                    'accountGroup': acc_grps,
+                    'resourceLists': rsc_lists
+                }
 
                 #Add the role to the list if there is a difference
-                if compare_roles(o_role, role):
+                if src_data != cln_data:
                     #update ID to the role id on the tenant
-                    o_role.update(id=role['id'])
-                    roles_delta.append(o_role)
+                    src_role.update(id=cln_role['id'])
+                    roles_delta.append(src_role)
 
         clone_tenant_roles_delta.append(roles_delta)
 
     return clone_tenant_roles_delta
 
-
-def compare_roles(role1, role2):
-    for r1_item in role1.items():
-        #Certain fields are okay to be different
-        # if r1_item[0] == 'id' or r1_item[0] == 'lastModifiedBy' or r1_item[0] == 'lastModifiedTs':#FIXME
-        if r1_item[0] == 'id' or r1_item[0] == 'lastModifiedBy' or r1_item[0] == 'lastModifiedTs' or r1_item[0] == 'associatedUsers':
-            continue
-        
-        r2_key = r1_item[0]
-        r1_val = r1_item[1]
-
-        if r1_val != role2[r2_key]:
-            #There is a difference, return
-            return True
-    #There is no difference, return
-    return False
 
 def name_change(role, original_tenant):
     role_desc = role['description']
