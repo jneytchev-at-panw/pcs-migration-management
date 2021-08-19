@@ -2,7 +2,7 @@ from sdk.color_print import c_print
 
 def delete_account_groups(session, account_groups):
     if account_groups:
-        c_print(f'Deleting Account Groups for tenant: \'{session.tenant}\'',color='blue')
+        c_print(f'Deleting Account Groups from tenant: \'{session.tenant}\'',color='blue')
         print()
 
         for acc in account_groups:

@@ -63,4 +63,6 @@ if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions
 
     tenant_sessions = load_config_create_sessions()
+
+    sync(tenant_sessions, True, True, True)
     

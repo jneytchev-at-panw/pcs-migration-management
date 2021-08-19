@@ -13,7 +13,7 @@ def add_resource_lists(session: object, resource_lists_to_add: list):
 
     else:
         
-        c_print(f'No Resource Lists to migrate for tenant: \'{tenant_name}\'', color='yellow')
+        c_print(f'No Resource Lists to add for tenant: \'{tenant_name}\'', color='yellow')
         print()
 
 
