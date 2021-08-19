@@ -3,7 +3,7 @@ from sdk.color_print import c_print
 def add_resource_lists(session: object, resource_lists_to_add: list):
     tenant_name = session.tenant
     if resource_lists_to_add:
-        print(f'Adding Resource Lists to tenant: \'{tenant_name}\'')
+        print(f'Adding Resource Lists to tenant: \'{tenant_name}\'', color='blue')
         print()
 
         status_ignore = [201]
