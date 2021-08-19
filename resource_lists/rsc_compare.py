@@ -11,3 +11,10 @@ def compare_resource_lists(source_resource_lists: list, clone_resource_lists: li
             resource_lists_to_add.append(src_rsc)
 
     return resource_lists_to_add
+
+
+def get_resource_lists_to_update():
+    pass
+
+def get_rsc_lists_to_delete():
+    pass
