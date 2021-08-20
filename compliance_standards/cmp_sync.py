@@ -1,7 +1,7 @@
 from compliance_standards import cmp_compare, cmp_get, cmp_add, cmp_migrate
 from sdk.color_print import c_print
 
-def sync_compliance(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     '''
     Normalizes custom compliance standards accross all tenants using the first tenant as the template
     for the others. Does a deep search accross all tenants to collect all compliance standards, requirements
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     from sdk import load_config
     tenant_sessions = load_config.load_config_create_sessions()
 
-    sync_compliance(tenant_sessions, True, True, True)
+    sync(tenant_sessions, True, True, True)
 
         
 
