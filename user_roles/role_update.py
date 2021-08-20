@@ -3,7 +3,7 @@ from user_roles import role_translate_id
 
 def update_roles(session, old_session, roles):
     if roles:
-        c_print(f'Updating User Roles for tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Updating User Roles for tenant: \'{session.tenant}\'', color='green')
         print()
 
         #Translate Acc Grp IDs

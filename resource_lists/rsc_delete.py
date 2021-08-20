@@ -2,7 +2,7 @@ from sdk.color_print import c_print
 
 def delete_resource_lists(session, resource_lists):
     if resource_lists:
-        c_print(f'Deleteing resource lists from tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Deleteing resource lists from tenant: \'{session.tenant}\'', color='green')
         print()
 
         for rsc_list in resource_lists:

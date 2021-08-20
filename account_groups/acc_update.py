@@ -2,7 +2,7 @@ from sdk.color_print import c_print
 
 def update_account_groups(session, account_groups):
     if account_groups:
-        c_print(f'Updating Account Groups for tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Updating Account Groups for tenant: \'{session.tenant}\'', color='green')
         print()
 
         for acc in account_groups:

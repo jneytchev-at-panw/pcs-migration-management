@@ -8,7 +8,7 @@ def add_networks(session, networks):
     '''
 
     if networks:
-        c_print(f'Adding Trusted Alert IP Networks to tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Adding Trusted Alert IP Networks to tenant: \'{session.tenant}\'', color='green')
         print()
 
         for network in networks:
@@ -26,12 +26,18 @@ def add_network_cidrs(session, network, cidrs):
 
     Adds network ciders to each given network.
     '''
-    networkUuid = network['uuid']
-    name = network['name']
-    for cidr in cidrs:
-        #upload each cider in a network
-        c_print(f'API - Adding cidr blocks to network{name}')
-        session.request('POST', f'/network/{networkUuid}/cidr', json=cidr, redlock_ignore=['duplicate_public_network'])
+    if cidrs:
+        c_print(f'Adding Network Cidrs to tenant: \'{session.tenant}\'', color='green')
+        print()
+        networkUuid = network['uuid']
+        name = network['name']
+        for cidr in cidrs:
+            #upload each cider in a network
+            c_print(f'API - Adding cidr blocks to network{name}')
+            session.request('POST', f'/network/{networkUuid}/cidr', json=cidr, redlock_ignore=['duplicate_public_network'])
+    else:
+        c_print(f'No Network Cidrs to add for tenant: \'{session.tenant}\'', color='yellow')
+        print()
 
 def add_network_allow_list_cidrs(session, net_uuid, cidrs):
     '''
@@ -58,7 +64,7 @@ def add_login_ips(session, ips):
     Adds the Login Allow IPs.
     '''
     if ips:
-        c_print(f'Adding Login IPs to tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Adding Login IPs to tenant: \'{session.tenant}\'', color='green')
         print()
 
         for ip in ips:

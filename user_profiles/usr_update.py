@@ -3,7 +3,7 @@ from sdk.color_print import c_print
 
 def update_user_profiles(session, users):
     if users:
-        c_print(f'Updating User Profiles on tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Updating User Profiles on tenant: \'{session.tenant}\'', color='green')
         print()
 
         for user in users:

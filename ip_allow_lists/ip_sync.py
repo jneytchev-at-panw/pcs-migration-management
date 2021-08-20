@@ -16,7 +16,8 @@ def sync_trusted_ips(tenant_sessions: list, addMode: bool, upMode: bool, delMode
         #Get the trusted network networks that are needed to be added=========================================
         trusted_networks_delta = []
         for cln_network in clone_networks:
-            trusted_networks_delta = ip_compare.compare_trusted_networks(src_network, cln_network)
+            ips = ip_compare.compare_trusted_networks(src_network, cln_network)
+            trusted_networks_delta.append(ips)
 
         #Upload networks to clone tenants
         clone_tenant_sessions = tenant_sessions[1:]

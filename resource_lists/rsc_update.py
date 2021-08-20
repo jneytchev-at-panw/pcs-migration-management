@@ -2,7 +2,7 @@ from sdk.color_print import c_print
 
 def update_resource_lists(session, resource_lists):
     if resource_lists:
-        c_print(f'Updating Resource Lists for tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Updating Resource Lists for tenant: \'{session.tenant}\'', color='green')
         print()
 
         for rsc_list in resource_lists:

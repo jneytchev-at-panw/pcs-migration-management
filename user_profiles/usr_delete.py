@@ -4,7 +4,7 @@ from sdk.color_print import c_print
 
 def delete_user_profiles(session, users):
     if users:
-        c_print(f'Deleteing User Profiles from tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Deleteing User Profiles from tenant: \'{session.tenant}\'', color='green')
         print()
 
         for user in users:

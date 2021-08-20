@@ -2,7 +2,7 @@ from sdk.color_print import c_print
 
 def delete_roles(session, roles):
     if roles:
-        c_print(f'Deleting User Roles from tenant: \'{session.tenant}\'', color='blue')
+        c_print(f'Deleting User Roles from tenant: \'{session.tenant}\'', color='green')
         print()
 
         for role in roles:
