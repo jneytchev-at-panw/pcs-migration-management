@@ -9,31 +9,37 @@ def add_custom_policies(tenant_session, source_tenant_session, policies):
     Adds the custom policies to the first tenant supplied.
     '''
 
-    #Updates IDs and saves searches before adding each policy to the new tenant.
+    if policies:
+        c_print(f'Adding Custom Policies to tenant: \'{tenant_session.tenant}\'', color='green')
+        print()
+        #Updates IDs and saves searches before adding each policy to the new tenant.
 
-    translate = plc_cmp_translate.Translate(tenant_session)
-    
-    for policy in policies:
-        p_type = policy['policyType']
-        name = policy['name']
-        desc = name
-        if 'description' in policy:
-            desc = policy['description']
+        translate = plc_cmp_translate.Translate(tenant_session)
+        
+        for policy in policies:
+            p_type = policy['policyType']
+            name = policy['name']
+            desc = name
+            if 'description' in policy:
+                desc = policy['description']
 
-        #the saved search needs to be migrated if there is one
-        if 'savedSearch' in policy['rule']['parameters']:
-            savedSearch = policy['rule']['parameters']['savedSearch']
-            if savedSearch == 'true' or savedSearch == True or savedSearch =='True' or savedSearch:
-                criteria = search_migrate_plc.migrate_search(tenant_session, source_tenant_session, policy['rule'], policy['name'], desc)
-                policy['rule'].update(criteria=criteria)
+            #the saved search needs to be migrated if there is one
+            if 'savedSearch' in policy['rule']['parameters']:
+                savedSearch = policy['rule']['parameters']['savedSearch']
+                if savedSearch == 'true' or savedSearch == True or savedSearch =='True' or savedSearch:
+                    criteria = search_migrate_plc.migrate_search(tenant_session, source_tenant_session, policy['rule'], policy['name'], desc)
+                    policy['rule'].update(criteria=criteria)
 
-        #The ID of the compliance standards needs to be updated if there is compliance data
-        if 'complianceMetadata' in policy:
-            complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
-            policy.update(complianceMetadata=complianceMetadata)
+            #The ID of the compliance standards needs to be updated if there is compliance data
+            if 'complianceMetadata' in policy:
+                complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
+                policy.update(complianceMetadata=complianceMetadata)
 
-        c_print(f'API - Adding {p_type} policy: {name}')
-        tenant_session.request('POST', '/policy', json=policy)
+            c_print(f'API - Adding {p_type} policy: {name}')
+            tenant_session.request('POST', '/policy', json=policy)
+    else:
+        c_print(f'No Custom Policies to add for tenant: \'{tenant_session.tenant}\'', color='yellow')
+        print()
 
 def update_default_policy(tenant_session: object, policy: dict):
     '''

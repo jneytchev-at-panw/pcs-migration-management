@@ -41,15 +41,14 @@ def get_policies_to_update(tenant_sessions: list, policies_list: list) -> list:
 
     #Get src saved searches for criteria lookup
     print('API - Getting source saved search for criteria lookup')
-    src_saved_search = src_session.request('GET', '/search/history', params={"filter":"saved"})
-
+    src_saved_search = src_session.request('GET', '/search/history', params={"filter":"saved"}).json()
 
     tenants_to_update = []
     for index, cln_tenant in enumerate(clone_tenants):
         #Get cln saved searches for critera lookup
         cln_session = clone_sessions[index]
         print('API - Getting clone saved search for criteria lookup')
-        cln_saved_search = cln_session.request('GET', '/search/history', params={"filter":"saved"})
+        cln_saved_search = cln_session.request('GET', '/search/history', params={"filter":"saved"}).json()
 
         policies_to_update = []
         for src_policy in source_tenant:

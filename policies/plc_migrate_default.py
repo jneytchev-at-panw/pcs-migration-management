@@ -49,7 +49,7 @@ def migrate_builtin_policies(tenant_sessions: list):
                     if plc['severity'] != old_plc['severity'] or labels != o_labels or plc['rule'] != old_plc['rule'] or compFlag:
                         plc_add.update_default_policy(tenant_sessions[index + 1], old_plc)
 
-    c_print('Finished migrated Default Policies')
+    c_print('Finished migrating Default Policies', color='green')
     print()
 
 if __name__ == '__main__':
