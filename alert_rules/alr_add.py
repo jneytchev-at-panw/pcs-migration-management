@@ -2,7 +2,7 @@ from sdk.color_print import c_print
 
 def add_alert_rules(session, alert_rules):
     if alert_rules:
-        c_print('Adding Alert Rules', color='blue')
+        c_print(f'Adding Alert Rules for tenant: \'{session.tenant}\'', color='blue')
         print()
 
         for alr in alert_rules:
@@ -10,5 +10,5 @@ def add_alert_rules(session, alert_rules):
             session.request("POST", "/alert/rule", json=alr)
 
     else:
-        c_print('No Alert Rules to add', color='yellow')
+        c_print('No Alert Rules to add for tenant: \'{session.tenant}\'', color='yellow')
         print()
