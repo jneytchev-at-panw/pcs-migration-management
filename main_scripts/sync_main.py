@@ -68,7 +68,7 @@ def sync(modes: dict, tenant_sessions: list):
 
     if 'compliance' in modes:
         if modes['compliance'].get('del', True):
-            cmp_sync.sync(tenant_sessions, False, False, True)
+            cmp_sync.sync(tenant_sessions, False, False, True, cmp_sync_data)
 
     if 'ip' in modes:
         if modes['ip'].get('del', True):
