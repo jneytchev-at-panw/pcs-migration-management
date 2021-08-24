@@ -41,7 +41,7 @@ def sync(modes: dict, tenant_sessions: list):
     if 'search' in modes:
         search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False)
     if 'policy' in modes:
-        plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), False)
+        plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), modes['policy'].get('up', True), False)
     if 'alert' in modes:
         alr_sync_data = alr_sync.sync(tenant_sessions, modes['alert'].get('add', True), modes['alert'].get('up', True), False)
     if 'anomaly' in modes:
@@ -64,7 +64,7 @@ def sync(modes: dict, tenant_sessions: list):
 
     if 'search' in modes:
         if modes['search'].get('del', True):
-            search_sync.sync(tenant_sessions, False, False, True)
+            search_sync.sync(tenant_sessions, False, True)
 
     if 'compliance' in modes:
         if modes['compliance'].get('del', True):
@@ -80,19 +80,19 @@ def sync(modes: dict, tenant_sessions: list):
 
     if 'role' in modes:
         if modes['role'].get('del', True):
-            pass
+            role_sync.sync(tenant_sessions, False, False, True)
 
     if 'resource' in modes:
         if modes['resource'].get('del', True):
-            pass
+            rsc_sync.sync(tenant_sessions, False, False, True)
 
     if 'cloud' in modes:
         if modes['cloud'].get('del', True):
-            pass
+            cld_sync.sync(tenant_sessions, False, False, True)
 
     if 'account' in modes:
         if modes['account'].get('del', True):
-            pass
+            acc_sync.sync(tenant_sessions, False, False, True)
     
 
     c_print('Finished syncing tenant', color='green')

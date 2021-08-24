@@ -9,6 +9,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     tenant_custom_policies = []
     for tenant_session in tenant_sessions:
         tenant_custom_policies.append(plc_get.api_get_custom(tenant_session))
+    
+    clone_tenant_sessions = tenant_sessions[1:]
 
     if addMode:
         #Get policies to add
@@ -16,7 +18,6 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         policies_to_add = plc_compare.compare_original_to_clones(tenant_sessions, tenant_custom_policies)
 
         #Upload policies to clone tenants
-        clone_tenant_sessions = tenant_sessions[1:]
         for index, policies in enumerate(policies_to_add):
             tenant_session = clone_tenant_sessions[index]
             plc_add.add_custom_policies(tenant_session, tenant_sessions[0], policies)

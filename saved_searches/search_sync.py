@@ -13,11 +13,12 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool):
         data = res.json()
         tenant_saved_searches.append(data)
 
+    o_tenant = tenant_saved_searches[0]
+    clone_tenants = tenant_saved_searches[1:]
+
     if addMode:
         #Compare saved searches across tenants and add missing ones
         #Loop over the saved searches of each tenant
-        o_tenant = tenant_saved_searches[0]
-        clone_tenants = tenant_saved_searches[1:]
         for index, d_tenant in enumerate(clone_tenants):
             saved_search_to_add = []
             for o_saved_search in o_tenant:
@@ -36,7 +37,6 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool):
                 if d_saved_search['searchName'] not in [o_ss['searchName'] for o_ss in o_tenant]:
                     saved_search_to_delete.append(d_saved_search)
             for search in saved_search_to_delete:
-                #FIXME Delete does not seem to be working 8/20/21
                 c_print('API - Deleteing saved search')
                 s_id = search['id']
                 tenant_sessions[index + 1].request('DELETE', f'/search/history/{s_id}', status_ignore=[204])

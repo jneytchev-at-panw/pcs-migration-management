@@ -9,7 +9,7 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
     tenant_name = session.tenant
 
     if accounts:
-        print('Adding Cloud Accounts to tenant: \'{}\'')
+        c_print(f'Adding Cloud Accounts to tenant: \'{session.tenant}\'', color='green')
         print()
         for account in accounts:
             res = object()
@@ -73,7 +73,7 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
             except:
                 c_print(account, color='red')
     else:
-        c_print('No Cloud Accounts to add for tenant: \'{}\'', color='yellow')
+        c_print('No Cloud Accounts to add for tenant: \'{session.tenant}\'', color='yellow')
         print()
         
 
