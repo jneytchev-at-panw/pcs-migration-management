@@ -11,6 +11,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     #Define network lists
     src_network = trusted_networks_list[0]
     clone_networks = trusted_networks_list[1:]
+    clone_tenant_sessions = tenant_sessions[1:]
 
     if addMode:
         #Get the trusted network networks that are needed to be added=========================================
@@ -20,7 +21,6 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
             trusted_networks_delta.append(ips)
 
         #Upload networks to clone tenants
-        clone_tenant_sessions = tenant_sessions[1:]
         for index, networks in enumerate(trusted_networks_delta):
             tenant_session = clone_tenant_sessions[index]
             ip_add.add_networks(tenant_session, networks)
