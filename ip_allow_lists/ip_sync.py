@@ -1,7 +1,7 @@
 from ip_allow_lists import ip_add, ip_compare, ip_get, ip_update, ip_delete
 from sdk.color_print import c_print
 
-def sync_trusted_ips(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     #Get trusted ips from the tenants
     trusted_networks_list = []
     for session in tenant_sessions:
@@ -91,4 +91,4 @@ if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions
     tenant_sessions = load_config_create_sessions()
 
-    sync_trusted_ips(tenant_sessions, True, True, True)
+    sync(tenant_sessions, True, True, True)

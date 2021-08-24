@@ -1,7 +1,7 @@
 from sdk.color_print import c_print
 from cloud_accounts import cld_migrate, cld_get, cld_compare, cld_update, cld_delete
 
-def sync_cloud_accounts(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     '''Update, add, or delete cloud accounts to normalize all tenants to be the same as the source tenant'''
 
     if addMode:
@@ -46,6 +46,6 @@ if __name__ == '__main__':
     #Generate a API session for each tenant
     tenant_sessions = load_config.load_config_create_sessions()
     
-    sync_cloud_accounts(tenant_sessions, True, True, True)
+    sync(tenant_sessions, True, True, True)
 
 

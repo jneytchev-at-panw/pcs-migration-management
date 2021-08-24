@@ -1,7 +1,7 @@
 from sdk.color_print import c_print
 from user_roles import role_add, role_compare, role_get, role_delete, role_update
 
-def sync_roles(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     #Get roles
     roles_lists = []
     for session in tenant_sessions:
@@ -46,5 +46,5 @@ if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions
 
     tenant_sessions = load_config_create_sessions()
-    sync_roles(tenant_sessions, True, True, True)
+    sync(tenant_sessions, True, True, True)
 

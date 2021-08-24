@@ -160,8 +160,6 @@ if __name__ == '__main__':
             migrate_main.migrate(migrate_modes)
 
     else:#---------------------------------------------------------------------------------
-        #FIXME LATER
-        exit()#FIXME 
         migrate_type = input('Do you want to do a full Sync? (Y/N): ')
         print()
         migrate_type = migrate_type.lower()
@@ -182,7 +180,7 @@ if __name__ == '__main__':
         }
 
         if migrate_type == 'y' or migrate_type == 'yes':
-            sync_main.sync(sync_modes)
+            sync_main.sync(sync_modes, tenant_sessions)
         else:
             enabled = input('Do you want to sync Cloud Accounts? (Y/N): ')
             enabled = enabled.lower()
@@ -284,7 +282,7 @@ if __name__ == '__main__':
             print()
             
             #Call sync module
-            sync_main.sync(sync_modes)
+            sync_main.sync(sync_modes, tenant_sessions)
 
 
         

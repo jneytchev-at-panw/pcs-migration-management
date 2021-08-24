@@ -1,18 +1,18 @@
-# from sdk.load_config import load_config_create_sessions
-# from sdk.color_print import c_print
+from sdk.load_config import load_config_create_sessions
+from sdk.color_print import c_print
 
-# from cloud_accounts import cld_sync
-# from account_groups import ag_sync_main
-# from resource_lists import rl_sync_main
-# from user_roles import role_sync
-# from user_profiles import users_sync_main
-# from ip_allow_lists import ip_sync
-# from compliance_standards import cmp_sync
-# from saved_searches import search_sync
-# from policies import plc_sync
-# from alert_rules import ar_main
-# from anomaly_settings import ano_sync
-# from enterprise_settings import settings_migrate
+from cloud_accounts import cld_sync
+from account_groups import acc_sync
+from resource_lists import rsc_sync
+from user_roles import role_sync
+from user_profiles import usr_sync
+from ip_allow_lists import ip_sync
+from compliance_standards import cmp_sync
+from saved_searches import search_sync
+from policies import plc_sync
+from alert_rules import alr_sync
+from anomaly_settings import ano_sync
+from enterprise_settings import set_sync
 
 def sync(modes: dict, tenant_sessions: list):
     '''
@@ -22,30 +22,81 @@ def sync(modes: dict, tenant_sessions: list):
     specifying the operations that are enabled.
     '''
 
+
+    #ADDING AND UPDATING - Order based on dependencies.
     if 'cloud' in modes:
-        cld_sync.sync_cloud_accounts(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('up', True), modes['cloud'].get('del', True))
+        cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('up', True), False)
     if 'account' in modes:
-        ag_sync_main.ag_sync_main(tenant_sessions, modes['account'].get('add', True), modes['account'].get('up', True), modes['account'].get('del', True))
+        acc_sync_data = acc_sync.sync(tenant_sessions, modes['account'].get('add', True), modes['account'].get('up', True), False)
     if 'resource' in modes:
-        rl_sync_main.resource_list_sync(tenant_sessions, modes['resource'].get('add', True), modes['resource'].get('up', True), modes['resource'].get('del', True))
+        rsc_sync_data = rsc_sync.sync(tenant_sessions, modes['resource'].get('add', True), modes['resource'].get('up', True), False)
     if 'role' in modes:
-        role_sync.sync_roles(tenant_sessions, modes['role'].get('add', True), modes['role'].get('up', True), modes['role'].get('del', True))
+        role_sync_data = role_sync.sync(tenant_sessions, modes['role'].get('add', True), modes['role'].get('up', True), False)
     if 'user' in modes:
-        users_sync_main.users_main(tenant_sessions, modes['user'].get('add', True), modes['user'].get('up', True), modes['user'].get('del', True))
+        usr_sync_data = usr_sync.sync(tenant_sessions, modes['user'].get('add', True), modes['user'].get('up', True), False)
     if 'ip' in modes:
-        ip_sync.sync_trusted_ips(tenant_sessions, modes['ip'].get('add', True), modes['ip'].get('up', True), modes['ip'].get('del', True))
+        ip_sync_data = ip_sync.sync(tenant_sessions, modes['ip'].get('add', True), modes['ip'].get('up', True), False)
     if 'compliance' in modes:
-        cmp_sync.sync_compliance(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('up', True), modes['compliance'].get('del', True))
+        cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('up', True), False)
     if 'search' in modes:
-        search_sync.sync_search(tenant_sessions, modes['search'].get('add', True), modes['search'].get('del', True))
+        search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False)
     if 'policy' in modes:
-        plc_sync.sync_policies(tenant_sessions, modes['policy'].get('add', True), modes['policy'].get('up', True), modes['policy'].get('del', True))
+        plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), False)
     if 'alert' in modes:
-        ar_main.alert_rules(tenant_sessions, modes['alert'].get('add', True), modes['alert'].get('up', True), modes['alert'].get('del', True))
+        alr_sync_data = alr_sync.sync(tenant_sessions, modes['alert'].get('add', True), modes['alert'].get('up', True), False)
     if 'anomaly' in modes:
-        ano_sync.sync_anomaly_settings(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('up', True), modes['anomaly'].get('del', True))
+        ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('up', True), False)
     if 'settings' in modes:
-        settings_migrate.migrate_settings(tenant_sessions)
+        set_sync.sync(tenant_sessions)
+
+    #DELETEING - Order based on dependencies
+    if 'anomaly' in modes:
+        if modes['anomaly'].get('del', True):
+            ano_sync.sync(tenant_sessions, False, False, True)
+
+    if 'alert' in modes:
+        if modes['alert'].get('del', True):
+            alr_sync.sync(tenant_sessions, False, False, True)
+
+    if 'policy' in modes:
+        if modes['policy'].get('del', True):
+            plc_sync.sync(tenant_sessions, False, False, True)
+
+    if 'search' in modes:
+        if modes['search'].get('del', True):
+            search_sync.sync(tenant_sessions, False, False, True)
+
+    if 'compliance' in modes:
+        if modes['compliance'].get('del', True):
+            cmp_sync.sync(tenant_sessions, False, False, True)
+
+    if 'ip' in modes:
+        if modes['ip'].get('del', True):
+            ip_sync.sync(tenant_sessions, False, False, True)
+
+    if 'user' in modes:
+        if modes['user'].get('del', True):
+            usr_sync.sync(tenant_sessions, False, False, True)
+
+    if 'role' in modes:
+        if modes['role'].get('del', True):
+            pass
+
+    if 'resource' in modes:
+        if modes['resource'].get('del', True):
+            pass
+
+    if 'cloud' in modes:
+        if modes['cloud'].get('del', True):
+            pass
+
+    if 'account' in modes:
+        if modes['account'].get('del', True):
+            pass
+    
+
+    c_print('Finished syncing tenant', color='green')
+    print()
 
 if __name__ == '__main__':
     sync()
