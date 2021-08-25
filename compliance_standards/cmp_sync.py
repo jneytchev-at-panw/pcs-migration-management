@@ -9,15 +9,13 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, tena
     tenants until each clone tenant matches the one source tenant.
     '''
     
-    #Get complance standards from all tenants
-    tenant_compliance_standards_lists = []
-    for session in tenant_sessions:
-        tenant_compliance_standards_lists.append(cmp_get.get_compliance_standard_list(session))
-
-
-    #Get all requirements and sections for each standard. This is a deep nested search and takes some time
-
     if not tenant_compliance_standards_data:#Sometimes the compliance data is passed in. Mainly used by the delete function
+        #Get complance standards from all tenants
+        tenant_compliance_standards_lists = []
+        for session in tenant_sessions:
+            tenant_compliance_standards_lists.append(cmp_get.get_compliance_standard_list(session))
+
+        #Get all requirements and sections for each standard. This is a deep nested search and takes some time  
         for index, tenant in enumerate(tenant_compliance_standards_lists):
             tenant_compliance = []
             for standard in tenant:
