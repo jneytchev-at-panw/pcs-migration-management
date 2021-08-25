@@ -14,7 +14,7 @@ from alert_rules import alr_sync
 from anomaly_settings import ano_sync
 from enterprise_settings import set_sync
 
-def sync(modes: dict, tenant_sessions: list):
+def sync(tenant_sessions: list, modes: dict):
     '''
     Accepts the enabled sync modes dictionary and a list of tenant_session objects.
     
@@ -94,8 +94,9 @@ def sync(modes: dict, tenant_sessions: list):
         if modes['account'].get('del', True):
             acc_sync.sync(tenant_sessions, False, False, True)
     
-
-    c_print('Finished syncing tenant', color='green')
+    c_print('************************', color='green')
+    c_print('Finished syncing tenants', color='green')
+    c_print('************************', color='green')
     print()
 
 if __name__ == '__main__':

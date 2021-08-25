@@ -70,6 +70,11 @@ def migrate(tenant_sessions: list, modes: dict):
         #Enterprise settings
         set_sync.sync(tenant_sessions)
 
+    c_print('**************************', color='green')
+    c_print('Finished migrating tenants', color='green')
+    c_print('**************************', color='green')
+    print()
+
 
 if __name__ == '__main__':
     migrate()
