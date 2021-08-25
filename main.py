@@ -1,4 +1,5 @@
 import json
+import sys
 from main_scripts import migrate_main, sync_main
 from sdk.color_print import c_print
 from sdk.load_config import load_config_create_sessions
@@ -87,6 +88,30 @@ if __name__ == '__main__':
     #Load JWT sessions from credentials.yaml
     tenant_sessions, same_stack = load_sessions()
 
+    migrate_modes = {
+        'cloud': {},
+        'account': {},
+        'resource': {},
+        'role': {},
+        'user': {},
+        'ip': {},
+        'compliance': {},
+        'policy': {},
+        'alert': {},
+        'anomaly': {},
+        'settings': {}
+    }
+
+    #Read command line args
+    if 'migrate' in sys.argv:
+        if 'full' in sys.argv:
+            migrate_main.migrate(tenant_sessions, migrate_modes)
+
+    if 'sync' in sys.argv:
+        if 'full' in sys.argv:
+            sync_main.sync(tenant_sessions, migrate_modes)
+
+    #Run the script based on user responces to the following prompts
     mode = input('Do you want to MIGRATE or SYNC? (M/S): ')
     print()
 

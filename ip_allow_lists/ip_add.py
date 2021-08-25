@@ -45,16 +45,11 @@ def add_network_allow_list_cidrs(session, net_uuid, cidrs):
 
     Adds all cidr blocks to the network with the provided UUID.
     '''
-    if cidrs:
-        c_print('Adding CIDRs to Trusted Alert Networks', color='blue')
-        print()
 
-        for cidr in cidrs:
-            print('API Adding CIDRs to network')
-            session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
-    else:
-        c_print(f'No Trusted Alert CIDRs to add for Network: \'{net_uuid}\'', color='yellow')
-        print()
+    for cidr in cidrs:
+        print('API Adding CIDRs to network')
+        session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
+
 
 
 def add_login_ips(session, ips):
