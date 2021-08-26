@@ -3,6 +3,46 @@ import re
 import yaml
 from sdk.session_manager import Session
 from sdk.color_print import c_print
+import requests
+
+def validate_credentials(a_key, s_key, url) -> bool:
+    '''
+    This function creates a session with the supplied credentials to test 
+    if the user successfully entered valid credentails.
+    '''
+
+    headers = {
+    'content-type': 'application/json; charset=UTF-8'
+    }
+
+    payload = {
+        "username": f"{a_key}",
+        "password": f"{s_key}"
+    }
+
+    try:
+        c_print('API - Validating credentials')
+        response = requests.request("POST", f'{url}/login', headers=headers, json=payload)
+
+        if response.status_code == 200:
+            c_print('SUCCESS', color='green')
+            print()
+            return True
+        else:
+            return False
+    except:
+        c_print('ERROR', end=' ', color='red')
+        print('Could not connect to Prisma Cloud API.')
+        print()
+        print('Steps to troubleshoot:')
+        c_print('1) Please discconnect from any incompatible VPN', color='blue')
+        print()
+        c_print('2) Please ensure you have entered a valid Prisma Cloud URL.', color='blue')
+        print('EX: https://app.prismacloud.io or https://app2.eu.prismacloud.io')
+        print()
+        return False
+
+#==============================================================================
 
 def validate_url(url):
     if 'https://' not in url:
@@ -14,18 +54,34 @@ def validate_url(url):
 
     return url
 
-def get_tenant_credentails():
-    name = input('Enter tenant name or pseudonym:\n')
-    print()
-    a_key = input('Enter tenant access key:\n')
-    print()
-    s_key = input('Enter tenant secret key:\n')
-    print()
-    url = input('Enter tenant url. (ex: https://app.ca.prismacloud.io):\n')
-    print()
-    url = validate_url(url)
+#==============================================================================
 
-    return name, a_key, s_key, url
+def get_tenant_credentails():
+    c_print('Enter tenant name or pseudonym:', color='blue')
+    name = input()
+    print()
+
+    c_print('Enter tenant url. (ex: https://app.ca.prismacloud.io):', color='blue')
+    url = input()
+    print()
+    new_url = validate_url(url)
+    if new_url != url:
+        c_print('Adjusted URL:',color='yellow')
+        print(new_url)
+        print()
+
+    c_print('Enter tenant access key:', color='blue')
+    a_key = input()
+    print()
+
+    c_print('Enter tenant secret key:', color='blue')
+    s_key = input()
+    print()
+    
+
+    return name, a_key, s_key, new_url
+
+#==============================================================================
 
 def build_session_dict(name, a_key, s_key, url):
     session_dict = {
@@ -37,6 +93,7 @@ def build_session_dict(name, a_key, s_key, url):
     }
     return session_dict
 
+#==============================================================================
 
 def load_config_create_sessions():
     '''
@@ -47,21 +104,44 @@ def load_config_create_sessions():
     '''
     #Open and load config file
     if not path.exists('credentials.yml'):
-        credentials = []
         #Create credentials yml file
+        credentials = []
         c_print('No credentials file found. Generating...', color='yellow')
         print()
-        c_print('First enter credentials for the source tenant.', color='blue')
-        print()
-        src_name, src_a_key, src_s_key, src_url = get_tenant_credentails()
-        credentials.append(build_session_dict(src_name, src_a_key, src_s_key, src_url))
+
+        #Gets the source tenant credentials and ensures that are valid
+        valid = False
+        while not valid:
+            c_print('Enter credentials for the source tenant. (The tenant the other \'clone\' tennats will replicate)', color='blue')
+            print()
+            src_name, src_a_key, src_s_key, src_url = get_tenant_credentails()
+            
+            valid = validate_credentials(src_a_key, src_s_key, src_url)
+            if valid == False:
+                c_print('FAILED', end=' ', color='red')
+                print('Invalid credentails. Please re-enter your credentials')
+                print()
+            else:
+                credentials.append(build_session_dict(src_name, src_a_key, src_s_key, src_url))
+
 
         c_print('Now enter credentials for the clone tenants that will be managed by this script.', color='blue')
         print()
 
-        while True:
-            cln_name, cln_a_key, cln_s_key, cln_url = get_tenant_credentails()
-            credentials.append(build_session_dict(cln_name, cln_a_key, cln_s_key, cln_url))
+        #Gets the clone tenant credentials and ensures they are valid
+        get_clone = True
+        while get_clone:
+            valid = False
+            while not valid:
+                cln_name, cln_a_key, cln_s_key, cln_url = get_tenant_credentails()
+                
+                valid = validate_credentials(cln_a_key, cln_s_key, cln_url)
+                if valid == False:
+                    c_print('FAILED', end=' ', color='red')
+                    print('Invalid credentails. Please re-enter your credentials')
+                    print()
+                else:
+                    credentials.append(build_session_dict(cln_name, cln_a_key, cln_s_key, cln_url))
             
             c_print('Do you want to add another managed tenant? (Y/N): ', color='blue')
             choice = input()
@@ -69,7 +149,7 @@ def load_config_create_sessions():
             print()
 
             if not (choice == 'y' or choice == 'yes'):
-                break
+                get_clone = False
 
         with open('credentials.yml', 'w') as yml_file:
             for tenant in credentials:

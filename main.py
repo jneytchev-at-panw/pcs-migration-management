@@ -88,6 +88,7 @@ if __name__ == '__main__':
     #Load JWT sessions from credentials.yaml
     tenant_sessions, same_stack = load_sessions()
 
+    #Read command line args
     migrate_modes = {
         'cloud': {},
         'account': {},
@@ -101,8 +102,6 @@ if __name__ == '__main__':
         'anomaly': {},
         'settings': {}
     }
-
-    #Read command line args
     if 'migrate' in sys.argv:
         if 'full' in sys.argv:
             migrate_main.migrate(tenant_sessions, migrate_modes)
@@ -156,67 +155,67 @@ if __name__ == '__main__':
         else:
             enabled = input('Do you want to migrate Cloud Accounts? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('cloud')
             print()
 
             enabled = input('Do you want to migrate Account Groups? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('account')
             print()
 
             enabled = input('Do you want to migrate Resource Lists? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('resource')
             print()
 
             enabled = input('Do you want to migrate Roles? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('role')
             print()
 
             enabled = input('Do you want to migrate Users? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('user')
             print()
 
             enabled = input('Do you want to migrate Trusted IPs? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('ip')
             print()
 
             enabled = input('Do you want to migrate Compliance Data? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('compliance')
             print()
 
             enabled = input('Do you want to migrate Policies? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('policy')
             print()
 
             enabled = input('Do you want to migrate Alert Rules? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('alert')
             print()
 
             enabled = input('Do you want to migrate Anomaly Settings? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('anomaly')
             print()
 
             enabled = input('Do you want to migrate Enterprise Settings? (Y/N): ')
             enabled = enabled.lower()
-            if enabled != 'y' or enabled != 'yes':
+            if enabled != 'y' and enabled != 'yes':
                 migrate_modes.pop('settings')
             print()
             
@@ -225,7 +224,7 @@ if __name__ == '__main__':
                 json.dump(migrate_modes, outfile)
 
             #Call migrate module
-            migrate_main.migrate(migrate_modes)
+            migrate_main.migrate(tenant_sessions, migrate_modes)
 
     else:#---------------------------------------------------------------------------------
         #Optional used saved settings file
