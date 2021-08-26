@@ -39,12 +39,12 @@ def build_module():
         return module_dict
 
 #Read credentials config file
-def load_sessions():
+def load_sessions(file_mode: bool):
     '''
     Returns the tenant sessions, config settings, and a flag for same-stack syncing/migration detected.
     '''
 
-    tenant_sessions = load_config_create_sessions()
+    tenant_sessions = load_config_create_sessions(file_mode)
 
     same_stack = False
     for session in tenant_sessions:
@@ -144,9 +144,9 @@ def get_sync_mode_settings(sync_modes, module):
 
 #==============================================================================
 
-def main():
+def main(file_mode):
     #Load JWT sessions from credentials.yaml
-    tenant_sessions, same_stack = load_sessions()
+    tenant_sessions, same_stack = load_sessions(file_mode)
 
     #Read command line args
     migrate_modes = {
@@ -299,5 +299,5 @@ def main():
 
 
 if __name__ =='__main__':
-    main()
+    main(False)
     #TODO Maybe run a clean up script and delete credentails files

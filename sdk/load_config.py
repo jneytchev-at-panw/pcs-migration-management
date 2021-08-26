@@ -95,79 +95,97 @@ def build_session_dict(name, a_key, s_key, url):
 
 #==============================================================================
 
-def load_config_create_sessions():
+def get_credentials_from_user():
+    #Gets the source tenant credentials and ensures that are valid
+    credentials = []
+
+    valid = False
+    while not valid:
+        c_print('Enter credentials for the source tenant. (The tenant the other \'clone\' tennats will replicate)', color='blue')
+        print()
+        src_name, src_a_key, src_s_key, src_url = get_tenant_credentails()
+        
+        valid = validate_credentials(src_a_key, src_s_key, src_url)
+        if valid == False:
+            c_print('FAILED', end=' ', color='red')
+            print('Invalid credentails. Please re-enter your credentials')
+            print()
+        else:
+            credentials.append(build_session_dict(src_name, src_a_key, src_s_key, src_url))
+
+
+    c_print('Now enter credentials for the clone tenants that will be managed by this script.', color='blue')
+    print()
+
+    #Gets the clone tenant credentials and ensures they are valid
+    get_clone = True
+    while get_clone:
+        valid = False
+        while not valid:
+            cln_name, cln_a_key, cln_s_key, cln_url = get_tenant_credentails()
+            
+            valid = validate_credentials(cln_a_key, cln_s_key, cln_url)
+            if valid == False:
+                c_print('FAILED', end=' ', color='red')
+                print('Invalid credentails. Please re-enter your credentials')
+                print()
+            else:
+                credentials.append(build_session_dict(cln_name, cln_a_key, cln_s_key, cln_url))
+        
+        c_print('Do you want to add another managed tenant? (Y/N): ', color='blue')
+        choice = input()
+        choice = choice.lower()
+        print()
+
+        if not (choice == 'y' or choice == 'yes'):
+            get_clone = False
+
+    return credentials
+
+def load_config_create_sessions(file_mode):
     '''
     Reads config.yml and generates a list of tenants and tokens for those tenants.
 
     Returns:
     List with the tenants list and the tokens list that corespond with each tenant.
     '''
-    #Open and load config file
-    if not path.exists('credentials.yml'):
-        #Create credentials yml file
-        credentials = []
-        c_print('No credentials file found. Generating...', color='yellow')
-        print()
 
-        #Gets the source tenant credentials and ensures that are valid
-        valid = False
-        while not valid:
-            c_print('Enter credentials for the source tenant. (The tenant the other \'clone\' tennats will replicate)', color='blue')
+    if file_mode:
+        #Open and load config file
+        if not path.exists('credentials.yml'):
+            #Create credentials yml file
+            c_print('No credentials file found. Generating...', color='yellow')
             print()
-            src_name, src_a_key, src_s_key, src_url = get_tenant_credentails()
-            
-            valid = validate_credentials(src_a_key, src_s_key, src_url)
-            if valid == False:
-                c_print('FAILED', end=' ', color='red')
-                print('Invalid credentails. Please re-enter your credentials')
-                print()
-            else:
-                credentials.append(build_session_dict(src_name, src_a_key, src_s_key, src_url))
+            credentials = get_credentials_from_user()
 
+            with open('credentials.yml', 'w') as yml_file:
+                for tenant in credentials:
+                    yaml.dump(tenant, yml_file, default_flow_style=False)
 
-        c_print('Now enter credentials for the clone tenants that will be managed by this script.', color='blue')
-        print()
+        with open("credentials.yml", "r") as file:
+            cfg = yaml.load(file, Loader=yaml.BaseLoader)
 
-        #Gets the clone tenant credentials and ensures they are valid
-        get_clone = True
-        while get_clone:
-            valid = False
-            while not valid:
-                cln_name, cln_a_key, cln_s_key, cln_url = get_tenant_credentails()
-                
-                valid = validate_credentials(cln_a_key, cln_s_key, cln_url)
-                if valid == False:
-                    c_print('FAILED', end=' ', color='red')
-                    print('Invalid credentails. Please re-enter your credentials')
-                    print()
-                else:
-                    credentials.append(build_session_dict(cln_name, cln_a_key, cln_s_key, cln_url))
-            
-            c_print('Do you want to add another managed tenant? (Y/N): ', color='blue')
-            choice = input()
-            choice = choice.lower()
-            print()
+        #Parse cfg for tenant names and create tokens for each tenant
+        tenant_sessions = []
+        for tenant in cfg:
+            a_key = cfg[tenant]['access_key']
+            s_key = cfg[tenant]['secret_key']
+            api_url = cfg[tenant]['api_url']
 
-            if not (choice == 'y' or choice == 'yes'):
-                get_clone = False
+            tenant_sessions.append(Session(tenant, a_key, s_key, api_url))
 
-        with open('credentials.yml', 'w') as yml_file:
-            for tenant in credentials:
-                yaml.dump(tenant, yml_file, default_flow_style=False)
+        return tenant_sessions
+    else:
+        credentials = get_credentials_from_user()
+        tenant_sessions = []
+        for tenant in credentials:
+            name = ''
+            for key in tenant:
+                name = key
 
-    with open("credentials.yml", "r") as file:
-        cfg = yaml.load(file, Loader=yaml.BaseLoader)
+            tenant_sessions.append(Session(name, tenant[name]['access_key'], tenant[name]['secret_key'], tenant[name]['api_url']))
 
-    #Parse cfg for tenant names and create tokens for each tenant
-    tenant_sessions = []
-    for tenant in cfg:
-        a_key = cfg[tenant]['access_key']
-        s_key = cfg[tenant]['secret_key']
-        api_url = cfg[tenant]['api_url']
-
-        tenant_sessions.append(Session(tenant, a_key, s_key, api_url))
-
-    return tenant_sessions
+        return tenant_sessions
 
 
 if __name__ == '__main__':
