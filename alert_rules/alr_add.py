@@ -10,5 +10,5 @@ def add_alert_rules(session, alert_rules):
             session.request("POST", "/alert/rule", json=alr)
 
     else:
-        c_print('No Alert Rules to add for tenant: \'{session.tenant}\'', color='yellow')
+        c_print(f'No Alert Rules to add for tenant: \'{session.tenant}\'', color='yellow')
         print()
