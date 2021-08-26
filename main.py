@@ -84,7 +84,67 @@ def load_sync_modes():
         print()
         return {}
 
-if __name__ == '__main__':
+#==============================================================================
+
+def msg_translate(module):
+    msg = ''
+    if module =='cloud':
+        msg = 'Cloud Acccounts'
+    elif module == 'account':
+        msg = 'Account Groups'
+    elif module == 'resource':
+        msg ='Resource Lists'
+    elif module == 'role':
+        msg = 'User Roles'
+    elif module == 'user':
+        msg = 'User Profiles'
+    elif module =='ip':
+        msg = 'Trusted IPs'
+    elif module == 'compliance':
+        msg = 'Compliance Data'
+    elif module == 'search':
+        msg = 'Saved Searches'
+    elif module == 'policy':
+        msg = 'Policies'
+    elif module == 'alert':
+        msg = 'Alert Rules'
+    elif module == 'anomaly':
+        msg = 'Anomaly Settings'
+    elif module == 'settings':
+        msg = 'Enterprise Settings'
+
+    return msg
+
+#==============================================================================
+
+def get_migrate_mode_settings(migrate_modes, module):
+    msg = msg_translate(module)
+    enabled = input(f'Do you want to migrate {msg}? (Y/N): ')
+    enabled = enabled.lower()
+    if enabled != 'y' and enabled != 'yes':
+        migrate_modes.pop(module)
+    print()
+
+    return migrate_modes
+
+#==============================================================================
+
+def get_sync_mode_settings(sync_modes, module):
+    msg = msg_translate(module)
+    enabled = input(f'Do you want to sync {msg}? (Y/N): ')
+    enabled = enabled.lower()
+    if enabled == 'y' or enabled == 'yes':
+        mode_dict = build_module()
+        sync_modes[module]=mode_dict
+    else:
+        sync_modes.pop(module)
+    print()
+
+    return sync_modes
+
+#==============================================================================
+
+def main():
     #Load JWT sessions from credentials.yaml
     tenant_sessions, same_stack = load_sessions()
 
@@ -124,8 +184,9 @@ if __name__ == '__main__':
             print()
             choice = choice.lower()
             if choice == 'y' or choice == 'yes':
+                #Call migrate module
                 migrate_main.migrate(tenant_sessions, migrate_modes_file)
-                exit()
+                return
 
         #Get migration settings from the user
         migrate_type = input('Do you want to do a full migration? (Y/N): ')
@@ -151,73 +212,21 @@ if __name__ == '__main__':
             with open('migrate_mode_settings.json', 'w') as outfile:
                 json.dump(migrate_modes, outfile)
 
+            #Call migrate module
             migrate_main.migrate(tenant_sessions, migrate_modes)
+            return
         else:
-            enabled = input('Do you want to migrate Cloud Accounts? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('cloud')
-            print()
-
-            enabled = input('Do you want to migrate Account Groups? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('account')
-            print()
-
-            enabled = input('Do you want to migrate Resource Lists? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('resource')
-            print()
-
-            enabled = input('Do you want to migrate Roles? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('role')
-            print()
-
-            enabled = input('Do you want to migrate Users? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('user')
-            print()
-
-            enabled = input('Do you want to migrate Trusted IPs? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('ip')
-            print()
-
-            enabled = input('Do you want to migrate Compliance Data? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('compliance')
-            print()
-
-            enabled = input('Do you want to migrate Policies? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('policy')
-            print()
-
-            enabled = input('Do you want to migrate Alert Rules? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('alert')
-            print()
-
-            enabled = input('Do you want to migrate Anomaly Settings? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('anomaly')
-            print()
-
-            enabled = input('Do you want to migrate Enterprise Settings? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled != 'y' and enabled != 'yes':
-                migrate_modes.pop('settings')
-            print()
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'cloud')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'account')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'resource')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'role')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'user')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'ip')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'compliance')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'policy')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'alert')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'anomaly')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'settings')
             
             #Dump settings to file
             with open('migrate_mode_settings.json', 'w') as outfile:
@@ -225,6 +234,7 @@ if __name__ == '__main__':
 
             #Call migrate module
             migrate_main.migrate(tenant_sessions, migrate_modes)
+            return
 
     else:#---------------------------------------------------------------------------------
         #Optional used saved settings file
@@ -234,8 +244,9 @@ if __name__ == '__main__':
             print()
             choice = choice.lower()
             if choice == 'y' or choice == 'yes':
+                #Call sync module
                 sync_main.sync(tenant_sessions, sync_modes_file)
-                exit()
+                return
 
         migrate_type = input('Do you want to do a full Sync? (Y/N): ')
         print()
@@ -261,137 +272,32 @@ if __name__ == '__main__':
             with open('sync_mode_settings.json', 'w') as outfile:
                 json.dump(sync_modes, outfile)
 
+            #Call sync module
             sync_main.sync(tenant_sessions, sync_modes)
+            return
         else:
-            enabled = input('Do you want to sync Cloud Accounts? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(cloud=mode_dict)
-            else:
-                sync_modes.pop('cloud')
-            print()
-
-            enabled = input('Do you want to sync Account Groups? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(account=mode_dict)
-            else:
-                sync_modes.pop('account')
-            print()
-
-            enabled = input('Do you want to sync Resource Lists? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(resource=mode_dict)
-            else:
-                sync_modes.pop('resource')
-            print()
-
-            enabled = input('Do you want to sync Roles? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(role=mode_dict)
-            else:
-                sync_modes.pop('role')
-            print()
-
-            enabled = input('Do you want to sync Users? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(user=mode_dict)
-            else:
-                sync_modes.pop('user')
-            print()
-
-            enabled = input('Do you want to sync Trusted IPs? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(ip=mode_dict)
-            else:
-                sync_modes.pop('ip')
-            print()
-
-            enabled = input('Do you want to sync Compliance Data? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(compliance=mode_dict)
-            else:
-                sync_modes.pop('compliance')
-            print()
-
-            enabled = input('Do you want to sync Saved Searches? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(search=mode_dict)
-            else:
-                sync_modes.pop('search')
-            print()
-
-            enabled = input('Do you want to sync Policies? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(policy=mode_dict)
-            else:
-                sync_modes.pop('policy')
-            print()
-
-            enabled = input('Do you want to sync Alert Rules? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(alert=mode_dict)
-            else:
-                sync_modes.pop('alert')
-            print()
-
-            enabled = input('Do you want to sync Anomaly Settings? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled == 'yes':
-                mode_dict = build_module()
-                sync_modes.update(anomaly=mode_dict)
-            else:
-                sync_modes.pop('anomaly')
-            print()
-
-            enabled = input('Do you want to sync Enterprise Settings? (Y/N): ')
-            enabled = enabled.lower()
-            if enabled == 'y' or enabled =='yes':
-                mode_dict = {}
-                sync_modes.update(settings=mode_dict)
-            else:
-                sync_modes.pop('settings')
-            print()
+            sync_modes = get_sync_mode_settings(sync_modes, 'cloud')
+            sync_modes = get_sync_mode_settings(sync_modes, 'account')
+            sync_modes = get_sync_mode_settings(sync_modes, 'resource')
+            sync_modes = get_sync_mode_settings(sync_modes, 'role')
+            sync_modes = get_sync_mode_settings(sync_modes, 'user')
+            sync_modes = get_sync_mode_settings(sync_modes, 'ip')
+            sync_modes = get_sync_mode_settings(sync_modes, 'compliance')
+            sync_modes = get_sync_mode_settings(sync_modes, 'search')
+            sync_modes = get_sync_mode_settings(sync_modes, 'policy')
+            sync_modes = get_sync_mode_settings(sync_modes, 'alert')
+            sync_modes = get_sync_mode_settings(sync_modes, 'anomaly')
+            sync_modes = get_sync_mode_settings(sync_modes, 'settings')
 
             #Dump settings to file
             with open('sync_mode_settings.json', 'w') as outfile:
                 json.dump(sync_modes, outfile)
 
-
             #Call sync module
             sync_main.sync(tenant_sessions, sync_modes)
+            return
 
 
-        
-        
-
-#Cloud accounts
-#Account Groups
-#Resource Lists
-#User Roles
-#Users
-#Trusted IPs
-#Compliance Standards
-#Saved Searches - done by policy
-#Policy
-#Alert Rules
-
-
+if __name__ =='__main__':
+    main()
+    #TODO Maybe run a clean up script and delete credentails files

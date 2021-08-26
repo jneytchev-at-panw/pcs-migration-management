@@ -90,7 +90,8 @@ def migrate(tenant_sessions: list):
                 for section in sections:
                     cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, section)
     
-    c_print('Finished migrating compliance standards')
+    c_print('Finished migrating Compliance Standards', color='blue')
+    print()
 
 #==============================================================================
 #Test code
