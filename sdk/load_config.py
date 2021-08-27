@@ -45,8 +45,11 @@ def validate_credentials(a_key, s_key, url) -> bool:
 #==============================================================================
 
 def validate_url(url):
-    if 'https://' not in url:
-        url = 'https://' + url
+    if len(url) >= 3:
+        if 'https://' not in url:
+            if url[:3] == 'app' or url[:3] == 'api':
+                url = 'https://' + url
+            
     
     url = url.replace('app', 'api')
 
@@ -189,4 +192,4 @@ def load_config_create_sessions(file_mode):
 
 
 if __name__ == '__main__':
-    validate_url('https://app.ca.prismacloud.io/home/beans')
+    validate_url('app.ca.anz.prismacloud.io/home/beans')

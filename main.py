@@ -148,28 +148,6 @@ def main(file_mode):
     #Load JWT sessions from credentials.yaml
     tenant_sessions, same_stack = load_sessions(file_mode)
 
-    #Read command line args
-    migrate_modes = {
-        'cloud': {},
-        'account': {},
-        'resource': {},
-        'role': {},
-        'user': {},
-        'ip': {},
-        'compliance': {},
-        'policy': {},
-        'alert': {},
-        'anomaly': {},
-        'settings': {}
-    }
-    if 'migrate' in sys.argv:
-        if 'full' in sys.argv:
-            migrate_main.migrate(tenant_sessions, migrate_modes)
-
-    if 'sync' in sys.argv:
-        if 'full' in sys.argv:
-            sync_main.sync(tenant_sessions, migrate_modes)
-
     #Run the script based on user responces to the following prompts
     mode = input('Do you want to MIGRATE or SYNC? (M/S): ')
     print()
@@ -299,5 +277,12 @@ def main(file_mode):
 
 
 if __name__ =='__main__':
-    main(False)
+    file_mode = False
+    
+    #Read command line args
+    if 'fileMode' in sys.argv:
+        file_mode = True
+    
+    main(file_mode)
+
     #TODO Maybe run a clean up script and delete credentails files
