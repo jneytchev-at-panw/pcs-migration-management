@@ -9,6 +9,8 @@ The delete opertation when running the tool in script mode is enabled by default
 
 The current output of the script is basically debugging output. It will soon be replaced with clean progress bars and relevant information about the completion status of the script. The current debugging output will be stored in a log file.
 
+For each question prompt given to the user, a short description of the question will soon be added.
+
 ## Conditions for Use / Caveats
 
 ### Name Changes
