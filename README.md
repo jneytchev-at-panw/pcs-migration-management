@@ -28,7 +28,7 @@ Install the required Python Libraries with pip3:
 
 Run the script using the customization menu:
 
-`python3 main_menu.py`
+`python3 main.py`
 
 ## Setup/Installation
 
@@ -54,7 +54,7 @@ You will be prompted to run the script in Migrate or Sync mode.
 
 Once you have selected a mode you will be prompted to do a full migration or a full sync. If you select YES then all Prisma Cloud components that are supported by this script will be migrated or synced across the tenants the script has access too. If you select NO then you will be asked to pick and choose what Prisma Cloud components will be migrated or synced with this script.
 
-`python3 main_menu.py`
+`python3 main.py`
 
 ## Overview and Other Information
 
