@@ -51,47 +51,47 @@ def sync(tenant_sessions: list, modes: dict):
 
     #DELETEING - Order based on dependencies
     if 'anomaly' in modes:
-        if modes['anomaly'].get('del', True):
+        if modes['anomaly'].get('del', False):
             ano_sync.sync(tenant_sessions, False, False, True)
 
     if 'alert' in modes:
-        if modes['alert'].get('del', True):
+        if modes['alert'].get('del', False):
             alr_sync.sync(tenant_sessions, False, False, True)
 
     if 'policy' in modes:
-        if modes['policy'].get('del', True):
+        if modes['policy'].get('del', False):
             plc_sync.sync(tenant_sessions, False, False, True)
 
     if 'search' in modes:
-        if modes['search'].get('del', True):
+        if modes['search'].get('del', False):
             search_sync.sync(tenant_sessions, False, True)
 
     if 'compliance' in modes:
-        if modes['compliance'].get('del', True):
+        if modes['compliance'].get('del', False):
             cmp_sync.sync(tenant_sessions, False, False, True, cmp_sync_data)
 
     if 'ip' in modes:
-        if modes['ip'].get('del', True):
+        if modes['ip'].get('del', False):
             ip_sync.sync(tenant_sessions, False, False, True)
 
     if 'user' in modes:
-        if modes['user'].get('del', True):
+        if modes['user'].get('del', False):
             usr_sync.sync(tenant_sessions, False, False, True)
 
     if 'role' in modes:
-        if modes['role'].get('del', True):
+        if modes['role'].get('del', False):
             role_sync.sync(tenant_sessions, False, False, True)
 
     if 'resource' in modes:
-        if modes['resource'].get('del', True):
+        if modes['resource'].get('del', False):
             rsc_sync.sync(tenant_sessions, False, False, True)
 
     if 'cloud' in modes:
-        if modes['cloud'].get('del', True):
+        if modes['cloud'].get('del', False):
             cld_sync.sync(tenant_sessions, False, False, True)
 
     if 'account' in modes:
-        if modes['account'].get('del', True):
+        if modes['account'].get('del', False):
             acc_sync.sync(tenant_sessions, False, False, True)
     
     c_print('************************', color='green')

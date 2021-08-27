@@ -7,12 +7,12 @@ from sdk.load_config import load_config_create_sessions
 #Build the dictionary used for sync to determin if the module should support the update, add and delete operations
 def build_module():
     module_dict = {}
-    full = input('Do you want to enable Add, Update, and Delete operations? (Y/N): ')
+    full = input('Do you want to use default operations (Add, Update)? (Y/N): ')
     full = full.lower()
     if full =='y' or full =='yes':
         module_dict.update(add=True)
         module_dict.update(up=True)
-        module_dict.update(delete=True)
+        module_dict.update(delete=False)
         return module_dict
     else:
         add = input('Do you want to enable the Add operation? (Y/N): ')
@@ -32,7 +32,12 @@ def build_module():
         del_ = input('Do you want to enable the Delete operation? (Y/N): ')
         del_ = del_.lower()
         if del_ == 'y' or del_ =='yes':
-            module_dict.update(delete=True)
+            del_2 = input('Deleted entities are not recoverable. Are you sure you want to enable this operation? (Y/N):')
+            del_2 = del_2.lower()
+            if del_2 == 'y' or del_2 == 'yes':
+                module_dict.update(delete=True)
+            else:
+                module_dict.update(delete=False)
         else:
             module_dict.update(delete=False)
 
