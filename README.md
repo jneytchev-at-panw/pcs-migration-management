@@ -4,6 +4,11 @@
 
 This script is in Beta and you will most likely encounter bugs. Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant.
 
+Known Issues:
+The delete opertation when running the tool in script mode is enabled by default and has to be turned off. This is being changed to disabled by default and has to be turned on.
+
+The current output of the script is basically debugging output. It will soon be replaced with clean progress bars and relevant information about the completion status of the script. The current debugging output will be stored in a log file.
+
 ## Conditions for Use / Caveats
 
 ### Name Changes
