@@ -1,5 +1,9 @@
 # Tenant Lift and Shift / Tenant Central Management
 
+# BETA TESTERS WARNING
+
+This script is in Beta and you will most likely encounter bugs. Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant.
+
 ## Conditions for Use / Caveats
 
 ### Name Changes
