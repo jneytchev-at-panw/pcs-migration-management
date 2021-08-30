@@ -18,6 +18,8 @@ cloud_credentials/azure/*
 # Files
 *.yml
 
+logs.txt
+
 *.json
 
 main.spec
