@@ -1,12 +1,9 @@
-from sdk.color_print import c_print
-
-def update_accounts(cln_session, accounts_to_update):
+def update_accounts(cln_session, accounts_to_update, logger):
     '''
     Updates the details of cloud accounts on the clone tenant
     '''
     if accounts_to_update:
-        c_print(f'Updating Cloud Accounts for tenant \'{cln_session.tenant}\'', color='blue')
-        print()
+        logger.info(f'Updating Cloud Accounts for tenant \'{cln_session.tenant}\'')
 
         for account in accounts_to_update:
             cloud_type = ''
@@ -32,20 +29,20 @@ def update_accounts(cln_session, accounts_to_update):
                         if status == False:
                             status = 'false'
 
-                        print('API - Patching child account')
+                        logger.debug('API - Patching child account')
                         cln_session.request('PATCH', f'/cloud/{cloud_type}/{cld_id}', json=patch)
                         cln_session.request('PATCH', f'/cloud/{cld_id}/status/{status}')
                     else:
                         #Update cloud account
-                        c_print('API - Updating cloud account')
+                        logger.debug('API - Updating cloud account')
                         cln_session.request('PUT', f'/cloud/{cloud_type}/{cld_id}', json=account)
                 else:
                     #Update cloud account
-                    c_print('API - Updating cloud account')
+                    logger.debug('API - Updating cloud account')
                     cln_session.request('PUT', f'/cloud/{cloud_type}/{cld_id}', json=account)
             else:
                 #Update cloud account
-                c_print('API - Updating cloud account')
+                logger.debug('API - Updating cloud account')
                 cln_session.request('PUT', f'/cloud/{cloud_type}/{cld_id}', json=account)
     else:
-        c_print(f'No Cloud Accounts to update for tenant \'{cln_session.tenant}\'', color='yellow')
+        logger.info(f'No Cloud Accounts to update for tenant \'{cln_session.tenant}\'')

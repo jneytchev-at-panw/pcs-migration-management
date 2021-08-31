@@ -1,23 +1,22 @@
-def get_names(session: object):
+def get_names(session: object, logger: object):
     '''
     Gets a list of all the cloud accounts and their names on a tenant.
     '''
 
     querystring = {'excludeAccountGroupDetails': 0 }
 
-    print(f'API - Gettings cloud account names from tenant: {session.tenant}.')
+    logger.debug(f'API - Gettings cloud account names from tenant: {session.tenant}.')
     response = session.request('GET', '/cloud/name', params=querystring)
 
     data = response.json()
 
     accounts_found = len(data)
 
-    print(f'Got {accounts_found} accounts from tenant: {session.tenant}.')
-    print()
+    logger.info(f'Got {accounts_found} accounts from tenant: {session.tenant}.')
 
     return data
 
-def get_info(session: object, account: dict) -> dict:
+def get_info(session: object, account: dict, logger: object) -> dict:
     '''
     Gets all cloud account info for all cloud accounts that are NOT children of organizations.
     The endpoint that returns all cloud accounts does not return enough details about
@@ -39,7 +38,7 @@ def get_info(session: object, account: dict) -> dict:
 
     querystring = {"includeGroupInfo":1}
 
-    print(f'API - Getting {cloud_type} cloud account info for \'{name}\' - \'{account_id}\'')
+    logger.debug(f'API - Getting {cloud_type} cloud account info for \'{name}\' - \'{account_id}\'')
     response = session.request("GET", endpoint_url, params=querystring)
     
     if response.status_code == 200:

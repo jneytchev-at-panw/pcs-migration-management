@@ -1,9 +1,8 @@
 from sdk.color_print import c_print
 
-def delete_accounts(cln_session, accounts):
+def delete_accounts(cln_session, accounts, logger):
     if accounts:
-        c_print(f'Deleting Cloud Accounts from tenant \'{cln_session.tenant}\'', color='blue')
-        print()
+        logger.info(f'Deleting Cloud Accounts from tenant \'{cln_session.tenant}\'')
 
         for account in accounts:
             cloud_type = ''
@@ -15,8 +14,8 @@ def delete_accounts(cln_session, accounts):
                 cloud_type = account['cloudType']
                 cld_id = account['accountId']
         
-            c_print('API - Deleting cloud account')
+            logger.debug('API - Deleting cloud account')
             cln_session.request('DELETE', f'/cloud/{cloud_type}/{cld_id}')
 
     else:
-        c_print(f'No Cloud Accounts to delete for tenant \'{cln_session.tenant}\'', color='yellow')
+        logger.info(f'No Cloud Accounts to delete for tenant \'{cln_session.tenant}\'')

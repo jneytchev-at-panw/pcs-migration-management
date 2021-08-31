@@ -14,7 +14,7 @@ from alert_rules import alr_sync
 from anomaly_settings import ano_sync
 from enterprise_settings import set_sync
 
-def sync(tenant_sessions: list, modes: dict):
+def sync(tenant_sessions: list, modes: dict, logger):
     '''
     Accepts the enabled sync modes dictionary and a list of tenant_session objects.
     
@@ -25,7 +25,7 @@ def sync(tenant_sessions: list, modes: dict):
 
     #ADDING AND UPDATING - Order based on dependencies.
     if 'cloud' in modes:
-        cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('up', True), False)
+        cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('up', True), False, logger)
     if 'account' in modes:
         acc_sync_data = acc_sync.sync(tenant_sessions, modes['account'].get('add', True), modes['account'].get('up', True), False)
     if 'resource' in modes:
@@ -92,7 +92,7 @@ def sync(tenant_sessions: list, modes: dict):
 
     if 'account' in modes:
         if modes['account'].get('del', False):
-            acc_sync.sync(tenant_sessions, False, False, True)
+            acc_sync.sync(tenant_sessions, False, False, True, logger)
     
     c_print('************************', color='green')
     c_print('Finished syncing tenants', color='green')

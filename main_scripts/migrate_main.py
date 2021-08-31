@@ -26,7 +26,7 @@ from anomaly_settings import ano_sync
 #Policy
 #Alert Rules
 
-def migrate(tenant_sessions: list, modes: dict):
+def migrate(tenant_sessions: list, modes: dict, logger: object):
     '''
     Accepts a dictionary of the migrate modes that are enabled and list of tenant session objects.
 
@@ -38,37 +38,37 @@ def migrate(tenant_sessions: list, modes: dict):
 
     #CLOUD ACCOUNT MIGRATE
     if 'cloud' in modes:
-        cld_migrate.migrate(tenant_sessions)
+        cld_migrate.migrate(tenant_sessions, logger)
     #ACCOUNT GROUPS MIGRATE
     if 'account' in modes:
-        acc_migrate.migrate(tenant_sessions)
+        acc_migrate.migrate(tenant_sessions, logger)
     #RESOURCE LIST MIGRATE
     if 'resource' in modes:
-        rsc_migrate.migrate(tenant_sessions)
+        rsc_migrate.migrate(tenant_sessions, logger)
     #USER ROLES MIGRATE
     if 'role' in modes:
-        role_migrate.migrate(tenant_sessions)
+        role_migrate.migrate(tenant_sessions, logger)
     #USERS MIGRATE
     if 'user' in modes:
-        usr_migrate.migrate(tenant_sessions)
+        usr_migrate.migrate(tenant_sessions, logger)
     #TRUSTED IP MIGRATE
     if 'ip' in modes:
-        ip_migrate.migrate(tenant_sessions)
+        ip_migrate.migrate(tenant_sessions, logger)
     #COMPLIANCE MIGRATE
     if 'compliance' in modes:
-        cmp_migrate.migrate(tenant_sessions)
+        cmp_migrate.migrate(tenant_sessions, logger)
     #POLICY MIGRATE
     if 'policy' in modes:
-        plc_migrate_custom.migrate_custom_policies(tenant_sessions)
-        plc_migrate_default.migrate_builtin_policies(tenant_sessions)
+        plc_migrate_custom.migrate_custom_policies(tenant_sessions, logger)
+        plc_migrate_default.migrate_builtin_policies(tenant_sessions, logger)
     #ALERT RULES MIGRATE
     if 'alert' in modes:
-        alr_migrate.migrate(tenant_sessions)
+        alr_migrate.migrate(tenant_sessions, logger)
     if 'anomaly' in modes:
-        ano_sync.sync(tenant_sessions, True, False, False)
+        ano_sync.sync(tenant_sessions, True, False, False, logger)
     if 'settings' in modes:
         #Enterprise settings
-        set_sync.sync(tenant_sessions)
+        set_sync.sync(tenant_sessions, logger)
 
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')

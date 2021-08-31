@@ -2,7 +2,7 @@ import requests
 from sdk.color_print import c_print
 
 class Session:
-    def __init__(self, tenant_name: str, a_key: str, s_key: str, api_url: str):
+    def __init__(self, tenant_name: str, a_key: str, s_key: str, api_url: str, logger: object):
         """
         Initializes a Prisma Cloud API session for a given tenant.
 
@@ -12,6 +12,7 @@ class Session:
         s_key -- Tenant Secret Key
         api_url -- API URL Tenant is hosted on
         """
+        self.logger = logger
         self.tenant = tenant_name
         self.a_key = a_key
         self.s_key = s_key
@@ -23,8 +24,7 @@ class Session:
             }
         self.retries = 5
         self.retry_statuses = [429, 500, 502, 503, 504]
-        c_print(f'Session created for tenant: {tenant_name}', color='green')
-        print()
+        logger.info(f'Session created for tenant: {tenant_name}')
 
 #==============================================================================
 
@@ -48,15 +48,14 @@ class Session:
             "password": f"{self.s_key}"
         }
 
-        c_print('API - Generating session token.')
+        self.logger.debug('API - Generating session token.')
         response = requests.request("POST", url, headers=headers, json=payload)
 
-        c_print(f'{url}', color='blue')
+        self.logger.info(f'{url}')
 
         #Results
         if response.status_code == 200:
-            c_print('SUCCESS', color='green')
-            print()
+            self.logger.success('SUCCESS')
             token = response.json()['token']
             self.token = token
             self.headers = {
@@ -65,23 +64,21 @@ class Session:
             }
             return token
         elif response.status_code == 401:
-            c_print('FAILED', end=' ', color='red')
-            print('Invalid Login Credentials. JWT not generated.')
-            print()
+            self.logger.error('FAILED')
+            self.logger.warning('Invalid Login Credentials. JWT not generated.')
             self.token = 'BAD'
             return 'BAD'
         else:
-            c_print('FAILED', end=' ', color='red')
-            print('ERROR Logging In. JWT not generated.')
-            print()
+            self.logger.error('FAILED')
+            self.logger.error('ERROR Logging In. JWT not generated.')
             self.token = 'BAD'
 
-            c_print('RESPONSE:', color='yellow')
-            print(response)
-            c_print('RESPONSE URL:', color='yellow')
-            print(response.url)
-            c_print('RESPONSE TEXT:', color='yellow')
-            print(response.text)
+            self.logger.warning('RESPONSE:')
+            self.logger.info(response)
+            self.logger.warning('RESPONSE URL:')
+            self.logger.info(response.url)
+            self.logger.warning('RESPONSE TEXT:')
+            self.logger.info(response.text)
             
             return 'BAD'
 
@@ -102,32 +99,28 @@ class Session:
         Respose from API call.
 
         """
-        c_print(f'{url}', color='blue')
+        self.logger.info(f'{url}')
         res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
         
         if res.status_code == 200 or res.status_code in status_ignore:
-            c_print('SUCCESS\n', color='green')
+            self.logger.success('SUCCESS')
             return res
         
-        c_print('--api_call_wrapper--', color='blue')
         if res.status_code == 401:
-            c_print('Token expired. Generating new Token and retrying.', color='yellow')
-            print()
+            self.logger.warning('Token expired. Generating new Token and retrying.')
             self.__api_login()
-            c_print(f'{url}', color='blue')
+            self.logger.info(f'{url}')
             res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
 
         retries = 0
         while res.status_code in self.retry_statuses and retries < self.retries:
-            c_print(f'Retrying request. Code {res.status_code}.', color='yellow')
-            c_print(f'{url}', color='blue')
+            self.logger.warning(f'Retrying request. Code {res.status_code}.')
+            self.logger.info(f'{url}')
             res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
             retries += 1
         
-            print() 
-        
         if res.status_code == 200 or res.status_code in status_ignore:
-            c_print('SUCCESS\n', color='green')
+            self.logger.success('SUCCESS')
             return res
 
         #Some redlock errors need to be handled elsewhere and don't require this debugging output
@@ -136,39 +129,34 @@ class Session:
                 if el in res.headers['x-redlock-status']:
                     return res
 
-        c_print('FAILED\nREQUEST DUMP:', color='red')
-        c_print('REQUEST HEADERS:', color='yellow')
-        print(self.headers)
-        c_print('REQUEST JSON:', color='yellow')
-        print(json)
+        self.logger.error('FAILED')
+        self.logger.error('REQUEST DUMP:')
+        self.logger.warning('REQUEST HEADERS:')
+        self.logger.info(self.headers)
+        self.logger.warning('REQUEST JSON:')
+        self.logger.info(json)
         if data:
-            c_print('REQUEST DATA:', color='yellow')
-            print(data)
-        c_print('REQUEST PARAMS:', color='yellow')
-        print(params)
-        c_print('RESPONSE:', color='yellow')
-        print(res)
-        c_print('RESPONSE URL:', color='yellow')
-        print(res.url)
-        c_print('RESPONSE HEADERS:', color='yellow')
-        print(res.headers)
-        c_print('RESPONSE REQUEST BODY:', color='yellow')
-        print(res.request.body)
-        c_print('RESPONSE STATUS:', color='yellow')
+            self.logger.warning('REQUEST DATA:')
+            self.logger.info(data)
+        self.logger.warning('REQUEST PARAMS:')
+        self.logger.info(params)
+        self.logger.warning('RESPONSE:')
+        self.logger.info(res)
+        self.logger.warning('RESPONSE URL:')
+        self.logger.info(res.url)
+        self.logger.warning('RESPONSE HEADERS:')
+        self.logger.info(res.headers)
+        self.logger.warning('RESPONSE REQUEST BODY:')
+        self.logger.info(res.request.body)
+        self.logger.warning('RESPONSE STATUS:')
         if 'x-redlock-status' in res.headers:
-            print(res.headers['x-redlock-status'])
-        else:
-            print()
-        c_print('RESPONSE TEXT:', color='yellow')
-        print(res.text)
-        c_print('RESPONSE JSON:', color='yellow')
+            self.logger.info(res.headers['x-redlock-status'])
+        self.logger.warning('RESPONSE TEXT:')
+        self.logger.info(res.text)
+        self.logger.warning('RESPONSE JSON:')
         if res.text != "":
             for json_data in res.json():
-                print(json_data)
-                print()
-        else:
-            print()
-        print()
+                self.logger.info(json_data)
 
         return res
 
@@ -183,9 +171,7 @@ class Session:
         #Validate method
         method = method.upper()
         if method not in ['POST', 'PUT', 'GET', 'OPTIONS', 'DELETE', 'PATCH']:
-            print('--request--')
-            c_print('Invalid method.', color='red')
-            print()
+            self.logger.warning('Invalid method.')
         
         #Build url
         if endpoint_url[0] != '/':
