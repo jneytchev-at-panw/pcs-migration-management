@@ -1,16 +1,15 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def delete_resource_lists(session, resource_lists):
+def delete_resource_lists(session, resource_lists, logger):
     if resource_lists:
-        c_print(f'Deleteing resource lists from tenant: \'{session.tenant}\'', color='green')
-        print()
+        logger.info(f'Deleteing resource lists from tenant: \'{session.tenant}\'')
 
-        for rsc_list in resource_lists:
+        for rsc_list in tqdm(resource_lists, desc='Deleting Resource Lists'):
             rl_id = rsc_list['id']
             status_ignore = [201, 204]
-            print('API - Deleting Resource List')
+            logger.debug('API - Deleting Resource List')
             session.request("DELETE", f"/v1/resource_list/{rl_id}", status_ignore=status_ignore)
 
     else:
-        c_print(f'No Resource Lists to delete for tenant: \'{session.tenant}\'', color='yellow')
-        print()
+        logger.info(f'No Resource Lists to delete for tenant: \'{session.tenant}\'')

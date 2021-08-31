@@ -35,7 +35,7 @@ def sync(tenant_sessions: list, modes: dict, logger):
         if 'account' == mode:
             acc_sync_data = acc_sync.sync(tenant_sessions, modes['account'].get('add', True), modes['account'].get('up', True), False, logger)
         if 'resource' == mode:
-            rsc_sync_data = rsc_sync.sync(tenant_sessions, modes['resource'].get('add', True), modes['resource'].get('up', True), False)
+            rsc_sync_data = rsc_sync.sync(tenant_sessions, modes['resource'].get('add', True), modes['resource'].get('up', True), False, logger)
         if 'role' == mode:
             role_sync_data = role_sync.sync(tenant_sessions, modes['role'].get('add', True), modes['role'].get('up', True), False)
         if 'user' == mode:
