@@ -287,13 +287,13 @@ def main(file_mode, logger):
 if __name__ =='__main__':
     #Command line arguments
     file_mode = False
-    terminal_logging = False
+    terminal_logging = True
     
     if '-yaml' in sys.argv:
         file_mode = True
 
-    if '-logging' in sys.argv:
-        terminal_logging = True
+    if '-quiet' in sys.argv:
+        terminal_logging = False
 
     #Configure logging output
     logger.remove()

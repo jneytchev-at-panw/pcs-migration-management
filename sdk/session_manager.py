@@ -17,7 +17,7 @@ class Session:
         self.a_key = a_key
         self.s_key = s_key
         self.api_url = api_url
-        self.token = self.__api_login()
+        self.token = self.api_login()
         self.headers = {
             'content-type': 'application/json; charset=UTF-8',
             'x-redlock-auth': self.token
@@ -28,7 +28,7 @@ class Session:
 
 #==============================================================================
 
-    def __api_login(self) -> None:
+    def api_login(self) -> None:
         '''
         Calls the Prisma Cloud API to generate a x-redlock-auth JWT.
 
@@ -51,7 +51,7 @@ class Session:
         self.logger.debug('API - Generating session token.')
         response = requests.request("POST", url, headers=headers, json=payload)
 
-        self.logger.info(f'{url}')
+        self.logger.debug(f'{url}')
 
         #Results
         if response.status_code == 200:
@@ -84,7 +84,7 @@ class Session:
 
 #==============================================================================
 
-    def __api_call_wrapper(self, method: str, url: str, json: dict=None, data: dict=None, params: dict=None, redlock_ignore: list=None, status_ignore: list=[]):
+    def api_call_wrapper(self, method: str, url: str, json: dict=None, data: dict=None, params: dict=None, redlock_ignore: list=None, status_ignore: list=[]):
         """
         A wrapper around all API calls that handles token generation, retrying
         requests and API error console output logging.
@@ -99,7 +99,7 @@ class Session:
         Respose from API call.
 
         """
-        self.logger.info(f'{url}')
+        self.logger.debug(f'{url}')
         res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
         
         if res.status_code == 200 or res.status_code in status_ignore:
@@ -108,14 +108,14 @@ class Session:
         
         if res.status_code == 401:
             self.logger.warning('Token expired. Generating new Token and retrying.')
-            self.__api_login()
-            self.logger.info(f'{url}')
+            self.api_login()
+            self.logger.debug(f'{url}')
             res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
 
         retries = 0
         while res.status_code in self.retry_statuses and retries < self.retries:
             self.logger.warning(f'Retrying request. Code {res.status_code}.')
-            self.logger.info(f'{url}')
+            self.logger.debug(f'{url}')
             res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
             retries += 1
         
@@ -180,4 +180,4 @@ class Session:
         url = f'{self.api_url}{endpoint_url}'
 
         #Call wrapper
-        return self.__api_call_wrapper(method, url, json=json, data=data, params=params, redlock_ignore=redlock_ignore, status_ignore=status_ignore)
+        return self.api_call_wrapper(method, url, json=json, data=data, params=params, redlock_ignore=redlock_ignore, status_ignore=status_ignore)

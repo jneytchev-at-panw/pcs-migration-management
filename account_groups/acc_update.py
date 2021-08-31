@@ -1,11 +1,10 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def update_account_groups(session, account_groups):
+def update_account_groups(session, account_groups, logger):
     if account_groups:
-        c_print(f'Updating Account Groups for tenant: \'{session.tenant}\'', color='green')
-        print()
-
-        for acc in account_groups:
+        logger.info(f'Updating Account Groups for tenant: \'{session.tenant}\'')
+        for acc in tqdm(account_groups, desc="Updating Account Groups"):
             payload = {
                 'name': acc.get('name'),
                 'description': acc.get('description', ''),
@@ -13,9 +12,8 @@ def update_account_groups(session, account_groups):
                 #'nonOnboardedCloudAccountIds': acc.get('nonOnboardedCloudAccountIds', []) 
             }
             grp_id = acc.get('id')
-            print('API - Updating Account Group')
+            logger.debug('API - Updating Account Group')
             session.request('PUT', f"/cloud/group/{grp_id}", json=payload)
 
     else:
-        c_print(f'No Account Groups to update for tenant: \'{session.tenant}\'', color='yellow')
-        print()
+        logger.info(f'No Account Groups to update for tenant: \'{session.tenant}\'')

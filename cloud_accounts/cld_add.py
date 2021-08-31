@@ -1,5 +1,7 @@
 
 
+from tqdm import tqdm
+
 def add_accounts(session: object, accounts: list, azure_account_keys: dict,
                     gcp_account_keys: dict, logger: object) -> bool:
 
@@ -10,7 +12,7 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
 
     if accounts:
         logger.info(f'Adding Cloud Accounts to tenant: \'{session.tenant}\'')
-        for account in accounts:
+        for account in tqdm(accounts, desc='Adding Cloud Accounts'):
             res = object()
             cloud_type = ''
             account_type = ''
@@ -67,7 +69,7 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
             except:
                 logger.critical('No responce from Prisma Cloud')
     else:
-        logger.info('No Cloud Accounts to add for tenant: \'{session.tenant}\'')
+        logger.info(f'No Cloud Accounts to add for tenant: \'{session.tenant}\'')
         
 
 #==============================================================================
