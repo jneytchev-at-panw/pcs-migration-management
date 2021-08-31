@@ -24,3 +24,5 @@ logs.txt
 
 main.spec
 
+log_*.log
+
