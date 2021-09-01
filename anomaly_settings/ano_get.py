@@ -1,30 +1,30 @@
 from sdk.color_print import c_print
 
-def get_all_network_settings(session: object):
+def get_all_network_settings(session: object, logger):
     params = {'type':'Network'}
-    c_print('API - Getting all anomaly settings')
+    logger.debug('API - Getting all anomaly settings')
     res = session.request('GET', '/anomalies/settings', params=params)
     data = res.json()
 
     return data
 
-def get_all_ueba_settings(session: object):
+def get_all_ueba_settings(session: object, logger):
     params = {'type':'UEBA'}
-    c_print('API - Getting all anomaly settings')
+    logger.debug('API - Getting all anomaly settings')
     res = session.request('GET', '/anomalies/settings', params=params)
     data = res.json()
 
     return data
 
-def get_setting(session: object, plc_id: str):
-    c_print('API - Getting anomaly setting')
+def get_setting(session: object, plc_id: str, logger):
+    logger.debug('API - Getting anomaly setting')
     res = session.request('GET', f'/anomalies/settings/{plc_id}')
     data = res.json()
     
     return data
 
-def get_trusted_lists(session: object):
-    c_print('API - Getting anomaly trusted list')
+def get_trusted_lists(session: object, logger):
+    logger.debug('API - Getting anomaly trusted list')
     res = session.request('GET', '/anomalies/trusted_list')
     data = res.json()
 

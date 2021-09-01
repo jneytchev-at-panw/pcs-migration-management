@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 def update_accounts(cln_session, accounts_to_update, logger):
     '''
     Updates the details of cloud accounts on the clone tenant
@@ -5,7 +7,7 @@ def update_accounts(cln_session, accounts_to_update, logger):
     if accounts_to_update:
         logger.info(f'Updating Cloud Accounts for tenant \'{cln_session.tenant}\'')
 
-        for account in accounts_to_update:
+        for account in tqdm(accounts_to_update, desc='Updating Cloud Accounts', leave=False):
             cloud_type = ''
             cld_id = ''
 

@@ -1,6 +1,5 @@
-from sdk.color_print import c_print
 import hashlib
-def migrate_search(tenant_session: object, original_session: object, rule: str, policy_name: str, policy_description: str):
+def migrate_search(tenant_session: object, original_session: object, rule: str, policy_name: str, policy_description: str, logger):
     '''
     Main function that will get info about the search to be migrated, like the RQL and time range, then dispatches
     the proper functions to perform and then save the search resulting in the saved search UUID being returned
@@ -15,11 +14,11 @@ def migrate_search(tenant_session: object, original_session: object, rule: str, 
         search = build_search_payload(rule=rule, search_id=search_id)
 
         #call the run and save function for the search
-        return run_and_save_search(tenant_session, search)
+        return run_and_save_search(tenant_session, search, logger)
         
 
     params = {"filter":"saved"}
-    c_print(f'API - getting old saved search with ID: {search_id}')
+    logger.debug(f'API - getting old saved search with ID: {search_id}')
     response = original_session.request("GET", f'/search/history/{search_id}', params=params)
 
     data = response.json()
@@ -30,27 +29,27 @@ def migrate_search(tenant_session: object, original_session: object, rule: str, 
         data['name'] = policy_name +  " - " + str(plc_hash)
     
     if response.status_code == 200:
-        return run_and_save_search(tenant_session, data)
+        return run_and_save_search(tenant_session, data, logger)
     else:
         return None
 
 #==============================================================================
 
-def run_and_save_search(session, old_search):
+def run_and_save_search(session, old_search, logger):
     '''
     This functions calles the appropriate run RQL API
     depending on the type of search
     '''
     if old_search['searchType'] == 'config':
-        return perform_config(session, old_search)
+        return perform_config(session, old_search, logger)
     elif old_search['searchType'] == 'audit_event':
-        return perform_event(session, old_search)
+        return perform_event(session, old_search, logger)
     else: #Network
-        return perform_network(session, old_search)
+        return perform_network(session, old_search, logger)
 
 #==============================================================================
 
-def perform_config(session, search):
+def perform_config(session, search, logger):
     '''
     Performs a config search.
     '''
@@ -59,17 +58,17 @@ def perform_config(session, search):
         "timeRange": search['timeRange']
     }
 
-    c_print('API - Performing config search')
+    logger.debug('API - Performing config search')
     response = session.request("POST", "/search/config", json=payload)
 
     if response.status_code == 200:
-        return save_search(session, response.json(), search)
+        return save_search(session, response.json(), search, logger)
     else:
         return 'BAD'
 
 #==============================================================================
 
-def perform_event(session, search):
+def perform_event(session, search, logger):
     '''
     Performs an event search
     '''
@@ -106,17 +105,17 @@ def perform_event(session, search):
     if 'timeRange' in search:
         payload.update(timeRange=search['timeRange'])
 
-    c_print('API - Performing event search')
+    logger.debug('API - Performing event search')
     response = session.request("POST", "/search/event", json=payload)
     
     if response.status_code == 200:
-        return save_search(session, response.json(), search)
+        return save_search(session, response.json(), search, logger)
     else:
         return 'BAD'
 
 #==============================================================================
 
-def perform_network(session, search):
+def perform_network(session, search, logger):
     '''
     Performs a networks search
     '''
@@ -143,17 +142,17 @@ def perform_network(session, search):
     if 'cloudType' in search:
         payload.update(name=search['cloudType'])
 
-    c_print('API - Performing network search')
+    logger.debug('API - Performing network search')
     response = session.request("POST", "/search", json=payload)
     
     if response.status_code == 200:
-        return save_search(session, response.json(), search)
+        return save_search(session, response.json(), search, logger)
     else:
         return 'BAD'
 
 #==============================================================================
 
-def save_search(session, new_search, old_search):
+def save_search(session, new_search, old_search, logger):
     '''
     After a search as been exected, it can then be saved. This function uses
     the details of a saved search from the source tenant to save an equivalent search
@@ -183,25 +182,23 @@ def save_search(session, new_search, old_search):
     
 
     search_id = new_search['id']
-    c_print(f'API - Saving search with ID of: {search_id}')
+    logger.debug(f'API - Saving search with ID of: {search_id}')
     response = session.request("POST", f"/search/history/{search_id}", json=payload, redlock_ignore=['duplicate_search_name'])
     
     if response.status_code != 200 and 'duplicate_search_name' in response.headers['x-redlock-status']:
-        c_print('Search already saved. Getting ID', color='yellow')
-        print()
-        return get_saved_search_id_by_name(session, old_search['name'])
+        logger.info('Search already saved. Getting ID')
+        return get_saved_search_id_by_name(session, old_search['name'], logger)
 
     if response.status_code == 200:
         data = response.json()
         return data['id']
     else:
-        c_print(old_search, color='blue')
-        print()
+        logger.debug(old_search)
         return 'BAD'
 
 #==============================================================================
 
-def get_saved_search_id_by_name(session, name):
+def get_saved_search_id_by_name(session, name, logger):
     '''
     If the search has already been saved to the clone tenant, then 
     just return its ID instead of re saving it.
@@ -209,18 +206,16 @@ def get_saved_search_id_by_name(session, name):
 
     params = {"filter": "saved"}
 
-    c_print('API - Getting saved searches')
+    logger.debug('API - Getting saved searches')
     response = session.request('GET', '/search/history', params=params)
 
     data = response.json()
 
     for el in data:
         if el['searchName'] == name:
-            c_print('Found saved ID', color='green')
-            print()
+            logger.info('Found saved ID')
             return el['id']
-    c_print('ID not found', color='red')
-    print()
+    logger.info('ID not found')
     return 'BAD'
 
 #==============================================================================

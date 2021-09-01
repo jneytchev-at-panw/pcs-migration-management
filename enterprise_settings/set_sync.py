@@ -1,7 +1,7 @@
 from sdk.color_print import c_print
 
-def sync(tenant_sessions):
-    c_print('API - Getting enterprise settings')
+def sync(tenant_sessions, logger):
+    logger.debug('API - Getting enterprise settings')
     res = tenant_sessions[0].request('GET', '/settings/enterprise')
     
     settings = res.json()
@@ -11,11 +11,10 @@ def sync(tenant_sessions):
 
     clone_tenant_sessions = tenant_sessions[1:]
     for session in clone_tenant_sessions:
-        c_print('API - Updating enterprise settings')
+        logger.debug('API - Updating enterprise settings')
         session.request('POST', '/settings/enterprise', json=settings)
 
-    c_print('Finished syncing Enterprise Settings', color='blue')
-    print()
+    logger.info('Finished syncing Enterprise Settings')
 
 if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions

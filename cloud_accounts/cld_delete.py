@@ -1,10 +1,11 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
 def delete_accounts(cln_session, accounts, logger):
     if accounts:
         logger.info(f'Deleting Cloud Accounts from tenant \'{cln_session.tenant}\'')
 
-        for account in accounts:
+        for account in tqdm(accounts, desc='Deleting Cloud Accounts', leave=False):
             cloud_type = ''
             cld_id = ''
             if 'cloudAccount' in account:

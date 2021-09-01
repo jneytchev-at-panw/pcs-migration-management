@@ -29,7 +29,7 @@ def sync(tenant_sessions: list, modes: dict, logger):
         mode_list.append(mode[0])
 
     #ADDING AND UPDATING - Order based on dependencies.
-    for mode in tqdm(mode_list, desc='SYNC ADD UPDATE STATUS'):
+    for mode in tqdm(mode_list, desc='SYNC ADD/UPDATE STATUS'):
         if 'cloud' == mode:
             cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
         if 'account' == mode:
@@ -45,7 +45,7 @@ def sync(tenant_sessions: list, modes: dict, logger):
         if 'compliance' == mode:
             cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
         if 'search' == mode:
-            search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False)
+            search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
         if 'policy' == mode:
             plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), modes['policy'].get('update', True), False, logger)
         if 'alert' == mode:
@@ -53,7 +53,7 @@ def sync(tenant_sessions: list, modes: dict, logger):
         if 'anomaly' == mode:
             ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
         if 'settings' == mode:
-            set_sync.sync(tenant_sessions)
+            set_sync.sync(tenant_sessions, logger)
 
     #DELETEING - Order based on dependencies
     for mode in tqdm(mode_list, desc='SYNC DELETE STATUS'):

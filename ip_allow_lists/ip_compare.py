@@ -1,4 +1,5 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
 #Migrate
 def compare_trusted_networks(source_networks, clone_networks):
@@ -29,9 +30,9 @@ def compare_each_network_cidr_and_add(session, source_networks, clone_networks, 
             if cidr['cidr'] not in [n_cidr['cidr'] for n_cidr in new_network['cidrs']]:
                 cidr_to_add.append(cidr)
         net_name = src_network['name']
-        for cidr in cidr_to_add:
+        for cidr in tqdm(cidr_to_add, desc='Adding CIDRs', leave=False):
             networkUuid = new_network['uuid']
-            logger.debug(f'API - Adding cidrs to network {net_name}')
+            logger.debug(f'API - Adding CIDRs to network {net_name}')
             session.request('POST', f'/allow_list/network/{networkUuid}/cidr', json=cidr)
 
 #Sync
@@ -46,11 +47,11 @@ def compare_each_network_cidr_and_update(session, source_networks, clone_network
                         c_cidr.update(description=s_cidr['description'])
                         cidrs_to_update.append(c_cidr)
 
-            for cidr in cidrs_to_update:
+            for cidr in tqdm(cidrs_to_update, desc='Updating CIDRs', leave=False):
                 networkUuid = cln_network['uuid']
                 name = cln_network['name']
                 c_id = cidr['uuid']
-                logger.debug(f'API - Updating cidr on network {name}')
+                logger.debug(f'API - Updating CIDR on network {name}')
                 session.request('PUT', f'/allow_list/network/{networkUuid}/cidr/{c_id}', json=cidr)
 
 #Sync
@@ -68,9 +69,9 @@ def compare_each_network_cidr_and_delete(session, source_networks, clone_network
                     if c_cidr['cidr'] not in [ci['cidr'] for ci in src_network['cidrs']]:
                         cidrs_to_delete.append(c_cidr) #We need the cidr and the uuid for deletion
                 #Delete the cidrs from the destination tenant
-                for cidr in cidrs_to_delete:
+                for cidr in tqdm(cidrs_to_delete, desc='Deleting CIDRs', leave=False):
                     cidrUuid = cidr['uuid']
-                    logger.debug(f'API - Deleting cidr from network: \'{name}\'')
+                    logger.debug(f'API - Deleting CIDR from network: \'{name}\'')
                     session.request('DELETE', f'/allow_list/network/{networkUuid}/cidr/{cidrUuid}')
 
 #Sync
