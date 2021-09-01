@@ -62,6 +62,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
 
 if __name__ == '__main__':
+    #TODO ADD PROGRESS BAR
     from sdk.load_config import load_config_create_sessions
 
     tenant_sessions = load_config_create_sessions()
