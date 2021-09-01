@@ -3,7 +3,7 @@ from loguru import logger
 import time
 
 def log_test(logger):
-    for x in tqdm(range(10), desc='BEANS'):
+    for x in tqdm(range(10), desc='BEANS', leave=False):
         logger.debug("That's it, beautiful and simple logging!")
         logger.info("Iterating #{}", x)
         logger.error('ERROR')

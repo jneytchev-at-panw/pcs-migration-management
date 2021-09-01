@@ -12,7 +12,7 @@ def add_account_groups(session, account_groups, logger):
     if account_groups:
         logger.info(f'Adding Account Groups to tenant: \'{tenant_name}\'')
         
-        for acc_grp in tqdm(account_groups, desc='Adding Account Groups'):
+        for acc_grp in tqdm(account_groups, desc='Adding Account Groups', leave=False):
             logger.debug('API - Adding Account Group')
             session.request('POST', '/cloud/group', json=acc_grp)
     else:

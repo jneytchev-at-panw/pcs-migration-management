@@ -7,7 +7,7 @@ def add_resource_lists(session: object, resource_lists_to_add: list, logger):
         logger.info(f'Adding Resource Lists to tenant: \'{tenant_name}\'')
 
         status_ignore = [201]
-        for rsc in tqdm(resource_lists_to_add, desc='Adding Resource Lists'):
+        for rsc in tqdm(resource_lists_to_add, desc='Adding Resource Lists', leave=False):
             logger.debug('API - Adding Resource List')
             session.request('POST', '/v1/resource_list', json=rsc, status_ignore=status_ignore)
 

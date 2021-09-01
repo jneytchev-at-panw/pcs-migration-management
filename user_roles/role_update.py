@@ -1,24 +1,24 @@
 from sdk.color_print import c_print
 from user_roles import role_translate_id
+from tqdm import tqdm
 
-def update_roles(session, old_session, roles):
+def update_roles(session, old_session, roles, logger):
     if roles:
-        c_print(f'Updating User Roles for tenant: \'{session.tenant}\'', color='green')
-        print()
+        logger.info(f'Updating User Roles for tenant: \'{session.tenant}\'')
 
         #Translate Acc Grp IDs
-        c_print('API - Getting source account groups')
+        logger.debug('API - Getting source account groups')
         src_acc_grps = old_session.request('GET', '/cloud/group').json()
-        c_print('API - Getting destination account groups')
+        logger.debug('API - Getting destination account groups')
         dest_acc_grps = session.request('GET', '/cloud/group').json()
 
         #Translate Resource List IDs
-        c_print('API - Getting source resource lists')
+        logger.debug('API - Getting source resource lists')
         src_rsc_lists = old_session.request('GET', '/v1/resource_list').json()
-        c_print('API - Getting destination resource lists')
+        logger.debug('API - Getting destination resource lists')
         dest_rsc_lists = session.request('GET', '/v1/resource_list').json()
 
-        for role in roles:
+        for role in tqdm(roles, desc='Updating User Roles', leave=False):
             #Translate Acc Grp IDs
             if 'accountGroupIds' in role:
                 new_ids = []
@@ -41,9 +41,8 @@ def update_roles(session, old_session, roles):
             name = role['name']
             # print(role)
             
-            c_print(f'API - Updating role {name}')
+            logger.debug(f'API - Updating role {name}')
             session.request('PUT', f'/user/role/{r_id}', json=role)
 
     else:
-        c_print(f'No User Roles to update for tenant: \'{session.tenant}\'', color='yellow')
-        print()
+        logger.info(f'No User Roles to update for tenant: \'{session.tenant}\'')

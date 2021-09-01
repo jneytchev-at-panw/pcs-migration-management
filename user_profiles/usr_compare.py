@@ -1,6 +1,4 @@
 #compares the tenants to find the missing user/s
-from sdk.color_print import c_print
-
 def compare_users(source_users: list, clone_users: list, clone_roles: list):
     users_to_add = []
     for src_usr in source_users:

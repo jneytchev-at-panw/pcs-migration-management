@@ -186,7 +186,7 @@ def load_config_create_sessions(file_mode, logger):
             for key in tenant:
                 name = key
 
-            tenant_sessions.append(Session(name, tenant[name]['access_key'], tenant[name]['secret_key'], tenant[name]['api_url']))
+            tenant_sessions.append(Session(name, tenant[name]['access_key'], tenant[name]['secret_key'], tenant[name]['api_url'], logger))
 
         return tenant_sessions
 

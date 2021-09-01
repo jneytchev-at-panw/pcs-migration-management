@@ -5,7 +5,7 @@ def delete_resource_lists(session, resource_lists, logger):
     if resource_lists:
         logger.info(f'Deleteing resource lists from tenant: \'{session.tenant}\'')
 
-        for rsc_list in tqdm(resource_lists, desc='Deleting Resource Lists'):
+        for rsc_list in tqdm(resource_lists, desc='Deleting Resource Lists', leave=False):
             rl_id = rsc_list['id']
             status_ignore = [201, 204]
             logger.debug('API - Deleting Resource List')

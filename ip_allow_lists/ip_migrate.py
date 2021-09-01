@@ -1,7 +1,7 @@
 from ip_allow_lists import ip_add, ip_compare, ip_get
 from sdk.color_print import c_print
 
-def migrate(tenant_sessions):
+def migrate(tenant_sessions, logger):
     '''
     Accepts a list of tenant session object.
 
@@ -13,7 +13,7 @@ def migrate(tenant_sessions):
     #Get trusted network ips from all tenants
     tenant_trusted_alert_networks = []
     for session in tenant_sessions:
-        networks = ip_get.get_trusted_networks(session)
+        networks = ip_get.get_trusted_networks(session, logger)
         tenant_trusted_alert_networks.append(networks)
 
     #Get trusted network IPs that need to be added
@@ -27,7 +27,7 @@ def migrate(tenant_sessions):
     #Upload the trusted alert IP networks to clone tenants
     for index, networks in enumerate(trusted_alert_networks_to_add):
         session = tenant_sessions[index + 1]
-        ip_add.add_networks(session, networks)
+        ip_add.add_networks(session, networks, logger)
 
     #Update the cidr blocks of all networks in each tenant
     #Define lists
@@ -45,14 +45,14 @@ def migrate(tenant_sessions):
                 if cidr['cidr'] not in [n_cidr['cidr'] for n_cidr in new_network['cidrs']]:
                     cidr_to_add.append(cidr)
             net_name = src_network['name']
-            ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network['uuid'], cidr_to_add)
+            ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network['uuid'], cidr_to_add, logger)
 
     #Next, migrate Trusted Login IPs
 
     #Get login ips
     tenant_login_ips_list = []
     for session in tenant_sessions:
-        ips = ip_get.get_login_ips(session)
+        ips = ip_get.get_login_ips(session, logger)
         tenant_login_ips_list.append(ips)
 
     #Get the login ips that need to be added
@@ -66,10 +66,9 @@ def migrate(tenant_sessions):
     #Upload login IPs to clone tenants
     for index, cln_ips in enumerate(tenant_login_ips_to_add):
         tenant_session = tenant_sessions[index + 1]
-        ip_add.add_login_ips(tenant_session, cln_ips)
+        ip_add.add_login_ips(tenant_session, cln_ips, logger)
 
-    c_print('Finished Migrating Trusted IPs', color='blue')
-    print()
+    logger.info('Finished Migrating Trusted IPs')
 
 if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions

@@ -12,7 +12,7 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
 
     if accounts:
         logger.info(f'Adding Cloud Accounts to tenant: \'{session.tenant}\'')
-        for account in tqdm(accounts, desc='Adding Cloud Accounts'):
+        for account in tqdm(accounts, desc='Adding Cloud Accounts', leave=False):
             res = object()
             cloud_type = ''
             account_type = ''

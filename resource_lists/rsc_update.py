@@ -5,7 +5,7 @@ def update_resource_lists(session, resource_lists, logger):
     if resource_lists:
         logger.info(f'Updating Resource Lists for tenant: \'{session.tenant}\'')
 
-        for rsc_list in tqdm(resource_lists, desc='Updating Resource Lists'):
+        for rsc_list in tqdm(resource_lists, desc='Updating Resource Lists', leave=False):
             rl_id = rsc_list['id']
             status_ignore = [201]
             logger.debug('API - Updating Resource List')

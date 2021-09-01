@@ -1,18 +1,17 @@
 import requests
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def update_user_profiles(session, users):
+def update_user_profiles(session, users, logger):
     if users:
-        c_print(f'Updating User Profiles on tenant: \'{session.tenant}\'', color='green')
-        print()
+        logger.info(f'Updating User Profiles on tenant: \'{session.tenant}\'')
 
-        for user in users:
+        for user in tqdm(users, desc='Updating User Profiles', leave=False):
             #The email address that is used as the ID in the URL must be encoded. 
             encoded_id = requests.utils.quote(user['email'])
             
-            print('API - Updating User Profile')
+            logger.debug('API - Updating User Profile')
             session.request('PUT', f'/v2/user/{encoded_id}', user)
 
     else:
-        c_print(f'No User Profiles to update for tenant: \'{session.tenant}\'',color='yellow')
-        print()
+        logger.info(f'No User Profiles to update for tenant: \'{session.tenant}\'')

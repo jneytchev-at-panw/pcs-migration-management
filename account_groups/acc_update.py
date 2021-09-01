@@ -4,7 +4,7 @@ from tqdm import tqdm
 def update_account_groups(session, account_groups, logger):
     if account_groups:
         logger.info(f'Updating Account Groups for tenant: \'{session.tenant}\'')
-        for acc in tqdm(account_groups, desc="Updating Account Groups"):
+        for acc in tqdm(account_groups, desc="Updating Account Groups", leave=False):
             payload = {
                 'name': acc.get('name'),
                 'description': acc.get('description', ''),

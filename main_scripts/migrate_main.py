@@ -42,7 +42,7 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
     for mode in modes.items():
         mode_list.append(mode[0])
 
-    for mode in tqdm(mode_list, desc='Migration Status'):
+    for mode in tqdm(mode_list, desc='MIGRATION STATUS', leave=False):
         #CLOUD ACCOUNT MIGRATE
         if 'cloud' == mode:
             cld_migrate.migrate(tenant_sessions, logger)

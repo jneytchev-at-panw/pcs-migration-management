@@ -1,25 +1,25 @@
 from sdk.color_print import c_print
 from user_roles import role_translate_id
+from tqdm import tqdm
 
-def add_roles(session, old_session, roles):
+def add_roles(session, old_session, roles, logger):
     tenant_name = session.tenant
     if roles:
-        print(f'Adding User Roles to tenant: \'{tenant_name}\'')
-        print()
+        logger.info(f'Adding User Roles to tenant: \'{tenant_name}\'')
 
         #Translate Acc Grp IDs
-        c_print('API - Getting source Account Groups')
+        logger.debug('API - Getting source Account Groups')
         src_acc_grps = old_session.request('GET', '/cloud/group').json()
-        c_print('API - Getting destination Account Groups')
+        logger.debug('API - Getting destination Account Groups')
         dest_acc_grps = session.request('GET', '/cloud/group').json()
 
         #Translate Resource List IDs
-        c_print('API - Getting source Resource Lists')
+        logger.debug('API - Getting source Resource Lists')
         src_rsc_lists = old_session.request('GET', '/v1/resource_list').json()
-        c_print('API - Getting destination Resource Lists')
+        logger.debug('API - Getting destination Resource Lists')
         dest_rsc_lists = session.request('GET', '/v1/resource_list').json()
 
-        for role in roles:
+        for role in tqdm(roles, desc='Adding User Roles', leave=False):
             #Translate Acc Grp IDs
             if 'accountGroupIds' in role:
                 new_ids = []
@@ -39,9 +39,8 @@ def add_roles(session, old_session, roles):
                 role.update(resourceListIds=new_ids)
 
             name = role['name']
-            c_print(f'API - Adding role: {name}')
+            logger.debug(f'API - Adding role: {name}')
             session.request('POST', '/user/role', json=role)
 
     else:
-        c_print(f'No User Roles to add for tenant: \'{tenant_name}\'', color='yellow')
-        print()
+        logger.info(f'No User Roles to add for tenant: \'{tenant_name}\'')

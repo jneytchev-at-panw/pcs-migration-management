@@ -1,7 +1,7 @@
 from sdk.color_print import c_print
 from user_profiles import usr_get, usr_add, usr_compare, usr_delete, usr_update
 
-def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
     '''
     Accepts a list of tenant session objects.
 
@@ -12,13 +12,13 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     #Get all user profiles
     tenant_user_profiles = []
     for session in tenant_sessions:
-        data = usr_get.get_users(session)
+        data = usr_get.get_users(session, logger)
         tenant_user_profiles.append(data)
 
     #Get all roles for role ID translation
     tenant_user_roles = []
     for session in tenant_sessions:
-        data = usr_get.get_user_roles(session)
+        data = usr_get.get_user_roles(session, logger)
         tenant_user_roles.append(data)
 
     cln_tenant_user_roles = tenant_user_roles[1:]
@@ -34,7 +34,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
 
         #Add user profiles
         for index in range(len(tenant_users_to_add)):
-            usr_add.add_users(tenant_sessions[index + 1], tenant_users_to_add[index])
+            usr_add.add_users(tenant_sessions[index + 1], tenant_users_to_add[index], logger)
     
     if upMode:
         #Get User Profiles to update
@@ -45,7 +45,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
 
             #Add user profiles
             for index, users in enumerate(tenant_users_to_update):
-                usr_update.update_user_profiles(tenant_sessions[index + 1], users)
+                usr_update.update_user_profiles(tenant_sessions[index + 1], users, logger)
 
     
     if delMode:
@@ -57,12 +57,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
 
         #Delete user profiles
         for index, users in enumerate(tenant_users_to_delete):
-            usr_delete.delete_user_profiles(tenant_sessions[index + 1], users)
+            usr_delete.delete_user_profiles(tenant_sessions[index + 1], users, logger)
 
-
-
-    c_print('Finished syncing User Profiles', color='blue')
-    print()
+    logger.info('Finished syncing User Profiles')
     
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

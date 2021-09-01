@@ -14,7 +14,7 @@ def build_module():
     full = full.lower()
     if full =='y' or full =='yes':
         module_dict.update(add=True)
-        module_dict.update(up=True)
+        module_dict.update(update=True)
         module_dict.update(delete=False)
         return module_dict
     else:

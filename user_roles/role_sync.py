@@ -1,11 +1,11 @@
 from sdk.color_print import c_print
 from user_roles import role_add, role_compare, role_get, role_delete, role_update
 
-def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
     #Get roles
     roles_lists = []
     for session in tenant_sessions:
-        roles = role_get.get_roles(session)
+        roles = role_get.get_roles(session, logger)
         roles_lists.append(roles)
     
     clone_tenant_sessions = tenant_sessions[1:]
@@ -17,7 +17,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         #Updates roles on tenants
         for index, roles in enumerate(roles_list_delta_update):
             session = clone_tenant_sessions[index]
-            role_update.update_roles(session, tenant_sessions[0], roles)
+            role_update.update_roles(session, tenant_sessions[0], roles, logger)
 
     if addMode:
         #Get list of roles to add to each tenant
@@ -26,7 +26,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         #upload roles to tenants
         for index, roles in enumerate(roles_list_delta_add):
             session = clone_tenant_sessions[index]
-            role_add.add_roles(session, tenant_sessions[0], roles)
+            role_add.add_roles(session, tenant_sessions[0], roles, logger)
 
     if delMode:
         #Get list of roles to delete from each tenant
@@ -35,10 +35,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         #Delete roles from tenants
         for index, roles in enumerate(roles_list_delta_delete):
             session = clone_tenant_sessions[index]
-            role_delete.delete_roles(session, roles)
+            role_delete.delete_roles(session, roles, logger)
 
-    c_print('Finished syncing User Roles', color='blue')
-    print()
+    logger.info('Finished syncing User Roles')
 
     
 
