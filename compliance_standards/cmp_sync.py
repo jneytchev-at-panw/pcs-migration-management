@@ -1,7 +1,8 @@
-from compliance_standards import cmp_compare, cmp_get, cmp_add, cmp_migrate
+from compliance_standards import cmp_compare, cmp_get
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, tenant_compliance_standards_data=[]):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger, tenant_compliance_standards_data=[]):
     '''
     Normalizes custom compliance standards accross all tenants using the first tenant as the template
     for the others. Does a deep search accross all tenants to collect all compliance standards, requirements
@@ -13,21 +14,22 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, tena
         #Get complance standards from all tenants
         tenant_compliance_standards_lists = []
         for session in tenant_sessions:
-            tenant_compliance_standards_lists.append(cmp_get.get_compliance_standard_list(session))
+            tenant_compliance_standards_lists.append(cmp_get.get_compliance_standard_list(session, logger))
 
         #Get all requirements and sections for each standard. This is a deep nested search and takes some time  
-        for index, tenant in enumerate(tenant_compliance_standards_lists):
+        for index in tqdm(range(len(tenant_compliance_standards_lists)), desc='Getting Compliance Data', leave=False):#FIXME progress bar is not working
+            tenant = tenant_compliance_standards_lists[index]
             tenant_compliance = []
             for standard in tenant:
                 standard_dict = {}
 
                 requirements = []
-                requirements_data = cmp_get.get_compliance_requirement_list(tenant_sessions[index], standard)
+                requirements_data = cmp_get.get_compliance_requirement_list(tenant_sessions[index], standard, logger)
 
                 for requirement in requirements_data:
                     requirement_dict = {}
                     
-                    sections = cmp_get.get_compliance_sections_list(tenant_sessions[index], requirement)
+                    sections = cmp_get.get_compliance_sections_list(tenant_sessions[index], requirement, logger)
 
                     requirement_dict.update(requirement=requirement)
                     requirement_dict.update(sections=sections)
@@ -49,10 +51,10 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, tena
     #Sync compliance data
     for index, clone in enumerate(clone_compliance_standards):
         session = tenant_sessions[index + 1]
-        cmp_compare.update_add_delete_compliance_data(source_compliance_standards, clone, session, addMode, upMode, delMode)
+        cmp_compare.update_add_delete_compliance_data(source_compliance_standards, clone, session, addMode, upMode, delMode, logger)
 
 
-    c_print('Finished syncing Compliance Data', color='blue')
+    logger.info('Finished syncing Compliance Data')
     print()
 
     return tenant_compliance_standards_data

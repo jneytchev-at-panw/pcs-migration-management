@@ -1,7 +1,8 @@
 from sdk.color_print import c_print
-from compliance_standards import cmp_add, cmp_get #cmp_update ,cmp_delete
+from compliance_standards import cmp_add, cmp_get, cmp_update ,cmp_delete
+from tqdm import tqdm
 
-def get_compliance_stanadards_to_add(tenant_sessions: object, compliance_standards: list) -> list:
+def get_compliance_stanadards_to_add(tenant_sessions: object, compliance_standards: list, logger) -> list:
     '''
     Compares the top level compliance standards between tenants and will return a list of 
     standards that are missing from each tenant.
@@ -21,7 +22,7 @@ def get_compliance_stanadards_to_add(tenant_sessions: object, compliance_standar
 
     #Logging output
     for enum in enumerate(clone_tenants_standards_delta):
-        c_print(f'Found {len(enum[1])} compliance standards missing from tenant: {tenant_sessions[enum[0]+1].tenant}.', color='green')
+        logger.info(f'Found {len(enum[1])} compliance standards missing from tenant: {tenant_sessions[enum[0]+1].tenant}.')
     
     print()
 
@@ -64,7 +65,7 @@ def compare_compliance_sections(src_sec: dict, cln_sec: dict):
 #==============================================================================
 
 
-def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_session, addMode, upMode, delMode):
+def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_session, addMode, upMode, delMode, logger):
     '''
     This function iderates over all the compliance data and will compare then add, update, or delete
     compliance data from the clone tenant until the clone tenant has the same compliance data as 
@@ -85,24 +86,24 @@ def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_s
     #     }
     # ]
     #Adding and and updating compliance data
-    for src_cmp_i in range(len(source_compliance)):
+    for src_cmp_i in tqdm(range(len(source_compliance)), desc='Syncing Compliance Standards', leave=False):
         #Get Compliance Standard to add--------
         src_cmp_std = source_compliance[src_cmp_i]['standard']
         if src_cmp_std['name'] not in [cln['standard']['name'] for cln in clone_compliance]:
             #Add compliance standard to tenant
             if addMode:
                 if not src_cmp_std['systemDefault']: #Only add custom
-                    cmp_add.add_compliance_standard(cln_session, src_cmp_std)
+                    cmp_add.add_compliance_standard(cln_session, src_cmp_std, logger)
                     #Add sub requirements
-                    cmp_std_id = cmp_get.get_compliance_standard_id_by_name(cln_session, src_cmp_std['name'])
+                    cmp_std_id = cmp_get.get_compliance_standard_id_by_name(cln_session, src_cmp_std['name'], logger)
                     for src_req_data in source_compliance[src_cmp_i]['requirements']:
                         src_req = src_req_data['requirement']
                         #Add requirement to tenant
-                        cmp_add.add_requirement_to_standard(cln_session, cmp_std_id, src_req)
+                        cmp_add.add_requirement_to_standard(cln_session, cmp_std_id, src_req, logger)
                         #Add sub sections
-                        req_id = cmp_get.get_requirement_id_by_name(cln_session, cmp_std_id, src_req['name'])
+                        req_id = cmp_get.get_requirement_id_by_name(cln_session, cmp_std_id, src_req['name'], logger)
                         for src_sec in src_req_data['sections']:
-                            cmp_add.add_section_to_requirement(cln_session, req_id, src_sec)
+                            cmp_add.add_section_to_requirement(cln_session, req_id, src_sec, logger)
         
         #Get Compliance Standard to update and Requirement Standards to add--------
         for cln_cmp_i in range(len(clone_compliance)):
@@ -113,7 +114,7 @@ def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_s
                 if upMode:
                     if compare_compliance_standards(src_cmp_data['standard'], cln_cmp_data['standard']):
                         #Update compliance standard
-                        cmp_update.update_compliance_standard(cln_session, cln_cmp_data['standard']['id'], src_cmp_data['standard'])
+                        cmp_update.update_compliance_standard(cln_session, cln_cmp_data['standard']['id'], src_cmp_data['standard'], logger)
 
                 #Get Requirement Standards to add
                 src_cmp_req = src_cmp_data['requirements']
@@ -124,12 +125,12 @@ def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_s
                         if addMode:
                             if not src_req['systemDefault']:#Only add custom
                                 cmp_std_id = cln_cmp_data['standard']['id']
-                                cmp_add.add_requirement_to_standard(cln_session, cmp_std_id, src_req)
+                                cmp_add.add_requirement_to_standard(cln_session, cmp_std_id, src_req, logger)
                                 #Add sub sections
-                                req_id = cmp_get.get_requirement_id_by_name(cln_session, cmp_std_id, src_req['name'])
+                                req_id = cmp_get.get_requirement_id_by_name(cln_session, cmp_std_id, src_req['name'], logger)
                                 for src_sec in src_req_data['sections']:
                                     #Get clone requirement by name 
-                                    cmp_add.add_section_to_requirement(cln_session, req_id, src_sec)
+                                    cmp_add.add_section_to_requirement(cln_session, req_id, src_sec, logger)
                     else:
                         #Get Requirement standards to update and sections to add--------
                         #Get requirements that need to be updated
@@ -139,7 +140,7 @@ def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_s
                             if upMode:
                                 if compare_compliance_requirements(cln_req, src_req):
                                     #Update compliance requirement
-                                    cmp_update.update_compliance_requirement(cln_session, cln_req['id'], src_req)
+                                    cmp_update.update_compliance_requirement(cln_session, cln_req['id'], src_req, logger)
 
                         #Get sections that need to be added
                         cln_req = [cln_req for cln_req in cln_cmp_data['requirements'] if cln_req['requirement']['name'] == src_req['name']][0]
@@ -148,12 +149,12 @@ def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_s
                                 #Section is missing from requirement, add it
                                 if addMode:
                                     if not src_sec['systemDefault']: #Only add custom
-                                        cmp_add.add_section_to_requirement(cln_session, cln_req['requirement']['id'], src_sec)
+                                        cmp_add.add_section_to_requirement(cln_session, cln_req['requirement']['id'], src_sec, logger)
                             #Compare sections in requirements
                             if upMode:
                                 for cln_sec in cln_req['sections']:
                                     if compare_compliance_sections(src_sec, cln_sec):
-                                        cmp_update.update_compliance_section(cln_session, cln_sec['id'], src_sec)
+                                        cmp_update.update_compliance_section(cln_session, cln_sec['id'], src_sec, logger)
 
     #Deleting compliance data
     if delMode:
@@ -162,7 +163,7 @@ def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_s
             cln_cmp_std = clone_compliance[cln_cmp_i]['standard']
             if cln_cmp_std['name'] not in [src['standard']['name'] for src in source_compliance]:
                 #Delete compliance standard from tenant
-                cmp_delete.delete_compliance_standard(cln_session, cln_cmp_std['id'])
+                cmp_delete.delete_compliance_standard(cln_session, cln_cmp_std['id'], logger)
 
             for src_cmp_i in range(len(source_compliance)):
                 cln_cmp_data = clone_compliance[cln_cmp_i]
@@ -174,12 +175,12 @@ def update_add_delete_compliance_data(source_compliance, clone_compliance, cln_s
                         cln_req = cln_req_data['requirement']
                         if cln_req['name'] not in [src_req_data['requirement']['name'] for src_req_data in src_cmp_data['requirements']]:
                             #Delete requirement
-                            cmp_delete.delete_compliance_requirement(cln_session, cln_req['id'])
+                            cmp_delete.delete_compliance_requirement(cln_session, cln_req['id'], logger)
                         else:
                             #Get sections to delete
                             src_req = [src_req for src_req in src_cmp_data['requirements'] if src_req['requirement']['name'] == cln_req['name']][0]
                             for cln_sec in cln_req_data['sections']:
                                 if cln_sec['sectionId'] not in [sec['sectionId'] for sec in src_req['sections']]:
                                     #Delete section
-                                    cmp_delete.delete_compliance_section(cln_session, cln_sec['id'])
+                                    cmp_delete.delete_compliance_section(cln_session, cln_sec['id'], logger)
     return

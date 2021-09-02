@@ -1,6 +1,6 @@
 from sdk.color_print import c_print
 
-def get_requirement_id_by_name(session, standard_id, name):
+def get_requirement_id_by_name(session, standard_id, name, logger):
     '''
     Accepts a tenant session object, a compliance standard ID, and the name of a requirement.
 
@@ -8,7 +8,7 @@ def get_requirement_id_by_name(session, standard_id, name):
     requirement and the standard ID the requirement belongs to, gets the requirement ID.
     '''
 
-    c_print('API - Getting requirement by name')
+    logger.debug('API - Getting requirement by name')
     res = session.request('GET', f'/compliance/{standard_id}/requirement')
     data = res.json()
     for req in data:
@@ -18,7 +18,7 @@ def get_requirement_id_by_name(session, standard_id, name):
 
 #==============================================================================
 
-def get_compliance_standard_id_by_name(session, name):
+def get_compliance_standard_id_by_name(session, name, logger):
     '''
     Accepts a tenant session object, a compliance standard ID, and the name of a requirement.
 
@@ -26,7 +26,7 @@ def get_compliance_standard_id_by_name(session, name):
     standard, the standards ID will be returned..
     '''
 
-    c_print('API - Getting compliance standard by name')
+    logger.debug('API - Getting compliance standard by name')
     res = session.request('GET', '/compliance')
     data = res.json()
 
@@ -37,7 +37,7 @@ def get_compliance_standard_id_by_name(session, name):
 
 #==============================================================================
 
-def get_compliance_standard_list(session: object, logging: bool=False):
+def get_compliance_standard_list(session: object, logger):
     '''
     Accepts a tenant session object and an optional logging flag.
 
@@ -46,25 +46,19 @@ def get_compliance_standard_list(session: object, logging: bool=False):
 
     endpoint_url = '/compliance'
 
-    c_print(f'API - Get compliance standard list from tenant \'{session.tenant}\'')
+    logger.debug(f'API - Get compliance standard list from tenant \'{session.tenant}\'')
     res = session.request('GET', endpoint_url)
 
     compliance_standards = dict()
     if res.status_code == 200:
         compliance_standards = res.json()
-        c_print(f'Got {len(compliance_standards)} compliance standards from tenant: \'{session.tenant}\'')
-        print()
-
-    if logging:
-        for el in compliance_standards:
-            print(el)
-            print()
+        logger.info(f'Got {len(compliance_standards)} compliance standards from tenant: \'{session.tenant}\'')
 
     return compliance_standards
 
 #==============================================================================
 
-def get_compliance_requirement_list(session: object, standard: dict, logging: bool=False):
+def get_compliance_requirement_list(session: object, standard: dict, logger):
     '''
     Accepts a tenant session object, the compliance standard, and an optional logging flag.
 
@@ -74,25 +68,19 @@ def get_compliance_requirement_list(session: object, standard: dict, logging: bo
     #Needs a standard object not just an ID so the name of the standard can printed out. 
     std_id = standard['id']
     std_name = standard['name']
-    c_print(f'API - Get compliance requirements from tenant \'{session.tenant}\'')
+    logger.debug(f'API - Get compliance requirements from tenant \'{session.tenant}\'')
     res = session.request('GET', f'/compliance/{std_id}/requirement')
 
     requirements = dict()
     if res.status_code == 200:
         requirements = res.json()
-        c_print(f'Got {len(requirements)} requirements from standard \'{std_name}\'', color='green')
-        print()
-
-    if logging:
-        for el in requirements:
-            print(el)
-            print()
+        logger.info(f'Got {len(requirements)} requirements from standard \'{std_name}\'', color='green')
 
     return requirements
 
 #==============================================================================
 
-def get_compliance_sections_list(session: object, requirement: dict, logging: bool=False):
+def get_compliance_sections_list(session: object, requirement: dict, logger):
     '''
     Accepts a tenant session object, the compliance requirement, and an optional logging flag.
 
@@ -103,19 +91,13 @@ def get_compliance_sections_list(session: object, requirement: dict, logging: bo
     req_id = requirement['id']
     req_name = requirement['name']
 
-    c_print(f'API - Get compliance section from tenant \'{session.tenant}\'')
+    logger.debug(f'API - Get compliance section from tenant \'{session.tenant}\'')
     res = session.request('GET', f'/compliance/{req_id}/section')
 
     sections = dict()
     if res.status_code == 200:
         sections = res.json()
-        c_print(f'Got {len(sections)} sections from requirement \'{req_name}\'', color='green')
-        print()
-
-    if logging:
-        for el in sections:
-            print(el)
-            print()
+        logger.info(f'Got {len(sections)} sections from requirement \'{req_name}\'')
     
     return sections
 
