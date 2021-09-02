@@ -1,4 +1,5 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
 def update_settings(session: list, settings: list, logger):
     if settings:
