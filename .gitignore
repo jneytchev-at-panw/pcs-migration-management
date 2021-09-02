@@ -11,8 +11,8 @@ build
 
 __pycache__
 
-cloud_credentials/gcp/*
-cloud_credentials/azure/*
+cloud_credentials/gcp/*.json
+cloud_credentials/azure/*.json
 
 
 # Files
