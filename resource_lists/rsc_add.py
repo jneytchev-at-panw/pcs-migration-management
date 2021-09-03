@@ -4,12 +4,7 @@ from tqdm import tqdm
 def add_resource_lists(session: object, resource_lists_to_add: list, logger):
     tenant_name = session.tenant
     if resource_lists_to_add:
-<<<<<<< HEAD
-        print(f'Adding Resource Lists to tenant: \'{tenant_name}\'')
-        print()
-=======
         logger.info(f'Adding Resource Lists to tenant: \'{tenant_name}\'')
->>>>>>> feature-progressbar_logging
 
         status_ignore = [201]
         for rsc in tqdm(resource_lists_to_add, desc='Adding Resource Lists', leave=False):
