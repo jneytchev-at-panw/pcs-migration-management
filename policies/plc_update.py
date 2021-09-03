@@ -1,14 +1,14 @@
 from policies import plc_cmp_translate
 from saved_searches import search_migrate_plc
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def update_custom_policies(tenant_session: object, source_tenant_session: object, policies: dict):
+def update_custom_policies(tenant_session: object, source_tenant_session: object, policies: dict, logger):
     if policies:
-        c_print(f'Updateing Custom Policies for tenant: \'{tenant_session.tenant}\'', color='green')
-        print()
+        logger.info(f'Updateing Custom Policies for tenant: \'{tenant_session.tenant}\'')
 
-        translate = plc_cmp_translate.Translate(tenant_session)
-        for policy in policies:
+        translate = plc_cmp_translate.Translate(tenant_session, logger)
+        for policy in tqdm(policies, desc='Updating Custom Policies', leave=False):
             p_type = policy['policyType']
             plc_id = policy['policyId']
             name = policy['name']
@@ -20,7 +20,7 @@ def update_custom_policies(tenant_session: object, source_tenant_session: object
             if 'savedSearch' in policy['rule']['parameters']:
                 savedSearch = policy['rule']['parameters']['savedSearch']
                 if savedSearch == 'true' or savedSearch == True or savedSearch =='True' or savedSearch:
-                    criteria = search_migrate_plc.migrate_search(tenant_session, source_tenant_session, policy['rule'], policy['name'], desc)
+                    criteria = search_migrate_plc.migrate_search(tenant_session, source_tenant_session, policy['rule'], policy['name'], desc, logger)
                     policy['rule'].update(criteria=criteria)
 
             #The ID of the compliance standards needs to be updated if there is compliance data
@@ -28,11 +28,10 @@ def update_custom_policies(tenant_session: object, source_tenant_session: object
                 complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
                 policy.update(complianceMetadata=complianceMetadata)
 
-            print(f'API - Updating policy: {name}')
+            logger.debug(f'API - Updating policy: {name}')
             tenant_session.request('PUT', f'/policy/{plc_id}', policy)
     else:
-        c_print(f'No Custom Policies to update for tenant: \'{tenant_session.tenant}\'', color='green')
-        print()
+        logger.info(f'No Custom Policies to update for tenant: \'{tenant_session.tenant}\'')
 
 
 def build_compliance_metadata(compliance_metadata, translate):

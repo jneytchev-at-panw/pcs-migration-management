@@ -1,8 +1,9 @@
 from sdk.color_print import c_print
 from policies import plc_cmp_translate
 from saved_searches import search_migrate_plc
+from tqdm import tqdm
 
-def add_custom_policies(tenant_session, source_tenant_session, policies):
+def add_custom_policies(tenant_session, source_tenant_session, policies, logger):
     '''
     Accepts a clone tenant session object, a source tenant session object, and a list of policies to add.
 
@@ -10,13 +11,13 @@ def add_custom_policies(tenant_session, source_tenant_session, policies):
     '''
 
     if policies:
-        c_print(f'Adding Custom Policies to tenant: \'{tenant_session.tenant}\'', color='green')
-        print()
+        logger.info(f'Adding Custom Policies to tenant: \'{tenant_session.tenant}\'')
+
         #Updates IDs and saves searches before adding each policy to the new tenant.
 
-        translate = plc_cmp_translate.Translate(tenant_session)
+        translate = plc_cmp_translate.Translate(tenant_session, logger)
         
-        for policy in policies:
+        for policy in tqdm(policies, desc='Adding Custom Policies', leave=False):
             p_type = policy['policyType']
             name = policy['name']
             desc = name
@@ -27,7 +28,7 @@ def add_custom_policies(tenant_session, source_tenant_session, policies):
             if 'savedSearch' in policy['rule']['parameters']:
                 savedSearch = policy['rule']['parameters']['savedSearch']
                 if savedSearch == 'true' or savedSearch == True or savedSearch =='True' or savedSearch:
-                    criteria = search_migrate_plc.migrate_search(tenant_session, source_tenant_session, policy['rule'], policy['name'], desc)
+                    criteria = search_migrate_plc.migrate_search(tenant_session, source_tenant_session, policy['rule'], policy['name'], desc, logger)
                     policy['rule'].update(criteria=criteria)
 
             #The ID of the compliance standards needs to be updated if there is compliance data
@@ -35,20 +36,19 @@ def add_custom_policies(tenant_session, source_tenant_session, policies):
                 complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
                 policy.update(complianceMetadata=complianceMetadata)
 
-            c_print(f'API - Adding {p_type} policy: {name}')
+            logger.debug(f'API - Adding {p_type} policy: {name}')
             tenant_session.request('POST', '/policy', json=policy)
     else:
-        c_print(f'No Custom Policies to add for tenant: \'{tenant_session.tenant}\'', color='yellow')
-        print()
+        logger.info(f'No Custom Policies to add for tenant: \'{tenant_session.tenant}\'')
 
-def update_default_policy(tenant_session: object, policy: dict):
+def update_default_policy(tenant_session: object, policy: dict, logger):
     '''
     Accepts a tenant session and a built in policy.
 
     Updates the built in policy.
     '''
 
-    translate = plc_cmp_translate.Translate(tenant_session)
+    translate = plc_cmp_translate.Translate(tenant_session, logger)
 
     plc_id = policy['policyId']
     name = policy['name']
@@ -58,7 +58,7 @@ def update_default_policy(tenant_session: object, policy: dict):
         complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
         policy.update(complianceMetadata=complianceMetadata)
 
-    c_print(f'API - Updating policy: {name}')
+    logger.debug(f'API - Updating policy: {name}')
     tenant_session.request('PUT', f'/policy/{plc_id}', policy)
 
 #==============================================================================

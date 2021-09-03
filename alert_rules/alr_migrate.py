@@ -3,7 +3,7 @@ from account_groups import acc_get
 from resource_lists import rsc_get
 from sdk.color_print import c_print
 
-def migrate(tenant_sessions):
+def migrate(tenant_sessions, logger):
     '''
     Accepts a list of tenant session.
 
@@ -15,12 +15,12 @@ def migrate(tenant_sessions):
     tenant_account_groups = []
     tenant_resource_lists = []
     for session in tenant_sessions:
-        alerts = alr_get.get_alert_rules(session)
+        alerts = alr_get.get_alert_rules(session, logger)
         tenant_alert_rules.append(alerts)
         #Get account groups and resource list for Alert Rule Dependency translation.
-        groups = acc_get.get_account_groups(session)
+        groups = acc_get.get_account_groups(session, logger)
         tenant_account_groups.append(groups)
-        resources = rsc_get.get_resource_lists(session)
+        resources = rsc_get.get_resource_lists(session, logger)
         tenant_resource_lists.append(resources)
 
     #Get alert rules to add
@@ -42,10 +42,9 @@ def migrate(tenant_sessions):
     #Add alert rules
     for index, alr_rls in enumerate(translated_alr_rls_to_add):
         session = tenant_sessions[index + 1]
-        alr_add.add_alert_rules(session, alr_rls)
+        alr_add.add_alert_rules(session, alr_rls, logger)
 
-    c_print('Finished migrating Alert Rules', color='blue')
-    print()
+    logger.info('Finished migrating Alert Rules')
 
 
 if __name__ == '__main__':

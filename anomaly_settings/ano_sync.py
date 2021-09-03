@@ -1,5 +1,6 @@
 from anomaly_settings import ano_get, ano_update, ano_compare
 from sdk.color_print import c_print
+from tqdm import tqdm
 
 def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
         #Get network settings----
