@@ -16,11 +16,11 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         for session in tenant_sessions:
             tenant_compliance_standards_lists.append(cmp_get.get_compliance_standard_list(session, logger))
 
-        #Get all requirements and sections for each standard. This is a deep nested search and takes some time  
-        for index in tqdm(range(len(tenant_compliance_standards_lists)), desc='Getting Compliance Data', leave=False):#FIXME progress bar is not working
+        #Get all requirements and sections for each standard. This is a deep nested search and takes some time
+        for index in range(len(tenant_compliance_standards_lists)):
             tenant = tenant_compliance_standards_lists[index]
             tenant_compliance = []
-            for standard in tenant:
+            for standard in tqdm(tenant, desc=f'Getting Compliance Data from Tenant {tenant_sessions[index].tenant}', leave=False):
                 standard_dict = {}
 
                 requirements = []
