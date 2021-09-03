@@ -56,6 +56,7 @@ def sync(tenant_sessions: list, modes: dict, logger):
             set_sync.sync(tenant_sessions, logger)
 
     #DELETEING - Order based on dependencies
+    mode_list = mode_list[::-1]
     for mode in tqdm(mode_list, desc='SYNC DELETE STATUS'):
         if 'anomaly' == mode:
             if modes['anomaly'].get('delete', False):
