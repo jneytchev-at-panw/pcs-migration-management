@@ -36,7 +36,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
                 cld_update.update_accounts(cln_tenant_sessions[index], accounts_to_update, logger)
             
             if delMode:
-                accounts_to_delete = cld_compare.get_accounts_to_delete(source_tenant_cloud_accounts, clone_tenants_cloud_accounts[index], logger)
+                accounts_to_delete = cld_compare.get_accounts_to_delete(source_tenant_cloud_accounts, clone_tenants_cloud_accounts[index])
                 cld_delete.delete_accounts(cln_tenant_sessions[index], accounts_to_delete, logger)
 
 

@@ -60,7 +60,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     if delMode:
         #Get anomaly lists to delete
         trusted_lists_to_delete = ano_compare.get_lists_to_delete(trusted_lists_list)
-        for index, tenant in enumerate(trusted_lists_to_update):
+        for index, tenant in enumerate(trusted_lists_to_delete):
             for t_list in tqdm(tenant, desc='Deleteing Trusted IP Lists', leave=False):
                 ano_update.delete_trusted_list(tenant_sessions[index + 1], t_list, logger)
 

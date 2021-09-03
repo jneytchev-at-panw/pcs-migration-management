@@ -10,11 +10,13 @@ def get_requirement_id_by_name(session, standard_id, name, logger):
 
     logger.debug('API - Getting requirement by name')
     res = session.request('GET', f'/compliance/{standard_id}/requirement')
-    data = res.json()
-    for req in data:
-        if req['name'] == name:
-            return req['id']
-    return 'BAD'
+    try:
+        data = res.json()
+        for req in data:
+            if req['name'] == name:
+                return req['id']
+    except:
+        return 'BAD'
 
 #==============================================================================
 
@@ -30,10 +32,12 @@ def get_compliance_standard_id_by_name(session, name, logger):
     res = session.request('GET', '/compliance')
     data = res.json()
 
-    for cmp in data:
-        if cmp['name'] == name:
-            return cmp['id']
-    return 'BAD'
+    try:
+        for cmp in data:
+            if cmp['name'] == name:
+                return cmp['id']
+    except:
+        return 'BAD'
 
 #==============================================================================
 
