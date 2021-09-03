@@ -1,15 +1,13 @@
 from sdk.color_print import c_print
 
-def delete_account_groups(session, account_groups):
+def delete_account_groups(session, account_groups, logger):
     if account_groups:
-        c_print(f'Deleting Account Groups from tenant: \'{session.tenant}\'',color='blue')
-        print()
+        logger.info(f'Deleting Account Groups from tenant: \'{session.tenant}\'')
 
-        for acc in account_groups:
+        for acc in tqdm(account_groups, desc='Deleteing Account Groups', leave=False):
             grp_id = acc.get('id')
-            print('API - Deleteing Account Group')
+            logger.debug('API - Deleteing Account Group')
             session.request('DELETE', f"/cloud/group/{grp_id}")
 
     else:
-        c_print(f'No Account Groups to delete for tenant: \'{session.tenant}\'', color='yellow')
-        print()
+        logger.info(f'No Account Groups to delete for tenant: \'{session.tenant}\'')

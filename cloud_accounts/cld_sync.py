@@ -1,18 +1,18 @@
 from sdk.color_print import c_print
 from cloud_accounts import cld_migrate, cld_get, cld_compare, cld_update, cld_delete
 
-def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger:object):
     '''Update, add, or delete cloud accounts to normalize all tenants to be the same as the source tenant'''
 
     if addMode:
         #Migrate missing cloud accounts first using migrate module
-        cld_migrate.migrate(tenant_sessions)
+        cld_migrate.migrate(tenant_sessions, logger)
 
     if upMode or delMode:
         #Get all cloud accounts from both tenants
         tenant_accounts = []
         for i in range(len(tenant_sessions)):
-            accounts = cld_get.get_names(tenant_sessions[i])
+            accounts = cld_get.get_names(tenant_sessions[i], logger)
             tenant_accounts.append(accounts)
 
         #Get the full information for each cloud account
@@ -21,7 +21,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
             cloud_accounts_to_upload = []
             for j in range(len(tenant_accounts[i])):
                 account = tenant_accounts[i][j]
-                ret = cld_get.get_info(tenant_sessions[i], account)#get info from original tenant
+                ret = cld_get.get_info(tenant_sessions[i], account, logger)#get info from original tenant
                 if ret != '':
                     cloud_accounts_to_upload.append(ret)
             tenants_cloud_accounts.append(cloud_accounts_to_upload)
@@ -32,12 +32,12 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         cln_tenant_sessions = tenant_sessions[1:]
         for index in range(len(clone_tenants_cloud_accounts)):
             if upMode:
-                accounts_to_update = cld_compare.get_accounts_to_update(source_tenant_cloud_accounts, clone_tenants_cloud_accounts[index], tenant_sessions[0], cln_tenant_sessions[index])
-                cld_update.update_accounts(cln_tenant_sessions[index], accounts_to_update)
+                accounts_to_update = cld_compare.get_accounts_to_update(source_tenant_cloud_accounts, clone_tenants_cloud_accounts[index], tenant_sessions[0], cln_tenant_sessions[index], logger)
+                cld_update.update_accounts(cln_tenant_sessions[index], accounts_to_update, logger)
             
             if delMode:
                 accounts_to_delete = cld_compare.get_accounts_to_delete(source_tenant_cloud_accounts, clone_tenants_cloud_accounts[index])
-                cld_delete.delete_accounts(cln_tenant_sessions[index], accounts_to_delete)
+                cld_delete.delete_accounts(cln_tenant_sessions[index], accounts_to_delete, logger)
 
 
 if __name__ == '__main__':

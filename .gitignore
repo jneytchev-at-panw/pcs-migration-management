@@ -14,6 +14,8 @@ __pycache__
 cloud_credentials/gcp/*.json
 cloud_credentials/azure/*.json
 
+logs
+
 
 # Files
 *.yml

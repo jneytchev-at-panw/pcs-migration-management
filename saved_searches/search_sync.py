@@ -1,13 +1,13 @@
-from saved_searches import saved_search
 from sdk.color_print import c_print
 from sdk import load_config
 import hashlib
+from tqdm import tqdm
 
-def sync(tenant_sessions: list, addMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
     #Get list of saved search from original tenant
     tenant_saved_searches = []
     for session in tenant_sessions:
-        c_print('API - Getting saved searches for each tenant')
+        logger.debug('API - Getting saved searches for each tenant')
         querystring = {"filter":"saved"}
         res = session.request('GET', '/search/history', params=querystring)
         data = res.json()
@@ -24,8 +24,8 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool):
             for o_saved_search in o_tenant:
                 if o_saved_search['searchName'] not in [d_ss['searchName'] for d_ss in d_tenant]:
                     saved_search_to_add.append(o_saved_search)
-            for search in saved_search_to_add:
-                run_and_save_search(tenant_sessions[index + 1], search)
+            for search in tqdm(saved_search_to_add, desc='Adding Saved Searches', leave=False):
+                run_and_save_search(tenant_sessions[index + 1], search, logger)
 
     #Saved searches don't seem to be able to updated so no reason to look for changes among searches
 
@@ -36,43 +36,43 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool):
             for d_saved_search in d_tenant:
                 if d_saved_search['searchName'] not in [o_ss['searchName'] for o_ss in o_tenant]:
                     saved_search_to_delete.append(d_saved_search)
-            for search in saved_search_to_delete:
-                c_print('API - Deleteing saved search')
+            for search in tqdm(saved_search_to_delete, desc='Deleting Saved Searches', leave=False):
+                logger.debug('API - Deleteing saved search')
                 s_id = search['id']
                 tenant_sessions[index + 1].request('DELETE', f'/search/history/{s_id}', status_ignore=[204])
 
 #==============================================================================
 
-def run_and_save_search(session, old_search):
+def run_and_save_search(session, old_search, logger):
     #This functions calles the appropriate run RQL API
     #depending on the type of search
     if 'config' in old_search['query'].split(' ')[0]:
-        return perfrom_config(session, old_search)
+        return perfrom_config(session, old_search, logger)
     elif 'audit_event' in old_search['query'].split(' ')[0]:
-        return perform_event(session, old_search)
+        return perform_event(session, old_search, logger)
     else: #Network
-        return perform_network(session, old_search)
+        return perform_network(session, old_search, logger)
 
 #==============================================================================
 
-def perfrom_config(session, search):
+def perfrom_config(session, search, logger):
     payload = {
         "query": search['query'],
         "timeRange": search['searchModel']['timeRange']
     }
 
 
-    c_print('API - Performing config search')
+    logger.debug('API - Performing config search')
     response = session.request("POST", "/search/config", json=payload)
 
     if response.status_code == 200:
-        return save_search(session, response.json(), search)
+        return save_search(session, response.json(), search, logger)
     else:
         return 'BAD'
 
 #==============================================================================
 
-def perform_event(session, search):
+def perform_event(session, search, logger):
     #FIXME
     payload = {
         "filters": [],
@@ -106,17 +106,17 @@ def perform_event(session, search):
     if 'timeRange' in search:
         payload.update(timeRange=search['searchModel']['timeRange'])
 
-    c_print('API - Performing event search')
+    logger.debug('API - Performing event search')
     response = session.request("POST", "/search/event", json=payload)
     
     if response.status_code == 200:
-        return save_search(session, response.json(), search)
+        return save_search(session, response.json(), search, logger)
     else:
         return 'BAD'
 
 #==============================================================================
 
-def perform_network(session, search):
+def perform_network(session, search, logger):
     #FIXME
     
     #Build payload object with values that are given
@@ -140,17 +140,17 @@ def perform_network(session, search):
     if 'cloudType' in search:
         payload.update(name=search['cloudType'])
 
-    c_print('API - Performing network search')
+    logger.debug('API - Performing network search')
     response = session.request("POST", "/search", json=payload)
     
     if response.status_code == 200:
-        return save_search(session, response.json(), search)
+        return save_search(session, response.json(), search, logger)
     else:
         return 'BAD'
 
 #==============================================================================
 
-def save_search(session, new_search, old_search):
+def save_search(session, new_search, old_search, logger):
     payload = {
         "id": new_search['id'],
         "name": old_search['searchName'],
@@ -175,41 +175,37 @@ def save_search(session, new_search, old_search):
     
 
     search_id = new_search['id']
-    c_print(f'API - Saving search with ID of: {search_id}')
+    logger.debug(f'API - Saving search with ID of: {search_id}')
     response = session.request("POST", f"/search/history/{search_id}", json=payload, redlock_ignore=['duplicate_search_name'])
     
     if response.status_code != 200 and 'duplicate_search_name' in response.headers['x-redlock-status']:
-        c_print('FAILED', color='red')
-        c_print('Search already saved. Getting ID', color='yellow')
-        print()
-        return get_saved_search_id_by_name(session, old_search['name'])
+        logger.debug('FAILED')
+        logger.info('Search already saved. Getting ID')
+        return get_saved_search_id_by_name(session, old_search['name'], logger)
 
     if response.status_code == 200:
         data = response.json()
         return data['id']
     else:
-        c_print(old_search, color='blue')
-        print()
+        logger.debug(old_search)
         return 'BAD'
 
 #==============================================================================
 
-def get_saved_search_id_by_name(session, name):
+def get_saved_search_id_by_name(session, name, logger):
 
     params = {"filter": "saved"}
 
-    c_print('API - Getting saved searches')
+    logger.debug('API - Getting saved searches')
     response = session.request('GET', '/search/history', params=params)
 
     data = response.json()
 
     for el in data:
         if el['searchName'] == name:
-            c_print('Found saved ID', color='green')
-            print()
+            logger.info('Found saved ID')
             return el['id']
-    c_print('ID not found', color='red')
-    print()
+    logger.info('ID not found')
     return 'BAD'
 
 #==============================================================================

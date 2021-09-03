@@ -1,11 +1,11 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def delete_accounts(cln_session, accounts):
+def delete_accounts(cln_session, accounts, logger):
     if accounts:
-        c_print(f'Deleting Cloud Accounts from tenant \'{cln_session.tenant}\'', color='blue')
-        print()
+        logger.info(f'Deleting Cloud Accounts from tenant \'{cln_session.tenant}\'')
 
-        for account in accounts:
+        for account in tqdm(accounts, desc='Deleting Cloud Accounts', leave=False):
             cloud_type = ''
             cld_id = ''
             if 'cloudAccount' in account:
@@ -15,8 +15,8 @@ def delete_accounts(cln_session, accounts):
                 cloud_type = account['cloudType']
                 cld_id = account['accountId']
         
-            c_print('API - Deleting cloud account')
+            logger.debug('API - Deleting cloud account')
             cln_session.request('DELETE', f'/cloud/{cloud_type}/{cld_id}')
 
     else:
-        c_print(f'No Cloud Accounts to delete for tenant \'{cln_session.tenant}\'', color='yellow')
+        logger.info(f'No Cloud Accounts to delete for tenant \'{cln_session.tenant}\'')

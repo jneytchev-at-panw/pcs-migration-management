@@ -2,7 +2,7 @@ from resource_lists import rsc_get, rsc_compare, rsc_add, rsc_update, rsc_delete
 import resource_lists
 from sdk.color_print import c_print
 
-def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
     '''
     Accepts a list of tenant session objects.
     
@@ -13,7 +13,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     #Get all resource lists
     tenant_resource_lists = []
     for session in tenant_sessions:
-        data = rsc_get.get_resource_lists(session)
+        data = rsc_get.get_resource_lists(session, logger)
         tenant_resource_lists.append(data)
 
     src_rsc_lists = tenant_resource_lists[0]
@@ -28,7 +28,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
 
         #Add resource lists
         for index, cln_rsc_lists in enumerate(cln_tenant_rsc_lists_to_add):
-            rsc_add.add_resource_lists(tenant_sessions[index + 1], cln_rsc_lists)
+            rsc_add.add_resource_lists(tenant_sessions[index + 1], cln_rsc_lists, logger)
     
     if upMode:
         #Get resource lists to update
@@ -39,7 +39,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         
         #Update resource lists
         for index, rsc_lists in enumerate(cln_tenant_rsc_list_to_update):
-            rsc_update.update_resource_lists(tenant_sessions[index + 1], rsc_lists)
+            rsc_update.update_resource_lists(tenant_sessions[index + 1], rsc_lists, logger)
 
     if delMode:
         #Get resource lists to delete
@@ -50,14 +50,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         
         #Delete resource lists
         for index, rsc_lists in enumerate(cln_tenant_rsc_lists_to_delete):
-            rsc_delete.delete_resource_lists(tenant_sessions[index + 1], rsc_lists)
+            rsc_delete.delete_resource_lists(tenant_sessions[index + 1], rsc_lists, logger)
 
-
-    c_print('Finished migrateding Resource Lists', color='blue')
-    print()
-
-
-
+    logger.info('Finished migrateding Resource Lists')
 
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

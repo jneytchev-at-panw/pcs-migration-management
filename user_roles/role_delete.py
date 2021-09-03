@@ -1,16 +1,16 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def delete_roles(session, roles):
+def delete_roles(session, roles, logger):
     if roles:
-        c_print(f'Deleting User Roles from tenant: \'{session.tenant}\'', color='green')
-        print()
+        logger.info(f'Deleting User Roles from tenant: \'{session.tenant}\'')
 
-        for role in roles:
+
+        for role in tqdm(roles, desc='Deleting User Roles', leave=False):
             r_id = role['id']
             name = role['name']
-            c_print(f'API - Deleting role {name}')
+            logger.debug(f'API - Deleting role {name}')
             session.request('DELETE', f'/user/role/{r_id}', json=role)
 
     else:
-        c_print(f'No User Roles to delete for tenant: \'{session.tenant}\'', color='yellow')
-        print()
+        logger.info(f'No User Roles to delete for tenant: \'{session.tenant}\'')

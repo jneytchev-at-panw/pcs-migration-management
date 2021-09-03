@@ -1,4 +1,4 @@
-def compare_original_to_clones(tenant_sessions: list, policies_list: list) -> list:
+def compare_original_to_clones(tenant_sessions: list, policies_list: list, logger) -> list:
     '''
     Returns a list of the policies that need to be added to each tenant.
     The first element in the list is the tenant where policies are
@@ -27,27 +27,25 @@ def compare_original_to_clones(tenant_sessions: list, policies_list: list) -> li
 
     #Logging output
     for index, policies in enumerate(clone_tenants_policies_delta):
-        print(f'Found {len(policies)} policies missing from tenant: {tenant_sessions[index+1].tenant}.')
-    
-    print()
+        logger.info(f'Found {len(policies)} policies missing from tenant: {tenant_sessions[index+1].tenant}.')
 
     return clone_tenants_policies_delta
 
-def get_policies_to_update(tenant_sessions: list, policies_list: list) -> list:
+def get_policies_to_update(tenant_sessions: list, policies_list: list, logger) -> list:
     source_tenant = policies_list[0]
     clone_tenants = policies_list[1:]
     src_session = tenant_sessions[0]
     clone_sessions = tenant_sessions[1:]
 
     #Get src saved searches for criteria lookup
-    print('API - Getting source saved search for criteria lookup')
+    logger.debug('API - Getting source saved search for criteria lookup')
     src_saved_search = src_session.request('GET', '/search/history', params={"filter":"saved"}).json()
 
     tenants_to_update = []
     for index, cln_tenant in enumerate(clone_tenants):
         #Get cln saved searches for critera lookup
         cln_session = clone_sessions[index]
-        print('API - Getting clone saved search for criteria lookup')
+        logger.debug('API - Getting clone saved search for criteria lookup')
         cln_saved_search = cln_session.request('GET', '/search/history', params={"filter":"saved"}).json()
 
         policies_to_update = []

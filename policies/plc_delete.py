@@ -1,15 +1,14 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def delete_policies(session, policies):
+def delete_policies(session, policies, logger):
     if policies:
-        c_print(f'Deleteing Policies from tenant \'{session.tenant}\'', color='green')
-        print()
+        logger.info(f'Deleteing Policies from tenant \'{session.tenant}\'')
 
-        for policy in policies:
+        for policy in tqdm(policies, desc='Deleting Policies', leave=False):
             plc_id = policy['policyId']
             name = policy['name']
-            print(f'API - Deleting policy \'{name}\'')
+            logger.debug(f'API - Deleting policy \'{name}\'')
             session.request('DELETE', f'/policy/{plc_id}', status_ignore=[204])
     else:
-        c_print(f'No Policies to delete from tenant \'{session.tenant}\'', color='yellow')
-        print()
+        logger.debug(f'No Policies to delete from tenant \'{session.tenant}\'')

@@ -1,18 +1,17 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def delete_login_ips(session, ips, dst_ips):
+def delete_login_ips(session, ips, dst_ips, logger):
     if ips:
-        c_print(f'Deleting Trusted Login IPs from tenant: \'{session.tenant}\'', color='green')
-        print()
+        logger.info(f'Deleting Trusted Login IPs from tenant: \'{session.tenant}\'')
 
-        for ip in ips:
+        for ip in tqdm(ips, desc='Deleteing Login IPs', leave=False):
             name = ip['name']
             #Translate ID
             l_id = ''
             if name in [i['name'] for i in dst_ips]:
                 l_id = [i['id'] for i in dst_ips if i['name'] == name]
-            c_print('API - Update login allow IP', color='blue')
+            logger.debug('API - Update login allow IP')
             session.request('DELETE', f'/ip_allow_list_login/{l_id}')
     else:
-        c_print(f'No Trusted Login IPs to delete for tenant: \'{session.tenant}\'', color='yellow')
-        print()
+        logger.info(f'No Trusted Login IPs to delete for tenant: \'{session.tenant}\'')

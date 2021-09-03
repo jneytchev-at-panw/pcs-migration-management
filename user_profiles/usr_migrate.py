@@ -1,7 +1,7 @@
 from sdk.color_print import c_print
 from user_profiles import usr_get, usr_add, usr_compare
 
-def migrate(tenant_sessions: list):
+def migrate(tenant_sessions: list, logger: object):
     '''
     Accepts a list of tenant session objects.
 
@@ -12,13 +12,13 @@ def migrate(tenant_sessions: list):
     #Get all user profiles
     tenant_user_profiles = []
     for session in tenant_sessions:
-        data = usr_get.get_users(session)
+        data = usr_get.get_users(session, logger)
         tenant_user_profiles.append(data)
 
     #Get all roles for role ID translation
     tenant_user_roles = []
     for session in tenant_sessions:
-        data = usr_get.get_user_roles(session)
+        data = usr_get.get_user_roles(session, logger)
         tenant_user_roles.append(data)
 
     #Comapre user profiles
@@ -32,9 +32,9 @@ def migrate(tenant_sessions: list):
 
     #Add user profiles
     for index in range(len(tenant_users_to_add)):
-        usr_add.add_users(tenant_sessions[index + 1], tenant_users_to_add[index])
+        usr_add.add_users(tenant_sessions[index + 1], tenant_users_to_add[index], logger)
 
-    c_print('Finished migrating User Profiles', color='blue')
+    logger.info('Finished migrating User Profiles')
     
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

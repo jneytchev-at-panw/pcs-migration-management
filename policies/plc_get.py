@@ -1,6 +1,6 @@
-from sdk.color_print import c_print
 
-def api_get_custom(tenant: object, logging: bool=False):
+
+def api_get_custom(tenant: object, logger):
     '''
     Accepts a tenant session object and a logging flag.
 
@@ -11,35 +11,23 @@ def api_get_custom(tenant: object, logging: bool=False):
 
     res = tenant.request('GET', endpoint_url, params=params)
 
-    c_print(f'Got {len(res.json())} custom policies.\n', color='green')
+    logger.info(f'Got {len(res.json())} custom policies.', color='green')
 
     policies = res.json()
-
-    if logging:
-        for policy in policies:
-            c_print(policy['name'], color='green')
-            print(policy)
-            print()
     
     return policies
 
 #==============================================================================
 
-def api_get_default(tenant: object, logging: bool=False):
+def api_get_default(tenant: object, logger):
     endpoint_url = '/v2/policy'
     params = {"policy.policyMode":"redlock_default"}
 
     res = tenant.request('GET', endpoint_url, params=params)
 
-    c_print(f'Got {len(res.json())} default policies.\n', color='green')
+    logger.info(f'Got {len(res.json())} default policies', color='green')
 
     policies = res.json()
-
-    if logging:
-        for policy in policies:
-            c_print(policy['name'], color='green')
-            print(policy)
-            print()
     
     return policies
 

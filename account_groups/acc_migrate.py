@@ -1,7 +1,7 @@
 from account_groups import acc_get, acc_compare, acc_add
 from sdk.color_print import c_print
 
-def migrate(tenant_sessions: list):
+def migrate(tenant_sessions: list, logger):
     '''
     Accepts a list of tenant sessions objects.
 
@@ -12,7 +12,7 @@ def migrate(tenant_sessions: list):
     #Get all account groups
     tenant_acc_grps = []
     for session in tenant_sessions:
-        data = acc_get.get_account_groups(session)
+        data = acc_get.get_account_groups(session, logger)
         tenant_acc_grps.append(data)
 
     #Get account groups to add
@@ -26,10 +26,9 @@ def migrate(tenant_sessions: list):
     #Add account groups
     for index, cln_acc_groups in enumerate(cln_tenant_acc_grps_to_add):
         session = tenant_sessions[index + 1]
-        acc_add.add_account_groups(session, cln_acc_groups)
+        acc_add.add_account_groups(session, cln_acc_groups, logger)
 
-    c_print('Finished migrating Account Groups', color='blue')
-    print()
+    logger.info('Finished migrating Account Groups')
 
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

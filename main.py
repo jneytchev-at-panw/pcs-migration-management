@@ -1,8 +1,11 @@
 import json
 import sys
+from loguru import logger
+from tqdm import tqdm
 from main_scripts import migrate_main, sync_main
 from sdk.color_print import c_print
 from sdk.load_config import load_config_create_sessions
+
 
 #Build the dictionary used for sync to determin if the module should support the update, add and delete operations
 def build_module():
@@ -11,7 +14,7 @@ def build_module():
     full = full.lower()
     if full =='y' or full =='yes':
         module_dict.update(add=True)
-        module_dict.update(up=True)
+        module_dict.update(update=True)
         module_dict.update(delete=False)
         return module_dict
     else:
@@ -44,12 +47,12 @@ def build_module():
         return module_dict
 
 #Read credentials config file
-def load_sessions(file_mode: bool):
+def load_sessions(file_mode: bool, logger):
     '''
     Returns the tenant sessions, config settings, and a flag for same-stack syncing/migration detected.
     '''
 
-    tenant_sessions = load_config_create_sessions(file_mode)
+    tenant_sessions = load_config_create_sessions(file_mode, logger)
 
     same_stack = False
     for session in tenant_sessions:
@@ -149,9 +152,9 @@ def get_sync_mode_settings(sync_modes, module):
 
 #==============================================================================
 
-def main(file_mode):
+def main(file_mode, logger):
     #Load JWT sessions from credentials.yaml
-    tenant_sessions, same_stack = load_sessions(file_mode)
+    tenant_sessions, same_stack = load_sessions(file_mode, logger)
 
     #Run the script based on user responces to the following prompts
     mode = input('Do you want to MIGRATE or SYNC? (M/S): ')
@@ -168,7 +171,7 @@ def main(file_mode):
             choice = choice.lower()
             if choice == 'y' or choice == 'yes':
                 #Call migrate module
-                migrate_main.migrate(tenant_sessions, migrate_modes_file)
+                migrate_main.migrate(tenant_sessions, migrate_modes_file, logger)
                 return
 
         #Get migration settings from the user
@@ -196,7 +199,7 @@ def main(file_mode):
                 json.dump(migrate_modes, outfile)
 
             #Call migrate module
-            migrate_main.migrate(tenant_sessions, migrate_modes)
+            migrate_main.migrate(tenant_sessions, migrate_modes, logger)
             return
         else:
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'cloud')
@@ -216,7 +219,7 @@ def main(file_mode):
                 json.dump(migrate_modes, outfile)
 
             #Call migrate module
-            migrate_main.migrate(tenant_sessions, migrate_modes)
+            migrate_main.migrate(tenant_sessions, migrate_modes, logger)
             return
 
     else:#---------------------------------------------------------------------------------
@@ -228,7 +231,7 @@ def main(file_mode):
             choice = choice.lower()
             if choice == 'y' or choice == 'yes':
                 #Call sync module
-                sync_main.sync(tenant_sessions, sync_modes_file)
+                sync_main.sync(tenant_sessions, sync_modes_file, logger)
                 return
 
         migrate_type = input('Do you want to do a full Sync? (Y/N): ')
@@ -256,7 +259,7 @@ def main(file_mode):
                 json.dump(sync_modes, outfile)
 
             #Call sync module
-            sync_main.sync(tenant_sessions, sync_modes)
+            sync_main.sync(tenant_sessions, sync_modes, logger)
             return
         else:
             sync_modes = get_sync_mode_settings(sync_modes, 'cloud')
@@ -277,17 +280,33 @@ def main(file_mode):
                 json.dump(sync_modes, outfile)
 
             #Call sync module
-            sync_main.sync(tenant_sessions, sync_modes)
+            sync_main.sync(tenant_sessions, sync_modes, logger)
             return
 
 
 if __name__ =='__main__':
+    #Command line arguments
     file_mode = False
+    terminal_logging = True
     
-    #Read command line args
-    if 'fileMode' in sys.argv:
+    if '-yaml' in sys.argv:
         file_mode = True
-    
-    main(file_mode)
+
+    if '-quiet' in sys.argv:
+        terminal_logging = False
+
+    #Configure logging output
+    logger.remove()
+
+    if terminal_logging:
+        logger.level("BAR", no=4)
+    else:
+        logger.level("BAR", no=51)
+
+    logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True, level='BAR')
+    logger.add('logs/{time:DD-MM-YYYY_HH:mm:ss}.log', level='TRACE')
+
+    #Call main function
+    main(file_mode, logger)
 
     #TODO Maybe run a clean up script and delete credentails files

@@ -145,7 +145,7 @@ def get_credentials_from_user():
 
     return credentials
 
-def load_config_create_sessions(file_mode):
+def load_config_create_sessions(file_mode, logger):
     '''
     Reads config.yml and generates a list of tenants and tokens for those tenants.
 
@@ -175,7 +175,7 @@ def load_config_create_sessions(file_mode):
             s_key = cfg[tenant]['secret_key']
             api_url = cfg[tenant]['api_url']
 
-            tenant_sessions.append(Session(tenant, a_key, s_key, api_url))
+            tenant_sessions.append(Session(tenant, a_key, s_key, api_url, logger))
 
         return tenant_sessions
     else:
@@ -186,10 +186,9 @@ def load_config_create_sessions(file_mode):
             for key in tenant:
                 name = key
 
-            tenant_sessions.append(Session(name, tenant[name]['access_key'], tenant[name]['secret_key'], tenant[name]['api_url']))
+            tenant_sessions.append(Session(name, tenant[name]['access_key'], tenant[name]['secret_key'], tenant[name]['api_url'], logger))
 
         return tenant_sessions
-
 
 if __name__ == '__main__':
     validate_url('app.ca.anz.prismacloud.io/home/beans')

@@ -4,7 +4,7 @@ from resource_lists import rsc_get
 from policies import plc_get
 from sdk.color_print import c_print
 
-def sync(tenant_sessions, addMode, upMode, delMode):
+def sync(tenant_sessions, addMode, upMode, delMode, logger):
     '''
     Accepts a list of tenant session.
 
@@ -17,17 +17,17 @@ def sync(tenant_sessions, addMode, upMode, delMode):
     tenant_resource_lists = []
     tenant_policies_list = []
     for session in tenant_sessions:
-        alerts = alr_get.get_alert_rules(session)
+        alerts = alr_get.get_alert_rules(session, logger)
         tenant_alert_rules.append(alerts)
         #Get account groups, resource lists and policies for Alert Rule Dependency translation.
-        groups = acc_get.get_account_groups(session)
+        groups = acc_get.get_account_groups(session, logger)
         tenant_account_groups.append(groups)
 
-        resources = rsc_get.get_resource_lists(session)
+        resources = rsc_get.get_resource_lists(session, logger)
         tenant_resource_lists.append(resources)
 
-        policies = plc_get.api_get_custom(session)
-        dft_policies = plc_get.api_get_default(session)
+        policies = plc_get.api_get_custom(session, logger)
+        dft_policies = plc_get.api_get_default(session, logger)
         all_policies = []
         all_policies.extend(policies)
         all_policies.extend(dft_policies)
@@ -54,7 +54,7 @@ def sync(tenant_sessions, addMode, upMode, delMode):
         #Add alert rules
         for index, alr_rls in enumerate(translated_alr_rls_to_add):
             session = tenant_sessions[index + 1]
-            alr_add.add_alert_rules(session, alr_rls)
+            alr_add.add_alert_rules(session, alr_rls, logger)
 
     if upMode:
         #Get alert rules to update-------------------------------------------------
@@ -66,7 +66,7 @@ def sync(tenant_sessions, addMode, upMode, delMode):
 
         #Update the alert rules
         for i, alert_rules in enumerate(tenant_alr_rls_to_update):
-            alr_update.update_alert_rules(tenant_sessions[i + 1], alert_rules)
+            alr_update.update_alert_rules(tenant_sessions[i + 1], alert_rules, logger)
     
     if delMode:
         #Get Alert Rules to delete-------------------------------------------------
@@ -78,13 +78,11 @@ def sync(tenant_sessions, addMode, upMode, delMode):
         #Delete Alert Rules
         for index, alr_rls in enumerate(tenant_alr_rls_to_delete):
             session = tenant_sessions[index + 1]
-            alr_delete.delete_alert_rules(session, alr_rls)
+            alr_delete.delete_alert_rules(session, alr_rls, logger)
 
 
 
-    c_print('Finished syncing Alert Rules', color='blue')
-    print()
-
+    logger.info('Finished syncing Alert Rules')
 
 if __name__ == '__main__':
     from sdk import load_config

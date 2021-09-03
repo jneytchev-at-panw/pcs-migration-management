@@ -1,4 +1,4 @@
-def get_accounts_to_update(src_accounts: list, cln_accounts: list, src_session: object, cln_session: object):
+def get_accounts_to_update(src_accounts: list, cln_accounts: list, src_session: object, cln_session: object, logger:object):
     '''
     Loops through the given cloud accounts and compares elements based on the type of the cloud account.
     Returns a list of the cloud accouts that have different attributes accross each tenant.
@@ -241,7 +241,7 @@ def get_accounts_to_delete(src_accounts, cln_accounts):
     return accounts_to_delete
 
 #==============================================================================
-def get_accounts_to_add(tenant_sessions: object, cloud_accounts: list) -> list:
+def get_accounts_to_add(tenant_sessions: object, cloud_accounts: list, logger:object) -> list:
     '''
     Returns a list of the cloud accounts that need to be added to each tenant.
     The first element in the list is the tenant where cloud accounts are
@@ -269,9 +269,7 @@ def get_accounts_to_add(tenant_sessions: object, cloud_accounts: list) -> list:
 
     #Logging output
     for enum in enumerate(clone_tenants_cloud_accounts_delta):
-        print(f'Found {len(enum[1])} cloud accounts missing from tenant: {tenant_sessions[enum[0]+1].tenant}.')
-    
-    print()
+        logger.info(f'Found {len(enum[1])} cloud accounts missing from tenant: {tenant_sessions[enum[0]+1].tenant}.')
 
     return clone_tenants_cloud_accounts_delta
 

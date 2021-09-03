@@ -1,7 +1,7 @@
 from account_groups import acc_get, acc_compare, acc_add, acc_update, acc_delete
 from sdk.color_print import c_print
 
-def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
+def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
     '''
     Accepts a list of tenant sessions objects.
 
@@ -11,7 +11,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
     #Get all account groups
     tenant_acc_grps = []
     for session in tenant_sessions:
-        data = acc_get.get_account_groups(session)
+        data = acc_get.get_account_groups(session, logger)
         tenant_acc_grps.append(data)
 
     src_acc_grps = tenant_acc_grps[0]
@@ -27,7 +27,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
         #Add account groups
         for index, cln_acc_grps in enumerate(cln_tenant_acc_grps_to_add):
             session = tenant_sessions[index + 1]
-            acc_add.add_account_groups(session, cln_acc_grps)
+            acc_add.add_account_groups(session, cln_acc_grps, logger)
 
     if upMode:
         #Get account groups to update
@@ -38,7 +38,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
 
         for index, cln_acc_grps in enumerate(cln_tenant_acc_grps_to_update):
             session = tenant_sessions[index + 1]
-            acc_update.update_account_groups(session, cln_acc_grps)
+            acc_update.update_account_groups(session, cln_acc_grps, logger)
 
     if delMode:
         cln_tenant_acc_grps_to_delete = []
@@ -48,11 +48,10 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool):
 
         for index, cln_acc_grps in enumerate(cln_tenant_acc_grps_to_delete):
             session = tenant_sessions[index + 1]
-            acc_delete.delete_account_groups(session, cln_acc_grps)
+            acc_delete.delete_account_groups(session, cln_acc_grps, logger)
         
 
-    c_print('Finished syncing Account Groups', color='blue')
-    print()
+    logger.info('Finished syncing Account Groups')
 
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

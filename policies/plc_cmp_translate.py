@@ -2,8 +2,9 @@ from sdk.color_print import c_print
 from sdk.load_config import load_config_create_sessions
 
 class Translate:
-    def __init__(self, session):
+    def __init__(self, session, logger):
         self.new_plc_cmp_standards = session.request('GET', '/policy/compliance').json()
+        self.logger = logger
 
 #==============================================================================
 
@@ -17,19 +18,19 @@ class Translate:
         try:
             complianceData = self.new_plc_cmp_standards[standardName]
         except:
-            c_print(f'ERROR. Compliance Standard {standardName} not yet migrated', color='red')
-            print()
+            self.logger.error(f'ERROR. Compliance Standard {standardName} not yet migrated')
+
             return ""
 
         for el in complianceData:
             if el['requirementId'] == requirementId and el['sectionId'] == sectionId:
                 return el['complianceId']
         
-        c_print('ERROR. Did not get new ID', color='red')
+        self.logger.error('ERROR. Did not get new ID', color='red')
 
 if __name__ == '__main__':
     tenant_sessions = load_config_create_sessions()
-    translate = Translate(tenant_sessions[1], tenant_sessions[0])
+    translate = Translate(tenant_sessions[1], tenant_sessions[0], logger)
 
     c_print('OLD COMPLIANCE:', color='green')
     print(translate.old_plc_cmp_standards)

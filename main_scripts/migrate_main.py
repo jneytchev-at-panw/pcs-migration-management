@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 from sdk.load_config import load_config_create_sessions
 from sdk.color_print import c_print
 
@@ -26,7 +28,7 @@ from anomaly_settings import ano_sync
 #Policy
 #Alert Rules
 
-def migrate(tenant_sessions: list, modes: dict):
+def migrate(tenant_sessions: list, modes: dict, logger: object):
     '''
     Accepts a dictionary of the migrate modes that are enabled and list of tenant session objects.
 
@@ -36,39 +38,44 @@ def migrate(tenant_sessions: list, modes: dict):
     #Checks if element is in the dictionary instead of for a value to keep the data structure
     # similar to the sync modes dictionary.
 
-    #CLOUD ACCOUNT MIGRATE
-    if 'cloud' in modes:
-        cld_migrate.migrate(tenant_sessions)
-    #ACCOUNT GROUPS MIGRATE
-    if 'account' in modes:
-        acc_migrate.migrate(tenant_sessions)
-    #RESOURCE LIST MIGRATE
-    if 'resource' in modes:
-        rsc_migrate.migrate(tenant_sessions)
-    #USER ROLES MIGRATE
-    if 'role' in modes:
-        role_migrate.migrate(tenant_sessions)
-    #USERS MIGRATE
-    if 'user' in modes:
-        usr_migrate.migrate(tenant_sessions)
-    #TRUSTED IP MIGRATE
-    if 'ip' in modes:
-        ip_migrate.migrate(tenant_sessions)
-    #COMPLIANCE MIGRATE
-    if 'compliance' in modes:
-        cmp_migrate.migrate(tenant_sessions)
-    #POLICY MIGRATE
-    if 'policy' in modes:
-        plc_migrate_custom.migrate_custom_policies(tenant_sessions)
-        plc_migrate_default.migrate_builtin_policies(tenant_sessions)
-    #ALERT RULES MIGRATE
-    if 'alert' in modes:
-        alr_migrate.migrate(tenant_sessions)
-    if 'anomaly' in modes:
-        ano_sync.sync(tenant_sessions, True, False, False)
-    if 'settings' in modes:
-        #Enterprise settings
-        set_sync.sync(tenant_sessions)
+    mode_list = []
+    for mode in modes.items():
+        mode_list.append(mode[0])
+
+    for mode in tqdm(mode_list, desc='MIGRATION STATUS'):
+        #CLOUD ACCOUNT MIGRATE
+        if 'cloud' == mode:
+            cld_migrate.migrate(tenant_sessions, logger)
+        #ACCOUNT GROUPS MIGRATE
+        if 'account' == mode:
+            acc_migrate.migrate(tenant_sessions, logger)
+        #RESOURCE LIST MIGRATE
+        if 'resource' == mode:
+            rsc_migrate.migrate(tenant_sessions, logger)
+        #USER ROLES MIGRATE
+        if 'role' == mode:
+            role_migrate.migrate(tenant_sessions, logger)
+        #USERS MIGRATE
+        if 'user' == mode:
+            usr_migrate.migrate(tenant_sessions, logger)
+        #TRUSTED IP MIGRATE
+        if 'ip' == mode:
+            ip_migrate.migrate(tenant_sessions, logger)
+        #COMPLIANCE MIGRATE
+        if 'compliance' == mode:
+            cmp_migrate.migrate(tenant_sessions, logger)
+        #POLICY MIGRATE
+        if 'policy' == mode:
+            plc_migrate_custom.migrate_custom_policies(tenant_sessions, logger)
+            plc_migrate_default.migrate_builtin_policies(tenant_sessions, logger)
+        #ALERT RULES MIGRATE
+        if 'alert' == mode:
+            alr_migrate.migrate(tenant_sessions, logger)
+        if 'anomaly' == mode:
+            ano_sync.sync(tenant_sessions, True, False, False, logger)
+        if 'settings' == mode:
+            #Enterprise settings
+            set_sync.sync(tenant_sessions, logger)
 
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')

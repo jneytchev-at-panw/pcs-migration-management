@@ -1,6 +1,7 @@
 from sdk.color_print import c_print
+from tqdm import tqdm
 
-def add_users(session: object, users_to_add: list):
+def add_users(session: object, users_to_add: list, logger):
     '''
     Accepts a tenant session object and a list of users to add.
 
@@ -11,18 +12,16 @@ def add_users(session: object, users_to_add: list):
     tenant_name = session.tenant
     # checks whether the list is empty
     if users_to_add:
-        print(f'Adding User Profiles to tenant: \'{tenant_name}\'')
-        print()
+        logger.info(f'Adding User Profiles to tenant: \'{tenant_name}\'')
         
         user_to_add = []
         #iterates through user_to_add and store the data by dictionaries individually
-        for user in users_to_add:
+        for user in tqdm(users_to_add, desc='Adding User Profiles', leave=False):
             #The role IDs of each user were translated in the compare potion of the code
-            print('API - Adding User Profile')
+            logger.debug('API - Adding User Profile')
             res = session.request("POST", "/v2/user", json=user)
 
 
     #prints the following string if the list is empty
     else:
-        c_print(f'No User Profiles to add for tenant: \'{tenant_name}\'', color='yellow')
-        print()
+        logger.info(f'No User Profiles to add for tenant: \'{tenant_name}\'')

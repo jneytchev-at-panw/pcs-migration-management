@@ -1,8 +1,7 @@
 import json
 from os import path
-from sdk.color_print import c_print
 
-def get_gcp_credentials(cloud_accounts: list):
+def get_gcp_credentials(cloud_accounts: list, logger:object):
     #Read Terraform JSON and get credentials
     #The Terraform JSON must be named as the same as the cloud_account
     info = dict()
@@ -14,7 +13,6 @@ def get_gcp_credentials(cloud_accounts: list):
             cld_name = account['name']            
             try:
                 f_path = path.join('cloud_credentials','gcp',cld_name) + '.json'
-                print(f_path)
                 with open(f_path, 'r') as f:
                     terraform = json.load(f)
                     account_id = account['id']
@@ -25,12 +23,10 @@ def get_gcp_credentials(cloud_accounts: list):
                             }
                         })
             except:
-                c_print(f'ERROR. Terraform JSON not found for GCP account: \'{cld_name}\'', color='red')
-                print()
-
+                logger.error(f'ERROR. Terraform JSON not found for GCP account: \'{cld_name}\'')
     return info
 
-def get_azure_credentials(cloud_accounts: list):
+def get_azure_credentials(cloud_accounts: list, logger:object):
     #Read Terraform JSON and get credentials
     #The Terraform JSON must be named as the same as the cloud_account
     info = dict()
@@ -41,8 +37,7 @@ def get_azure_credentials(cloud_accounts: list):
                     continue
             cld_name = account['name']            
             try:
-                f_path = f'cloud_credentials/azure/{cld_name}.json'
-                f_path = path.join('cloud_credentials','azure',cld_name)
+                f_path = path.join('cloud_credentials','azure',cld_name) + '.json'
                 with open(f_path, 'r') as f:
                     terraform = json.load(f)
                     account_id = account['id']
@@ -52,6 +47,5 @@ def get_azure_credentials(cloud_accounts: list):
                             }
                         })
             except:
-                c_print(f'ERROR. Terraform JSON not found for Azure account: \'{cld_name}\'', color='red')
-                print()
+                logger.error(f'ERROR. Terraform JSON not found for Azure account: \'{cld_name}\'')
     return info
