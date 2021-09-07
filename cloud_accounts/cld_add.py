@@ -48,7 +48,7 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
                     if 'x-redlock-status' in res.headers:
                         if  redlock_ignore[0] in res.headers['x-redlock-status']:
                             logger.error('FAILED')
-                            logger.warning(f'{cloud_type} cloud account {account_name}::{account_id} already onboarded to application stack.')
+                            logger.warning(f'{cloud_type} cloud account \'{account_name}\'::\'{account_id}\' already onboarded to application stack.')
                             logger.error('not_account_owner')
                         if redlock_ignore[1] in res.headers['x-redlock-status']:
                             logger.error('FAILED')
@@ -66,6 +66,8 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
                             logger.error('FAILED')
                             logger.warning('Problem with GCP Project Key - No viewer permission')
                             logger.error('organization_viewer_permission_required')
+
+                    logger.error(f'Cloud Account \'{account_name}\'::\'{account_id}\' failed to onboard.')
             except:
                 logger.critical('No responce from Prisma Cloud')
     else:
