@@ -2,11 +2,7 @@
 
 # BETA TESTERS WARNING
 
-This script is in Beta and you will most likely encounter bugs. Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant.
-
-The current output of the script is basically debugging output. It will soon be replaced with clean progress bars and relevant information about the completion status of the script. The current debugging output will be stored in a log file.
-
-For each question prompt given to the user, a short description of the question will soon be added.
+This script is in Beta and you will most likely encounter bugs. Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant. Log files are now produced with each run so if you encounter any errors please include any associated log files.
 
 ## Conditions for Use / Caveats
 
@@ -34,9 +30,9 @@ Install the required Python Libraries with pip3:
 
 `pip3 install -r requirements.txt`
 
-Get your Prisma Cloud credentials ready. The script will ask you for them during setup.
+Get your Prisma Cloud Access Key, Secret Key and App URL ready. The script will ask you for them during setup.
 
-If you intend to migrate/sync cloud accounts, please add the terraform json file for each cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
+If you intend to migrate/sync cloud accounts, please add the terraform json file for each Azure and GCP cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
 ![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
 ![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true)  
 
@@ -50,9 +46,11 @@ This script was written in Python3
 
 Clone this project from github onto the machine of your choice. This script requires a reliable internet connection and may run into trouble if it is being run on a machine connected to a VPN that does TLS Interception.
 
-This script relies on these two external Python libraries:
-Requests. An installation guide can be found here: https://docs.python-requests.org/en/master/
-PyYAML. An installation guide can be found here: https://pyyaml.org/
+This script relies on 4 external Python libraries:  
+Requests - An installation guide can be found here: https://docs.python-requests.org/en/master/  
+PyYAML - An installation guide can be found here: https://pyyaml.org/  
+Loguru - An installation guide can be found here: https://github.com/Delgan/loguru
+tqdm - An installation guide can be found here: https://github.com/tqdm/tqdm
 
 You can also install the dependencies quickly by using Python’s package manager and the supplied requirements file.
 
@@ -60,11 +58,11 @@ You can also install the dependencies quickly by using Python’s package manage
 
 ## Run
 
-Get your Prisma Cloud credentials ready. The script will ask you for them during setup.
+Get your Prisma Cloud Access Key, Secret Key and App URL ready. The script will ask you for them during setup.
 
-If you intend to migrate/sync cloud accounts, please add the terraform json file for each cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
+If you intend to migrate/sync cloud accounts, please add the terraform json file for each Azure and GCP cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
 ![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
-![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true)  
+![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true) 
 
 This script includes a text based menu that allows you to customize the way the script runs. This is the recommended way to interact with this script. Please note that for the sake of user choice, the script allows you to migrate/sync components of a Prisma Cloud tenant without first migrating the components dependencies. For a full list of components and their dependencies see the Overview section. 
 
