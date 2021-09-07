@@ -153,8 +153,22 @@ def get_sync_mode_settings(sync_modes, module):
 #==============================================================================
 
 def main(file_mode, logger):
+    print()
+    c_print('PRISMA CLOUD TENANT MIGRATION AND CENTRAL MANAGEMENT TOOL', color='blue')
+    print()
+
     #Load JWT sessions from credentials.yaml
     tenant_sessions, same_stack = load_sessions(file_mode, logger)
+
+    print()
+    c_print('You will now be asked a series of questions so you can customize the operations this script will perform.', color='blue')
+    c_print('This script supports two main modes, Migration and Sync.The Migration mode is intended to be used when you', color='blue')
+    c_print('are copying data from a full tenant to an empty or mostly empty tenant or tenants. The Sync mode is intended', color='blue')
+    c_print('to be used when you want to Add, Update, and Delete elements from one or more clone tenants so that those', color='blue')
+    c_print('clone tenants will become identical to your source tenant. The Sync mode does a deep search of all involved', color='blue')
+    c_print('tenants so that even the smallest change will be detected and reflected across all managed tenants.', color='blue')
+    print()
+    print()
 
     #Run the script based on user responces to the following prompts
     mode = input('Do you want to MIGRATE or SYNC? (M/S): ')
@@ -166,6 +180,10 @@ def main(file_mode, logger):
         #Optional used saved settings file
         migrate_modes_file = load_migrate_modes()
         if migrate_modes_file:
+            c_print('Loading from saved settings will allow you to run the script with the same settings as the last time it was ran.', color='blue')
+            c_print('If you wish to use the same settings as last time, then select \'Yes\'. If you wish to configure the script to', color='blue')
+            c_print('run with new settings, then select \'No\'', color='blue')
+            print()
             choice = input('Do you want to use the saved migration mode settings? (Y/N): ')
             print()
             choice = choice.lower()
@@ -175,6 +193,9 @@ def main(file_mode, logger):
                 return
 
         #Get migration settings from the user
+        c_print('A full migration will migrate all components of the Prisma Cloud Tenant that are supported by this script.', color='blue')
+        c_print('Selecting \'No\' will allow you to customize which components are migrated.', color='blue')
+        print()
         migrate_type = input('Do you want to do a full migration? (Y/N): ')
         print()
         migrate_type = migrate_type.lower()
@@ -226,6 +247,10 @@ def main(file_mode, logger):
         #Optional used saved settings file
         sync_modes_file = load_sync_modes()
         if sync_modes_file:
+            c_print('Loading from saved settings will allow you to run the script with the same settings as the last time it was ran.', color='blue')
+            c_print('If you wish to use the same settings as last time, then select \'Yes\'. If you wish to configure the script to', color='blue')
+            c_print('run with new settings, then select \'No\'', color='blue')
+            print()
             choice = input('Do you want to use the saved sync mode settings? (Y/N): ')
             print()
             choice = choice.lower()
@@ -234,6 +259,9 @@ def main(file_mode, logger):
                 sync_main.sync(tenant_sessions, sync_modes_file, logger)
                 return
 
+        c_print('A full sync will do Add and Update operations on all components of the Prisma Cloud Tenant that are supported by this script.', color='blue')
+        c_print('Selecting \'No\' will allow you to customize the components that are synced and the operations that are performed.', color='blue')
+        print()
         migrate_type = input('Do you want to do a full Sync? (Y/N): ')
         print()
         migrate_type = migrate_type.lower()
