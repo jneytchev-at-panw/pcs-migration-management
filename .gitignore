@@ -28,3 +28,5 @@ main.spec
 
 log_*.log
 
+workspace.code-workspace
+
