@@ -2,11 +2,7 @@
 
 # BETA TESTERS WARNING
 
-This script is in Beta and you will most likely encounter bugs. Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant.
-
-The current output of the script is basically debugging output. It will soon be replaced with clean progress bars and relevant information about the completion status of the script. The current debugging output will be stored in a log file.
-
-For each question prompt given to the user, a short description of the question will soon be added.
+This script is in Beta and you will most likely encounter bugs. Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant. Log files are now produced with each run so if you encounter any errors please include any associated log files.
 
 ## Conditions for Use / Caveats
 
