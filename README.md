@@ -34,7 +34,7 @@ Install the required Python Libraries with pip3:
 
 `pip3 install -r requirements.txt`
 
-Get your Prisma Cloud credentials ready. The script will ask you for them during setup.
+Get your Prisma Cloud Access Key, Secret Key and App URL ready. The script will ask you for them during setup.
 
 If you intend to migrate/sync cloud accounts, please add the terraform json file for each cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
 ![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
@@ -60,7 +60,7 @@ You can also install the dependencies quickly by using Python’s package manage
 
 ## Run
 
-Get your Prisma Cloud credentials ready. The script will ask you for them during setup.
+Get your Prisma Cloud Access Key, Secret Key and App URL ready. The script will ask you for them during setup.
 
 If you intend to migrate/sync cloud accounts, please add the terraform json file for each cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
 ![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
