@@ -21,7 +21,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
             cloud_accounts_to_upload = []
             for j in range(len(tenant_accounts[i])):
                 account = tenant_accounts[i][j]
-                ret = cld_get.get_info(tenant_sessions[i], account, logger)#get info from original tenant
+                ret = cld_get.get_all_info(tenant_sessions[i], account, logger)#get info from original tenant
                 if ret != '':
                     cloud_accounts_to_upload.append(ret)
             tenants_cloud_accounts.append(cloud_accounts_to_upload)
