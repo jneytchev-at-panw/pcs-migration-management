@@ -36,9 +36,9 @@ Install the required Python Libraries with pip3:
 
 Get your Prisma Cloud credentials ready. The script will ask you for them during setup.
 
-If you intend to migrate/sync cloud accounts, please add the terraform json file for each cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.
+If you intend to migrate/sync cloud accounts, please add the terraform json file for each cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
 ![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
-![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true)
+![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true)  
 
 Run the script using the customization menu:
 
@@ -60,13 +60,19 @@ You can also install the dependencies quickly by using Python’s package manage
 
 ## Run
 
+Get your Prisma Cloud credentials ready. The script will ask you for them during setup.
+
+If you intend to migrate/sync cloud accounts, please add the terraform json file for each cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
+![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
+![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true)  
+
 This script includes a text based menu that allows you to customize the way the script runs. This is the recommended way to interact with this script. Please note that for the sake of user choice, the script allows you to migrate/sync components of a Prisma Cloud tenant without first migrating the components dependencies. For a full list of components and their dependencies see the Overview section. 
 
 Run the main menu script using Python3 after all required Python3 libraries have been installed.
 
 You will be prompted to run the script in Migrate or Sync mode.
 
-Once you have selected a mode you will be prompted to do a full migration or a full sync. If you select YES then all Prisma Cloud components that are supported by this script will be migrated or synced across the tenants the script has access too. If you select NO then you will be asked to pick and choose what Prisma Cloud components will be migrated or synced with this script.
+Once you have selected a mode you will be prompted to do a full migration or a full sync. If you select YES then all Prisma Cloud components that are supported by this script will be migrated or synced across the tenants the script has access too. If you select NO then you will be asked to pick and choose what Prisma Cloud components will be migrated or synced with this script. You will also be able to selectively enable Add, Update, and Delete operations for sync mode through this customization menu.
 
 `python3 main.py`
 
