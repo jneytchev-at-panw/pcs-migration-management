@@ -74,6 +74,14 @@ Once you have selected a mode you will be prompted to do a full migration or a f
 
 `python3 main.py`
 
+There are also two command line arguments that can be used. -yaml and -quiet.
+
+-yaml Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials.
+
+-quiet Hides the logging output and only show progress bars in the terminal output.
+
+`python3 main.py -yaml`
+
 ## Overview and Other Information
 
 This script is divided up into modules that each migrate/sync one component of Prisma Cloud. For example, the cloud_migrate module handles the migration of Cloud Accounts.
