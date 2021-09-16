@@ -1,6 +1,8 @@
 from account_groups import acc_get, acc_compare, acc_add, acc_update, acc_delete
 from sdk.color_print import c_print
 
+from cross_tenant_translation import create_matrix
+
 def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
     '''
     Accepts a list of tenant sessions objects.
@@ -13,6 +15,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     for session in tenant_sessions:
         data = acc_get.get_account_groups(session, logger)
         tenant_acc_grps.append(data)
+
+    matrix = create_matrix.create_account_groups_matrix(tenant_acc_grps, tenant_sessions, {})
 
     src_acc_grps = tenant_acc_grps[0]
     cln_tenant_acc_grps = tenant_acc_grps[1:]

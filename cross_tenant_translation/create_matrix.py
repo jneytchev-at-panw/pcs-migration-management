@@ -29,11 +29,11 @@ def create_account_groups_matrix(tenants_data, tenant_sessions, matrix):
                     if src_element.get('id'):
                         if src_element['name'] == cln_element['name']:
                             #Create relation between these elements
-                            matrix.update({src.element.get('id'): {clone_session.tenant: cln_element.get('id')}})
+                            old_val = matrix.get(src_element.get('id'), {})
+                            old_val.update({clone_session.tenant: cln_element.get('id')})
+                            matrix.update({src_element.get('id'): old_val})
 
     return matrix
-
-
 
 
 def update_account_groups_matrix():
