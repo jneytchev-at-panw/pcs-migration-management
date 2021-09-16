@@ -1,3 +1,5 @@
+import json
+
 #Get info from all tenants
 #Relate UUIDs from each tenant to a UUID from an other tenant
 
@@ -12,7 +14,15 @@ def update_cloud_account_matrix():
     pass
 
 
-def create_account_groups_matrix(tenants_data, tenant_sessions, matrix):
+def create_update_account_groups_matrix(tenants_data, tenant_sessions):
+    matrix = {}
+
+    try:
+        with open('translation_matrix/account_groups_matrix.json', 'r') as f:
+            matrix = json.load(f)
+    except:
+        matrix = {}
+
     source_data = tenants_data[0]
     source_tenant = tenant_sessions[0]
     
@@ -33,8 +43,8 @@ def create_account_groups_matrix(tenants_data, tenant_sessions, matrix):
                             old_val.update({clone_session.tenant: cln_element.get('id')})
                             matrix.update({src_element.get('id'): old_val})
 
-    return matrix
-
+    with open('translation_matrix/account_groups_matrix.json', 'w') as f:
+        json.dump(matrix, f)
 
 def update_account_groups_matrix():
     pass
