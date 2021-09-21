@@ -20,6 +20,10 @@ Oracle Cloud (OCI) Accounts are not supported by this script at this time.
 
 Integrations can not be migrated by this script. All Alert Rules that rely on external integrations will be migrated but will not be configured to use the external integrations. These alert rules will be migrated and disabled. The user will have to manually configure these alert rules to use the integrations.
 
+### Trusted Login IPs
+
+The script will not automatically enable the trusted Login IPs to ensure the machine running the script does not get blocked from the tenant. After the migration or sync process is done, someone will have to manually enable them.
+
 ## Quickstart
 
 This script requires Python3 and Python3’s package manager, Pip3
