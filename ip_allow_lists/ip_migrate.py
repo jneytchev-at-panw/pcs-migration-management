@@ -8,6 +8,10 @@ def migrate(tenant_sessions, logger):
     Migrates Trusted Alert IPs and Trusted Login IPs from source tenants to clone tenants.
     '''
 
+    tenant_networks_added = []
+    tenant_cidrs_added = []
+    tenant_login_ips_added = []
+
     #Migrate Trusted Alert IP Networks first
 
     #Get trusted network ips from all tenants
@@ -27,7 +31,8 @@ def migrate(tenant_sessions, logger):
     #Upload the trusted alert IP networks to clone tenants
     for index, networks in enumerate(trusted_alert_networks_to_add):
         session = tenant_sessions[index + 1]
-        ip_add.add_networks(session, networks, logger)
+        added = ip_add.add_networks(session, networks, logger)
+        tenant_networks_added.append(added)
 
     #Update the cidr blocks of all networks in each tenant
     #Define lists
@@ -45,7 +50,9 @@ def migrate(tenant_sessions, logger):
                 if cidr['cidr'] not in [n_cidr['cidr'] for n_cidr in new_network['cidrs']]:
                     cidr_to_add.append(cidr)
             net_name = src_network['name']
-            ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network['uuid'], cidr_to_add, logger)
+            added = ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network['uuid'], cidr_to_add, logger)
+            tenant_cidrs_added.append(added)
+
 
     #Next, migrate Trusted Login IPs
 
@@ -66,9 +73,12 @@ def migrate(tenant_sessions, logger):
     #Upload login IPs to clone tenants
     for index, cln_ips in enumerate(tenant_login_ips_to_add):
         tenant_session = tenant_sessions[index + 1]
-        ip_add.add_login_ips(tenant_session, cln_ips, logger)
+        added = ip_add.add_login_ips(tenant_session, cln_ips, logger)
+        tenant_login_ips_added.append(added)
 
     logger.info('Finished Migrating Trusted IPs')
+
+    return tenant_networks_added, tenant_cidrs_added, tenant_login_ips_added
 
 if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions

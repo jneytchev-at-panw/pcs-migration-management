@@ -10,6 +10,8 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
 
     tenant_name = session.tenant
 
+    accounts_added = 0
+
     if accounts:
         logger.info(f'Adding Cloud Accounts to tenant: \'{session.tenant}\'')
         for account in tqdm(accounts, desc='Adding Cloud Accounts', leave=False):
@@ -68,10 +70,14 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
                             logger.error('organization_viewer_permission_required')
 
                     logger.error(f'Cloud Account \'{account_name}\'::\'{account_id}\' failed to onboard.')
+                else:
+                    accounts_added += 1
             except:
                 logger.critical('No responce from Prisma Cloud')
     else:
         logger.info(f'No Cloud Accounts to add for tenant: \'{session.tenant}\'')
+
+    return accounts_added
         
 
 #==============================================================================

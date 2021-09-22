@@ -9,6 +9,8 @@ def migrate(tenant_sessions: list, logger):
     to all other tenants (clone tenants).
     '''
 
+    tenant_groups_added = []
+
     #Get all account groups
     tenant_acc_grps = []
     for session in tenant_sessions:
@@ -26,9 +28,12 @@ def migrate(tenant_sessions: list, logger):
     #Add account groups
     for index, cln_acc_groups in enumerate(cln_tenant_acc_grps_to_add):
         session = tenant_sessions[index + 1]
-        acc_add.add_account_groups(session, cln_acc_groups, logger)
+        added = acc_add.add_account_groups(session, cln_acc_groups, logger)
+        tenant_groups_added.append(added)
 
     logger.info('Finished migrating Account Groups')
+
+    return tenant_groups_added
 
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

@@ -32,12 +32,17 @@ def migrate(tenant_sessions: list, logger: object):
                 cloud_accounts_to_upload.append(ret)
         clone_tenants_cloud_accounts_to_upload.append(cloud_accounts_to_upload)
 
+    tenant_accounts_added = []
+
     #Upload cloud accounts missing from each tenant
     for i in range(len(clone_tenants_cloud_accounts_to_upload)):
-        cld_add.add_accounts(tenant_sessions[i+1], clone_tenants_cloud_accounts_to_upload[i],
+        accounts_added = cld_add.add_accounts(tenant_sessions[i+1], clone_tenants_cloud_accounts_to_upload[i],
                                               azure_account_keys, gcp_account_keys, logger)
+        tenant_sessions.append(accounts_added)
 
     logger.info('Finished migrating Cloud Accounts')
+
+    return tenant_accounts_added
 
 if __name__ == '__main__':
     from sdk import load_config

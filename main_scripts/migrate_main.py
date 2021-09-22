@@ -42,25 +42,39 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
     for mode in modes.items():
         mode_list.append(mode[0])
 
+    run_summary = {}
+
     for mode in tqdm(mode_list, desc='MIGRATION STATUS'):
         #CLOUD ACCOUNT MIGRATE
         if 'cloud' == mode:
-            cld_migrate.migrate(tenant_sessions, logger)
+            added = cld_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_cloud_accounts=added)
+
         #ACCOUNT GROUPS MIGRATE
         if 'account' == mode:
-            acc_migrate.migrate(tenant_sessions, logger)
+            added = acc_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_account_groups=added)
+
         #RESOURCE LIST MIGRATE
         if 'resource' == mode:
-            rsc_migrate.migrate(tenant_sessions, logger)
+            added = rsc_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_resource_lists=added)
+
         #USER ROLES MIGRATE
         if 'role' == mode:
-            role_migrate.migrate(tenant_sessions, logger)
+            added = role_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_user_roles=added)
+
         #USERS MIGRATE
         if 'user' == mode:
-            usr_migrate.migrate(tenant_sessions, logger)
+            added = usr_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_user_profiles=added)
+        
         #TRUSTED IP MIGRATE
         if 'ip' == mode:
-            ip_migrate.migrate(tenant_sessions, logger)
+            added = ip_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_trusted_ips=added) 
+
         #COMPLIANCE MIGRATE
         if 'compliance' == mode:
             cmp_migrate.migrate(tenant_sessions, logger)

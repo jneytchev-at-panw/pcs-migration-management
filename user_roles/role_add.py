@@ -3,6 +3,8 @@ from user_roles import role_translate_id
 from tqdm import tqdm
 
 def add_roles(session, old_session, roles, logger):
+    added = 0
+
     tenant_name = session.tenant
     if roles:
         logger.info(f'Adding User Roles to tenant: \'{tenant_name}\'')
@@ -40,7 +42,11 @@ def add_roles(session, old_session, roles, logger):
 
             name = role['name']
             logger.debug(f'API - Adding role: {name}')
-            session.request('POST', '/user/role', json=role)
+            res = session.request('POST', '/user/role', json=role)
+            if res.status_code == 200 or res.status_code == 201:
+                added += 1
 
     else:
         logger.info(f'No User Roles to add for tenant: \'{tenant_name}\'')
+
+    return added

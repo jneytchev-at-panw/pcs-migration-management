@@ -9,6 +9,9 @@ def add_users(session: object, users_to_add: list, logger):
     The User Profiles in the users_to_add list have to have already had their Role IDs
     translated before running this function.
     '''
+
+    added = 0
+
     tenant_name = session.tenant
     # checks whether the list is empty
     if users_to_add:
@@ -20,8 +23,12 @@ def add_users(session: object, users_to_add: list, logger):
             #The role IDs of each user were translated in the compare potion of the code
             logger.debug('API - Adding User Profile')
             res = session.request("POST", "/v2/user", json=user)
+            if res.status_code == 200 or res.status_code == 201:
+                added += 1
 
 
     #prints the following string if the list is empty
     else:
         logger.info(f'No User Profiles to add for tenant: \'{tenant_name}\'')
+
+    return added

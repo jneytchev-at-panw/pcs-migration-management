@@ -9,11 +9,17 @@ def add_account_groups(session, account_groups, logger):
     
     tenant_name = session.tenant
 
+    added = 0
+
     if account_groups:
         logger.info(f'Adding Account Groups to tenant: \'{tenant_name}\'')
         
         for acc_grp in tqdm(account_groups, desc='Adding Account Groups', leave=False):
             logger.debug('API - Adding Account Group')
-            session.request('POST', '/cloud/group', json=acc_grp)
+            res = session.request('POST', '/cloud/group', json=acc_grp)
+            if res.status_code == 200 or res.status_code == 201:
+                added += 1
     else:
         logger.info(f'No Account Groups to add for tenant: \'{tenant_name}\'')
+
+    return added

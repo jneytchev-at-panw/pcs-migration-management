@@ -8,16 +8,21 @@ def add_networks(session, networks, logger):
     Adds each network and then dispatches function to add the network cidrs
     '''
 
+    added = 0
+
     if networks:
         logger.info(f'Adding Trusted Alert IP Networks to tenant: \'{session.tenant}\'')
 
         for network in tqdm(networks, desc='Adding Networks', leave=False):
             logger.debug('API - Adding Trusted Alert IP Network')
             res = session.request('POST', '/allow_list/network', json=network)
+            added += 1
             data = res.json()
             add_network_cidrs(session, data, network['cidr'])
     else:
         logger.info(f'No Trusted Alert IP Networks to add for tenant: \'{session.tenant}\'')
+
+    return added
 
 #==============================================================================
 
@@ -49,10 +54,16 @@ def add_network_allow_list_cidrs(session, net_uuid, cidrs, logger):
     Adds all cidr blocks to the network with the provided UUID.
     '''
 
+    added = 0
+
     if cidrs:
         for cidr in tqdm(cidrs, desc='Adding CIDRs to network', leave=False):
             logger.debug('API - Adding CIDRs to network')
             session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
+            if res.status_code == 200 or res.status_code == 201:
+                added += 1
+
+    return added
 
 
 

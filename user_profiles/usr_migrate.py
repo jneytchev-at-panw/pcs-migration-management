@@ -9,6 +9,8 @@ def migrate(tenant_sessions: list, logger: object):
     clone tenants
     '''
 
+    tenant_users_added = []
+
     #Get all user profiles
     tenant_user_profiles = []
     for session in tenant_sessions:
@@ -32,9 +34,12 @@ def migrate(tenant_sessions: list, logger: object):
 
     #Add user profiles
     for index in range(len(tenant_users_to_add)):
-        usr_add.add_users(tenant_sessions[index + 1], tenant_users_to_add[index], logger)
+        added = usr_add.add_users(tenant_sessions[index + 1], tenant_users_to_add[index], logger)
+        tenant_users_added.append(added)
 
     logger.info('Finished migrating User Profiles')
+
+    return tenant_users_added
     
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

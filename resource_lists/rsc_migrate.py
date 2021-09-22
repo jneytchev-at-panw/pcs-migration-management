@@ -8,6 +8,8 @@ def migrate(tenant_sessions: list, logger):
     Migrates all resource lists from the first tenant, (source tenant)
     to all other tenants (clone tenants).
     '''
+
+    tenant_resource_added = []
     
     #Get all resource lists
     tenant_resource_lists = []
@@ -25,9 +27,12 @@ def migrate(tenant_sessions: list, logger):
 
     #Add resource lists
     for index, cln_rsc_lists in enumerate(cln_tenant_rsc_lists_to_add):
-        rsc_add.add_resource_lists(tenant_sessions[index + 1], cln_rsc_lists, logger)
+        added = rsc_add.add_resource_lists(tenant_sessions[index + 1], cln_rsc_lists, logger)
+        tenant_resource_added.append(added)
 
     logger.info('Finished migrateding Resource Lists')
+
+    return tenant_resource_added
 
 
 
