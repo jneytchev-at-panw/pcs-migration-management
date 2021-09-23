@@ -10,6 +10,8 @@ def add_custom_policies(tenant_session, source_tenant_session, policies, logger)
     Adds the custom policies to the first tenant supplied.
     '''
 
+    added = 0
+
     if policies:
         logger.info(f'Adding Custom Policies to tenant: \'{tenant_session.tenant}\'')
 
@@ -38,8 +40,11 @@ def add_custom_policies(tenant_session, source_tenant_session, policies, logger)
 
             logger.debug(f'API - Adding {p_type} policy: {name}')
             tenant_session.request('POST', '/policy', json=policy)
+            added += 1
     else:
         logger.info(f'No Custom Policies to add for tenant: \'{tenant_session.tenant}\'')
+
+    return added
 
 def update_default_policy(tenant_session: object, policy: dict, logger):
     '''

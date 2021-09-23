@@ -6,6 +6,8 @@ def sync(tenant_sessions, logger):
     
     settings = res.json()
 
+    tenant_updated = []
+
     if 'userAttributionInNotification' not in settings:
         settings.update(userAttributionInNotification=False)
 
@@ -13,8 +15,11 @@ def sync(tenant_sessions, logger):
     for session in clone_tenant_sessions:
         logger.debug('API - Updating enterprise settings')
         session.request('POST', '/settings/enterprise', json=settings)
+        updated.append(True)
 
     logger.info('Finished syncing Enterprise Settings')
+
+    return tenant_updated
 
 if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions

@@ -10,6 +10,8 @@ def migrate(tenant_sessions, logger):
     For each tenant_session, migrates all alert rules
     '''
 
+    tenant_added_alert_rules = []
+
     #Get all alert rules
     tenant_alert_rules = []
     tenant_account_groups = []
@@ -42,7 +44,8 @@ def migrate(tenant_sessions, logger):
     #Add alert rules
     for index, alr_rls in enumerate(translated_alr_rls_to_add):
         session = tenant_sessions[index + 1]
-        alr_add.add_alert_rules(session, alr_rls, logger)
+        added = alr_add.add_alert_rules(session, alr_rls, logger)
+        tenant_added_alert_rules.append(added)
 
     logger.info('Finished migrating Alert Rules')
 

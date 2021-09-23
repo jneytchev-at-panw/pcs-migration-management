@@ -11,6 +11,11 @@ def migrate(tenant_sessions: list, logger):
     sync module which does a much more time intensive nested search of all the 
     compliance data accross all tenants
     '''
+
+    standards_added = {}
+    requirements_added = {}
+    sections_added = {}
+
     #Get complance standards from all tenants
     tenant_compliance_standards_lists = []
     for session in tenant_sessions:
@@ -50,8 +55,11 @@ def migrate(tenant_sessions: list, logger):
     #Then migrate over the requirements and translate the UUIDS. Finnally migrate the sections.
     for index, tenant_standards in enumerate(clone_compliance_standards_data):
         #Migrate compliance standards
+        added = 0
         for standard in tenant_standards:
             cmp_add.add_compliance_standard(tenant_sessions[index + 1], standard['standard'], logger)
+            added += 1
+        standards_added.append(added)
 
         #Translate compliance IDs
         clone_standards = cmp_get.get_compliance_standard_list(tenant_sessions[index + 1])
@@ -67,8 +75,11 @@ def migrate(tenant_sessions: list, logger):
         for index2, standard in enumerate(tenant_standards):
             requirements = standard['requirements']
             std_id = standard['standard']['id']
+            added = 0
             for requirement in requirements:
                 cmp_add.add_requirement_to_standard(tenant_sessions[index + 1], std_id, requirement['requirement'], logger)
+                added += 1
+            requirements_added.append(added)
 
             #Translate compliance IDs
             clone_requirements = cmp_get.get_compliance_requirement_list(tenant_sessions[index+1], standard['standard'])
@@ -87,11 +98,17 @@ def migrate(tenant_sessions: list, logger):
             for requirement in requirements:
                 req_id = requirement['requirement']['id']
                 sections = requirement['sections']
+                added = 0
                 for section in sections:
                     cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, section, logger)
+                    added += 1
+                sections_added.append(added)
     
     logger.info('Finished migrating Compliance Standards')
     print()
+
+
+    return standards_added, requirements_added, sections_added
 
 #==============================================================================
 #Test code

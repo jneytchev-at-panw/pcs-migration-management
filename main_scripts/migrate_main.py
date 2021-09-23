@@ -72,24 +72,42 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         
         #TRUSTED IP MIGRATE
         if 'ip' == mode:
-            added = ip_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_trusted_ips=added) 
+            tenant_networks_added, tenant_cidrs_added, tenant_login_ips_added = ip_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_networks=tenant_networks_added)
+        run_summary.update(added_cidrs=tenant_cidrs_added)
+        run_summary.update(added_login_ips=tenant_login_ips_added) 
 
         #COMPLIANCE MIGRATE
         if 'compliance' == mode:
-            cmp_migrate.migrate(tenant_sessions, logger)
+            standards_added, requirements_added, sections_added = cmp_migrate.migrate(tenant_sessions, logger)
+        run_summary.update(added_compliance_standards=standards_added)
+        run_summary.update(added_compliance_requirements=requirements_added)
+        run_summary.update(added_compliance_sections=sections_added)
+
+        
         #POLICY MIGRATE
         if 'policy' == mode:
-            plc_migrate_custom.migrate_custom_policies(tenant_sessions, logger)
-            plc_migrate_default.migrate_builtin_policies(tenant_sessions, logger)
+            added = plc_migrate_custom.migrate_custom_policies(tenant_sessions, logger)
+            run_summary.update(added_custom_policies=added)
+
+            added = plc_migrate_default.migrate_builtin_policies(tenant_sessions, logger)
+            run_summary.update(updated_default_policies=added)
+        
         #ALERT RULES MIGRATE
         if 'alert' == mode:
-            alr_migrate.migrate(tenant_sessions, logger)
+            added = alr_migrate.migrate(tenant_sessions, logger)
+            run_summary.update(added_alert_rules)
+            
+        
         if 'anomaly' == mode:
-            ano_sync.sync(tenant_sessions, True, False, False, logger)
+            added_trusted_lists = ano_sync.sync(tenant_sessions, True, False, False, logger)
+            run_summary.update(added_trusted_lists=added_trusted_lists)
+
+
         if 'settings' == mode:
             #Enterprise settings
-            set_sync.sync(tenant_sessions, logger)
+            updated = set_sync.sync(tenant_sessions, logger)
+            run_summary.update(updated_enterprise_settings=updated)
 
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')

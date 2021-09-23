@@ -8,6 +8,9 @@ def migrate_custom_policies(tenant_sessions: list, logger):
     In the proccess of migrating policies, saved searched/rql queries will be migrated over
     as well since they are associated with policies.
     '''
+
+    tenant_added_policies = []
+
     #Get all custom policies from all tenants
     tenant_custom_policies = []
     for tenant_session in tenant_sessions:
@@ -20,9 +23,12 @@ def migrate_custom_policies(tenant_sessions: list, logger):
     clone_tenant_sessions = tenant_sessions[1:]
     for index, policies in enumerate(clone_tenant_policies_delta):
         tenant_session = clone_tenant_sessions[index]
-        plc_add.add_custom_policies(tenant_session, tenant_sessions[0], policies, logger)
+        added = plc_add.add_custom_policies(tenant_session, tenant_sessions[0], policies, logger)
+        tenant_added_policies.append(added)
 
     logger.info('Finished migrating custom policies')
+
+    return tenant_added_policies
 
 if __name__ == '__main__':
     from sdk import load_config

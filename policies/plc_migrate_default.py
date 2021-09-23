@@ -7,6 +7,9 @@ def migrate_builtin_policies(tenant_sessions: list, logger):
     Updates the default/built in policies of all clone tenants so they are the same as the
     source tenant. Default policies can not be added or deleted.
     '''
+
+    tenant_updated_policies = []
+
     tenant_default_policies = []
     for tenant_session in tenant_sessions:
         tenant_default_policies.append(plc_get.api_get_default(tenant_session, logger))
@@ -14,6 +17,7 @@ def migrate_builtin_policies(tenant_sessions: list, logger):
     original_tenant = tenant_default_policies[0]
     clone_tenant_default_policies = tenant_default_policies[1:]
     for index, tenant in enumerate(clone_tenant_default_policies):
+        added = 0
         for plc in tqdm(tenant, desc='Syncing Default Policies', leave=False):
             for old_plc in original_tenant:
                 if plc['name'] == old_plc['name']:
@@ -49,8 +53,12 @@ def migrate_builtin_policies(tenant_sessions: list, logger):
                     # if plc['severity'] != old_plc['severity'] or plc['labels'] != old_plc['labels'] or plc['rule'] != old_plc['rule'] or compFlag:
                     if plc['severity'] != old_plc['severity'] or labels != o_labels or plc['rule'] != old_plc['rule'] or compFlag:
                         plc_add.update_default_policy(tenant_sessions[index + 1], old_plc, logger)
+                        added += 1
+        tenant_updated_policies.append(added)
 
     logger.info('Finished migrating Default Policies')
+
+    return tenant_updated_policies
 
 if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions

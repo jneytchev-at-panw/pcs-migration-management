@@ -3,6 +3,8 @@ from sdk.color_print import c_print
 from tqdm import tqdm
 
 def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
+    tenant_added_trusted_lists = []
+
         #Get network settings----
     network_settings_list = []
     for session in tenant_sessions:
@@ -54,8 +56,12 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         #Get anomaly lists to update
         trusted_lists_to_update = ano_compare.get_lists_to_update(trusted_lists_list)
         for index, tenant in enumerate(trusted_lists_to_update):
+            added = 0
             for t_list in tqdm(tenant, desc='Updating Trusted IP Lists', leave=False):
                 ano_update.update_trusted_list(tenant_sessions[index + 1], t_list, logger)
+                added +=1
+            tenant_added_trusted_lists.append(added)
+
 
     if delMode:
         #Get anomaly lists to delete
@@ -65,6 +71,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
                 ano_update.delete_trusted_list(tenant_sessions[index + 1], t_list, logger)
 
     logger.info('Finished syncing Anomaly Settings')
+
+    return tenant_added_trusted_lists
 
 
 if __name__ == '__main__':
