@@ -73,11 +73,15 @@ def add_login_ips(session, ips, logger):
 
     Adds the Login Allow IPs.
     '''
+    added = 0
     if ips:
         logger.info(f'Adding Login IPs to tenant: \'{session.tenant}\'')
 
         for ip in ips:
             logger.debug('API - Adding login allow IP')
             session.request('POST', '/ip_allow_list_login', json=ip)
+            added += 1
     else:
         logger.info(f'No Login IPs to add for tenant: \'{session.tenant}\'')
+
+    return added
