@@ -20,6 +20,10 @@ Oracle Cloud (OCI) Accounts are not supported by this script at this time.
 
 Integrations can not be migrated by this script. All Alert Rules that rely on external integrations will be migrated but will not be configured to use the external integrations. These alert rules will be migrated and disabled. The user will have to manually configure these alert rules to use the integrations.
 
+### Trusted Login IPs
+
+The script will not automatically enable the trusted Login IPs to ensure the machine running the script does not get blocked from the tenant. After the migration or sync process is done, someone will have to manually enable them.
+
 ## Quickstart
 
 This script requires Python3 and Python3’s package manager, Pip3
@@ -73,6 +77,14 @@ You will be prompted to run the script in Migrate or Sync mode.
 Once you have selected a mode you will be prompted to do a full migration or a full sync. If you select YES then all Prisma Cloud components that are supported by this script will be migrated or synced across the tenants the script has access too. If you select NO then you will be asked to pick and choose what Prisma Cloud components will be migrated or synced with this script. You will also be able to selectively enable Add, Update, and Delete operations for sync mode through this customization menu.
 
 `python3 main.py`
+
+There are also two command line arguments that can be used. -yaml and -quiet.
+
+-yaml Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials.
+
+-quiet Hides the logging output and only show progress bars in the terminal output.
+
+`python3 main.py -yaml`
 
 ## Overview and Other Information
 
