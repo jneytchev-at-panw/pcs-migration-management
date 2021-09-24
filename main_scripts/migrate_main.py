@@ -48,41 +48,41 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         #CLOUD ACCOUNT MIGRATE
         if 'cloud' == mode:
             added = cld_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_cloud_accounts=added)
+            run_summary.update(added_cloud_accounts=added)
 
         #ACCOUNT GROUPS MIGRATE
         if 'account' == mode:
             added = acc_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_account_groups=added)
+            run_summary.update(added_account_groups=added)
 
         #RESOURCE LIST MIGRATE
         if 'resource' == mode:
             added = rsc_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_resource_lists=added)
+            run_summary.update(added_resource_lists=added)
 
         #USER ROLES MIGRATE
         if 'role' == mode:
             added = role_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_user_roles=added)
+            run_summary.update(added_user_roles=added)
 
         #USERS MIGRATE
         if 'user' == mode:
             added = usr_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_user_profiles=added)
+            run_summary.update(added_user_profiles=added)
         
         #TRUSTED IP MIGRATE
         if 'ip' == mode:
             tenant_networks_added, tenant_cidrs_added, tenant_login_ips_added = ip_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_networks=tenant_networks_added)
-        run_summary.update(added_cidrs=tenant_cidrs_added)
-        run_summary.update(added_login_ips=tenant_login_ips_added) 
+            run_summary.update(added_networks=tenant_networks_added)
+            run_summary.update(added_cidrs=tenant_cidrs_added)
+            run_summary.update(added_login_ips=tenant_login_ips_added) 
 
         #COMPLIANCE MIGRATE
         if 'compliance' == mode:
             standards_added, requirements_added, sections_added = cmp_migrate.migrate(tenant_sessions, logger)
-        run_summary.update(added_compliance_standards=standards_added)
-        run_summary.update(added_compliance_requirements=requirements_added)
-        run_summary.update(added_compliance_sections=sections_added)
+            run_summary.update(added_compliance_standards=standards_added)
+            run_summary.update(added_compliance_requirements=requirements_added)
+            run_summary.update(added_compliance_sections=sections_added)
 
         
         #POLICY MIGRATE
@@ -96,7 +96,7 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         #ALERT RULES MIGRATE
         if 'alert' == mode:
             added = alr_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_alert_rules)
+            run_summary.update(added_alert_rules=added)
             
         
         if 'anomaly' == mode:
@@ -108,6 +108,9 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
             #Enterprise settings
             updated = set_sync.sync(tenant_sessions, logger)
             run_summary.update(updated_enterprise_settings=updated)
+
+    print(run_summary)
+
 
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')

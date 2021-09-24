@@ -17,7 +17,7 @@ def migrate_custom_policies(tenant_sessions: list, logger):
         tenant_custom_policies.append(plc_get.api_get_custom(tenant_session, logger))
     
     #Get delta from original tenant policies and clone tenant policies
-    clone_tenant_policies_delta = plc_compare.compare_original_to_clones(tenant_sessions, tenant_custom_policies)
+    clone_tenant_policies_delta = plc_compare.compare_original_to_clones(tenant_sessions, tenant_custom_policies, logger)
 
     #Upload policies to clone tenants
     clone_tenant_sessions = tenant_sessions[1:]

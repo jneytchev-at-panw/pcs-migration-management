@@ -1,5 +1,6 @@
 from compliance_standards import cmp_compare, cmp_get, cmp_add
 from sdk.color_print import c_print
+from tqdm import tqdm
 
 def migrate(tenant_sessions: list, logger):
     '''
@@ -12,9 +13,9 @@ def migrate(tenant_sessions: list, logger):
     compliance data accross all tenants
     '''
 
-    standards_added = {}
-    requirements_added = {}
-    sections_added = {}
+    standards_added = []
+    requirements_added = []
+    sections_added = []
 
     #Get complance standards from all tenants
     tenant_compliance_standards_lists = []
@@ -22,7 +23,7 @@ def migrate(tenant_sessions: list, logger):
         tenant_compliance_standards_lists.append(cmp_get.get_compliance_standard_list(session, logger))
 
     #Compare compliance standards
-    clone_compliance_standards_to_migrate = cmp_compare.get_compliance_stanadards_to_add(tenant_sessions, tenant_compliance_standards_lists)
+    clone_compliance_standards_to_migrate = cmp_compare.get_compliance_stanadards_to_add(tenant_sessions, tenant_compliance_standards_lists, logger)
 
     #Get all requirements and sections for each standard. This is a deep nested search and takes some time
     clone_compliance_standards_data = []
@@ -62,7 +63,7 @@ def migrate(tenant_sessions: list, logger):
         standards_added.append(added)
 
         #Translate compliance IDs
-        clone_standards = cmp_get.get_compliance_standard_list(tenant_sessions[index + 1])
+        clone_standards = cmp_get.get_compliance_standard_list(tenant_sessions[index + 1], logger)
         for i in range(len(tenant_standards)):
             name = tenant_standards[i]['standard']['name']  
             for j in range(len(clone_standards)):

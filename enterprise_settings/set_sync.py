@@ -15,7 +15,7 @@ def sync(tenant_sessions, logger):
     for session in clone_tenant_sessions:
         logger.debug('API - Updating enterprise settings')
         session.request('POST', '/settings/enterprise', json=settings)
-        updated.append(True)
+        tenant_updated.append(True)
 
     logger.info('Finished syncing Enterprise Settings')
 
