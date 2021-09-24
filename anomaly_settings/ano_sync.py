@@ -48,20 +48,18 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     if addMode:
         #Getting anomaly lists to add
         trusted_lists_to_add = ano_compare.get_lists_to_add(trusted_lists_list)
+        added = 0
         for index, tenant in enumerate(trusted_lists_to_add):
             for t_list in tqdm(tenant, desc='Adding Trusted IP Lists', leave=False):
                 ano_update.add_trusted_list(tenant_sessions[index + 1], t_list, logger)
-
+                added +=1
+        tenant_added_trusted_lists.append(added)
     if upMode:
         #Get anomaly lists to update
         trusted_lists_to_update = ano_compare.get_lists_to_update(trusted_lists_list)
         for index, tenant in enumerate(trusted_lists_to_update):
-            added = 0
             for t_list in tqdm(tenant, desc='Updating Trusted IP Lists', leave=False):
                 ano_update.update_trusted_list(tenant_sessions[index + 1], t_list, logger)
-                added +=1
-            tenant_added_trusted_lists.append(added)
-
 
     if delMode:
         #Get anomaly lists to delete

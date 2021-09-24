@@ -111,6 +111,35 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
 
     print(run_summary)
 
+    clone_tenant_sessions = tenant_sessions[1:]
+    for tenant in clone_tenant_sessions:
+
+        added_cloud_accounts = run_summary.get('added_cloud_accounts')
+        added_account_groups = run_summary.get('added_account_groups')
+        added_resource_lists = run_summary.get('added_resource_lists')
+        added_user_roles = run_summary.get('added_user_roles')
+        added_user_profiles = run_summary.get('added_user_profiles')
+        added_networks = run_summary.get('added_networks')
+        added_cidrs = run_summary.get('added_cidrs')
+        added_login_ips = run_summary.get('added_login_ips')
+        added_compliance_standards = run_summary.get('added_compliance_standards')
+        added_compliance_requirements = run_summary.get('added_compliance_requirements')
+        added_compliance_sections = run_summary.get('added_compliance_sections')
+        added_custom_policies = run_summary.get('added_custom_policies')
+        updated_default_policies = run_summary.get('updated_default_policies')
+        added_alert_rules = run_summary.get('added_alert_rules')
+        added_trusted_lists = run_summary.get('added_trusted_lists')
+        updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
+
+
+        
+        logger.info(f'RUN SUMMARY FOR TENANT {tenant.tenant}')
+        logger.info(f'Added {added_cloud_accounts} cloud accounts')
+        logger.info(f'Added {added_account_groups} cloud account groups')
+        logger.info(f'Added {added_resource_lists} resource lists')
+        logger.info(f'Added {added_user_roles} user roles')
+        logger.info(f'Added {added_user_roles} user profiles')
+
 
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')

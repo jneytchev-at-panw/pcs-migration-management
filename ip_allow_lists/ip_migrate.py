@@ -39,6 +39,7 @@ def migrate(tenant_sessions, logger):
     source_tenant = tenant_trusted_alert_networks[0]
     clone_tenants = tenant_trusted_alert_networks[1:]
     for index, tenant in enumerate(clone_tenants):
+        added = 0
         for src_network in source_tenant:
             #Check if all cidr blocks are present
             new_network = [network for network in tenant if network['name'] == src_network['name']][0]
@@ -50,8 +51,8 @@ def migrate(tenant_sessions, logger):
                 if cidr['cidr'] not in [n_cidr['cidr'] for n_cidr in new_network['cidrs']]:
                     cidr_to_add.append(cidr)
             net_name = src_network['name']
-            added = ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network['uuid'], cidr_to_add, logger)
-            tenant_cidrs_added.append(added)
+            added += ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network['uuid'], cidr_to_add, logger)
+        tenant_cidrs_added.append(added)
 
 
     #Next, migrate Trusted Login IPs

@@ -73,14 +73,15 @@ def migrate(tenant_sessions: list, logger):
                     break
         
         #Migrate compliance requirements
+        added_reqs = 0
         for index2, standard in enumerate(tenant_standards):
             requirements = standard['requirements']
             std_id = standard['standard']['id']
-            added = 0
+            
             for requirement in requirements:
                 cmp_add.add_requirement_to_standard(tenant_sessions[index + 1], std_id, requirement['requirement'], logger)
-                added += 1
-            requirements_added.append(added)
+                added_reqs += 1
+            
 
             #Translate compliance IDs
             clone_requirements = cmp_get.get_compliance_requirement_list(tenant_sessions[index+1], standard['standard'])
@@ -96,14 +97,17 @@ def migrate(tenant_sessions: list, logger):
             tenant_standards[index2].update(requirements=requirements)
 
             #Migrate sections now that the requirement UUIDs have been updated
+            added_secs = 0
             for requirement in requirements:
                 req_id = requirement['requirement']['id']
                 sections = requirement['sections']
-                added = 0
+                
                 for section in sections:
                     cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, section, logger)
-                    added += 1
-                sections_added.append(added)
+                    added_secs += 1
+            sections_added.append(added_secs)
+        
+        requirements_added.append(added_reqs)
     
     logger.info('Finished migrating Compliance Standards')
     print()
