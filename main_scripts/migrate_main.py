@@ -112,7 +112,8 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
     print(run_summary)
 
     clone_tenant_sessions = tenant_sessions[1:]
-    for tenant in clone_tenant_sessions:
+    for index in range(len(clone_tenant_sessions)):
+        tenant = clone_tenant_sessions[index]
 
         added_cloud_accounts = run_summary.get('added_cloud_accounts')
         added_account_groups = run_summary.get('added_account_groups')
@@ -134,22 +135,22 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
 
         
         logger.info(f'RUN SUMMARY FOR TENANT {tenant.tenant}')
-        logger.info(f'Added {added_cloud_accounts} cloud accounts')
-        logger.info(f'Added {added_account_groups} cloud account groups')
-        logger.info(f'Added {added_resource_lists} resource lists')
-        logger.info(f'Added {added_user_roles} user roles')
-        logger.info(f'Added {added_user_profiles} user profiles')
-        logger.info(f'Added {added_networks} trusted networks')
-        logger.info(f'Added {added_cidrs} trusted network cidrs')
-        logger.info(f'Added {added_login_ips} trusted login ips')
-        logger.info(f'Added {added_compliance_standards} compliance standards')
-        logger.info(f'Added {added_compliance_requirements} compliance requirements')
-        logger.info(f'Added {added_compliance_sections} compliance sections')
-        logger.info(f'Added {added_custom_policies} custom policies')
-        logger.info(f'Updated {updated_default_policies} default policies')
-        logger.info(f'Added {added_alert_rules} alert rules')
-        logger.info(f'Added {added_trusted_lists} anomaly trusted lists')
-        logger.info(f'Updated enterprise settings T/F: {updated_enterprise_settings}')
+        logger.info(f'Added {added_cloud_accounts[index]} cloud accounts')
+        logger.info(f'Added {added_account_groups[index]} cloud account groups')
+        logger.info(f'Added {added_resource_lists[index]} resource lists')
+        logger.info(f'Added {added_user_roles[index]} user roles')
+        logger.info(f'Added {added_user_profiles[index]} user profiles')
+        logger.info(f'Added {added_networks[index]} trusted networks')
+        logger.info(f'Added {added_cidrs[index]} trusted network cidrs')
+        logger.info(f'Added {added_login_ips[index]} trusted login ips')
+        logger.info(f'Added {added_compliance_standards[index]} compliance standards')
+        logger.info(f'Added {added_compliance_requirements[index]} compliance requirements')
+        logger.info(f'Added {added_compliance_sections[index]} compliance sections')
+        logger.info(f'Added {added_custom_policies[index]} custom policies')
+        logger.info(f'Updated {updated_default_policies[index]} default policies')
+        logger.info(f'Added {added_alert_rules[index]} alert rules')
+        logger.info(f'Added {added_trusted_lists[index]} anomaly trusted lists')
+        logger.info(f'Updated enterprise settings T/F: {updated_enterprise_settings[index]}')
 
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')
