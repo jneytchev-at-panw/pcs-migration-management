@@ -109,7 +109,10 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
             updated = set_sync.sync(tenant_sessions, logger)
             run_summary.update(updated_enterprise_settings=updated)
 
-    print(run_summary)
+    c_print('**************************', color='green')
+    c_print('Finished migrating tenants', color='green')
+    c_print('**************************', color='green')
+    print()
 
     clone_tenant_sessions = tenant_sessions[1:]
     for index in range(len(clone_tenant_sessions)):
@@ -152,10 +155,7 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         logger.info(f'Added {added_trusted_lists[index]} anomaly trusted lists')
         logger.info(f'Updated enterprise settings T/F: {updated_enterprise_settings[index]}')
 
-    c_print('**************************', color='green')
-    c_print('Finished migrating tenants', color='green')
-    c_print('**************************', color='green')
-    print()
+    
 
 
 if __name__ == '__main__':
