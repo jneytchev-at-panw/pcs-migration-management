@@ -59,7 +59,7 @@ def add_network_allow_list_cidrs(session, net_uuid, cidrs, logger):
     if cidrs:
         for cidr in tqdm(cidrs, desc='Adding CIDRs to network', leave=False):
             logger.debug('API - Adding CIDRs to network')
-            session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
+            res = session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
             if res.status_code == 200 or res.status_code == 201:
                 added += 1
 

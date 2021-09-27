@@ -84,7 +84,7 @@ def migrate(tenant_sessions: list, logger):
                 added_reqs += 1
 
             #Translate compliance IDs
-            clone_requirements = cmp_get.get_compliance_requirement_list(tenant_sessions[index+1], standard['standard'])
+            clone_requirements = cmp_get.get_compliance_requirement_list(tenant_sessions[index+1], standard['standard'], logger)
             for i in range(len(requirements)):
                 name = requirements[i]['requirement']['name']
                 for j in range(len(clone_requirements)):
