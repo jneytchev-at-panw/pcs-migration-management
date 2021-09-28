@@ -32,26 +32,37 @@ def sync(tenant_sessions: list, modes: dict, logger):
     for mode in tqdm(mode_list, desc='SYNC ADD/UPDATE STATUS'):
         if 'cloud' == mode:
             cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
+        
         if 'account' == mode:
             acc_sync_data = acc_sync.sync(tenant_sessions, modes['account'].get('add', True), modes['account'].get('update', True), False, logger)
+        
         if 'resource' == mode:
             rsc_sync_data = rsc_sync.sync(tenant_sessions, modes['resource'].get('add', True), modes['resource'].get('update', True), False, logger)
+        
         if 'role' == mode:
             role_sync_data = role_sync.sync(tenant_sessions, modes['role'].get('add', True), modes['role'].get('update', True), False, logger)
+        
         if 'user' == mode:
             usr_sync_data = usr_sync.sync(tenant_sessions, modes['user'].get('add', True), modes['user'].get('update', True), False, logger)
+        
         if 'ip' == mode:
             ip_sync_data = ip_sync.sync(tenant_sessions, modes['ip'].get('add', True), modes['ip'].get('update', True), False, logger)
+        
         if 'compliance' == mode:
             cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
+        
         if 'search' == mode:
             search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
+        
         if 'policy' == mode:
             plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), modes['policy'].get('update', True), False, logger)
+        
         if 'alert' == mode:
             alr_sync_data = alr_sync.sync(tenant_sessions, modes['alert'].get('add', True), modes['alert'].get('update', True), False, logger)
+        
         if 'anomaly' == mode:
             ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
+        
         if 'settings' == mode:
             set_sync.sync(tenant_sessions, logger)
 

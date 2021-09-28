@@ -49,6 +49,8 @@ def migrate(tenant_sessions, logger):
 
     logger.info('Finished migrating Alert Rules')
 
+    return tenant_added_alert_rules
+
 
 if __name__ == '__main__':
     from sdk import load_config

@@ -59,7 +59,7 @@ def add_network_allow_list_cidrs(session, net_uuid, cidrs, logger):
     if cidrs:
         for cidr in tqdm(cidrs, desc='Adding CIDRs to network', leave=False):
             logger.debug('API - Adding CIDRs to network')
-            session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
+            res = session.request('POST', f'/allow_list/network/{net_uuid}/cidr', json=cidr)
             if res.status_code == 200 or res.status_code == 201:
                 added += 1
 
@@ -73,11 +73,15 @@ def add_login_ips(session, ips, logger):
 
     Adds the Login Allow IPs.
     '''
+    added = 0
     if ips:
         logger.info(f'Adding Login IPs to tenant: \'{session.tenant}\'')
 
         for ip in ips:
             logger.debug('API - Adding login allow IP')
             session.request('POST', '/ip_allow_list_login', json=ip)
+            added += 1
     else:
         logger.info(f'No Login IPs to add for tenant: \'{session.tenant}\'')
+
+    return added

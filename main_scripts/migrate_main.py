@@ -109,13 +109,53 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
             updated = set_sync.sync(tenant_sessions, logger)
             run_summary.update(updated_enterprise_settings=updated)
 
-    print(run_summary)
-
-
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')
     c_print('**************************', color='green')
     print()
+
+    clone_tenant_sessions = tenant_sessions[1:]
+    for index in range(len(clone_tenant_sessions)):
+        tenant = clone_tenant_sessions[index]
+
+        added_cloud_accounts = run_summary.get('added_cloud_accounts')
+        added_account_groups = run_summary.get('added_account_groups')
+        added_resource_lists = run_summary.get('added_resource_lists')
+        added_user_roles = run_summary.get('added_user_roles')
+        added_user_profiles = run_summary.get('added_user_profiles')
+        added_networks = run_summary.get('added_networks')
+        added_cidrs = run_summary.get('added_cidrs')
+        added_login_ips = run_summary.get('added_login_ips')
+        added_compliance_standards = run_summary.get('added_compliance_standards')
+        added_compliance_requirements = run_summary.get('added_compliance_requirements')
+        added_compliance_sections = run_summary.get('added_compliance_sections')
+        added_custom_policies = run_summary.get('added_custom_policies')
+        updated_default_policies = run_summary.get('updated_default_policies')
+        added_alert_rules = run_summary.get('added_alert_rules')
+        added_trusted_lists = run_summary.get('added_trusted_lists')
+        updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
+
+
+        
+        logger.info(f'RUN SUMMARY FOR TENANT {tenant.tenant}')
+        logger.info(f'Added {added_cloud_accounts[index]} cloud accounts')
+        logger.info(f'Added {added_account_groups[index]} cloud account groups')
+        logger.info(f'Added {added_resource_lists[index]} resource lists')
+        logger.info(f'Added {added_user_roles[index]} user roles')
+        logger.info(f'Added {added_user_profiles[index]} user profiles')
+        logger.info(f'Added {added_networks[index]} trusted networks')
+        logger.info(f'Added {added_cidrs[index]} trusted network cidrs')
+        logger.info(f'Added {added_login_ips[index]} trusted login ips')
+        logger.info(f'Added {added_compliance_standards[index]} compliance standards')
+        logger.info(f'Added {added_compliance_requirements[index]} compliance requirements')
+        logger.info(f'Added {added_compliance_sections[index]} compliance sections')
+        logger.info(f'Added {added_custom_policies[index]} custom policies')
+        logger.info(f'Updated {updated_default_policies[index]} default policies')
+        logger.info(f'Added {added_alert_rules[index]} alert rules')
+        logger.info(f'Added {added_trusted_lists[index]} anomaly trusted lists')
+        logger.info(f'Updated enterprise settings T/F: {updated_enterprise_settings[index]}')
+
+    
 
 
 if __name__ == '__main__':
