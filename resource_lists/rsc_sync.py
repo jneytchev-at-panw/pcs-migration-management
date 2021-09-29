@@ -9,6 +9,10 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     Syncs resource lists by adding updating and deleting
     resource lists from the clone tenant.
     '''
+
+    added_resource_lists = []
+    updated_resource_lists = []
+    deleted_resource_lists = []
     
     #Get all resource lists
     tenant_resource_lists = []
@@ -28,7 +32,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
         #Add resource lists
         for index, cln_rsc_lists in enumerate(cln_tenant_rsc_lists_to_add):
-            rsc_add.add_resource_lists(tenant_sessions[index + 1], cln_rsc_lists, logger)
+            added = rsc_add.add_resource_lists(tenant_sessions[index + 1], cln_rsc_lists, logger)
+            added_resource_lists.append(added)
     
     if upMode:
         #Get resource lists to update
@@ -39,7 +44,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         
         #Update resource lists
         for index, rsc_lists in enumerate(cln_tenant_rsc_list_to_update):
-            rsc_update.update_resource_lists(tenant_sessions[index + 1], rsc_lists, logger)
+            updated = rsc_update.update_resource_lists(tenant_sessions[index + 1], rsc_lists, logger)
+            updated_resource_lists.append(updated)
 
     if delMode:
         #Get resource lists to delete
@@ -50,9 +56,12 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         
         #Delete resource lists
         for index, rsc_lists in enumerate(cln_tenant_rsc_lists_to_delete):
-            rsc_delete.delete_resource_lists(tenant_sessions[index + 1], rsc_lists, logger)
+            deleted = rsc_delete.delete_resource_lists(tenant_sessions[index + 1], rsc_lists, logger)
+            deleted_resource_lists.append(deleted)
 
     logger.info('Finished migrateding Resource Lists')
+
+    return added_resource_lists, updated_resource_lists, deleted_resource_lists, {}
 
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

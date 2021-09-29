@@ -8,6 +8,10 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     Adds, Updates, and Deletes account group to sync changes accross all tenants supplied.
     '''
 
+    added_account = []
+    updated_account = []
+    deleted_account = []
+
     #Get all account groups
     tenant_acc_grps = []
     for session in tenant_sessions:
@@ -27,7 +31,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         #Add account groups
         for index, cln_acc_grps in enumerate(cln_tenant_acc_grps_to_add):
             session = tenant_sessions[index + 1]
-            acc_add.add_account_groups(session, cln_acc_grps, logger)
+            added = acc_add.add_account_groups(session, cln_acc_grps, logger)
+            added_account.append(added)
 
     if upMode:
         #Get account groups to update
@@ -38,7 +43,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
         for index, cln_acc_grps in enumerate(cln_tenant_acc_grps_to_update):
             session = tenant_sessions[index + 1]
-            acc_update.update_account_groups(session, cln_acc_grps, logger)
+            updated = acc_update.update_account_groups(session, cln_acc_grps, logger)
+            updated_account.append(updated)
 
     if delMode:
         cln_tenant_acc_grps_to_delete = []
@@ -48,10 +54,13 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
         for index, cln_acc_grps in enumerate(cln_tenant_acc_grps_to_delete):
             session = tenant_sessions[index + 1]
-            acc_delete.delete_account_groups(session, cln_acc_grps, logger)
+            deleted = acc_delete.delete_account_groups(session, cln_acc_grps, logger)
+            deleted_account.append(deleted)
         
 
     logger.info('Finished syncing Account Groups')
+
+    return added_account, updated_account, deleted_account, {}
 
 if __name__ =='__main__':
     from sdk.load_config import load_config_create_sessions

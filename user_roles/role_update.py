@@ -3,6 +3,8 @@ from user_roles import role_translate_id
 from tqdm import tqdm
 
 def update_roles(session, old_session, roles, logger):
+    updated = 0
+
     if roles:
         logger.info(f'Updating User Roles for tenant: \'{session.tenant}\'')
 
@@ -43,6 +45,9 @@ def update_roles(session, old_session, roles, logger):
             
             logger.debug(f'API - Updating role {name}')
             session.request('PUT', f'/user/role/{r_id}', json=role)
+            updated += 1
 
     else:
         logger.info(f'No User Roles to update for tenant: \'{session.tenant}\'')
+
+    return updated 

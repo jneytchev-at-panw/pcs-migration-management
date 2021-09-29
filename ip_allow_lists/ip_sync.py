@@ -2,6 +2,14 @@ from ip_allow_lists import ip_add, ip_compare, ip_get, ip_update, ip_delete
 from sdk.color_print import c_print
 
 def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
+    added_networks = []
+    added_cidrs = []
+    added_logins = []
+    updated_network_cidrs = []
+    updated_logins = []
+    deleted_network_cidrs = []
+    deleted_logins = []
+
     #Get trusted ips from the tenants
     trusted_networks_list = []
     for session in tenant_sessions:
