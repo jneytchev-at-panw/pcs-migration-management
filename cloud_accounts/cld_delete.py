@@ -2,6 +2,7 @@ from sdk.color_print import c_print
 from tqdm import tqdm
 
 def delete_accounts(cln_session, accounts, logger):
+    deleted = 0
     if accounts:
         logger.info(f'Deleting Cloud Accounts from tenant \'{cln_session.tenant}\'')
 
@@ -16,7 +17,10 @@ def delete_accounts(cln_session, accounts, logger):
                 cld_id = account['accountId']
         
             logger.debug('API - Deleting cloud account')
-            cln_session.request('DELETE', f'/cloud/{cloud_type}/{cld_id}')
-
+            res = cln_session.request('DELETE', f'/cloud/{cloud_type}/{cld_id}')
+            if res.status_code == 200 or res.status_code == 201:
+                delted += 1
     else:
         logger.info(f'No Cloud Accounts to delete for tenant \'{cln_session.tenant}\'')
+
+    return deleted

@@ -24,6 +24,8 @@ def sync(tenant_sessions: list, modes: dict, logger):
     specifying the operations that are enabled.
     '''
 
+    run_summary = {}
+
     mode_list = []
     for mode in modes.items():
         mode_list.append(mode[0])
@@ -31,8 +33,10 @@ def sync(tenant_sessions: list, modes: dict, logger):
     #ADDING AND UPDATING - Order based on dependencies.
     for mode in tqdm(mode_list, desc='SYNC ADD/UPDATE STATUS'):
         if 'cloud' == mode:
-            cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
-        
+            added, updated, delted, cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
+            run_summary.update(added_cloud_accounts=added)
+            run_summary.update(updated_cloud_accounts=updated)
+            
         if 'account' == mode:
             acc_sync_data = acc_sync.sync(tenant_sessions, modes['account'].get('add', True), modes['account'].get('update', True), False, logger)
         
