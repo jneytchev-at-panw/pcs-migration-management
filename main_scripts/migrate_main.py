@@ -100,7 +100,7 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
             
         
         if 'anomaly' == mode:
-            added_trusted_lists = ano_sync.sync(tenant_sessions, True, False, False, logger)
+            added_trusted_lists, updated, deleted, anomaly_data = ano_sync.sync(tenant_sessions, True, False, False, logger)
             run_summary.update(added_trusted_lists=added_trusted_lists)
 
 

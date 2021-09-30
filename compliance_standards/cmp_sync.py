@@ -9,6 +9,19 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     and sections so that they can be compared. Compliance data will be added, updated or delted from the clone
     tenants until each clone tenant matches the one source tenant.
     '''
+
+    added_standards_list = []
+    added_requirements_list = []
+    added_sections_list = []
+    
+    updated_standards_list = []
+    updated_requirements_list = []
+    updated_sections_list = []
+    
+    deleted_standards_list = []
+    deleted_requirements_list = []
+    deleted_sections_list = []
+
     
     if not tenant_compliance_standards_data:#Sometimes the compliance data is passed in. Mainly used by the delete function
         #Get complance standards from all tenants
@@ -51,13 +64,24 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     #Sync compliance data
     for index, clone in enumerate(clone_compliance_standards):
         session = tenant_sessions[index + 1]
-        cmp_compare.update_add_delete_compliance_data(source_compliance_standards, clone, session, addMode, upMode, delMode, logger)
+        res = cmp_compare.update_add_delete_compliance_data(source_compliance_standards, clone, session, addMode, upMode, delMode, logger)
 
+        added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections = res
+        
+        added_standards_list.append(added_standards)
+        added_requirements_list.append(added_requirements)
+        added_sections_list.append(added_sections)
+        updated_standards_list.append(updated_standards)
+        updated_requirements_list.append(updated_requirements)
+        updated_sections_list.append(updated_sections)
+        deleted_standards_list.append(deleted_standards)
+        deleted_requirements_list.append(deleted_requirements)
+        deleted_sections_list.append(deleted_sections)
 
     logger.info('Finished syncing Compliance Data')
     print()
 
-    return tenant_compliance_standards_data
+    return added_standards_list, added_requirements_list, added_sections_list, updated_standards_list, updated_requirements_list, updated_sections_list, deleted_standards_list, deleted_requirements_list, deleted_sections_list, tenant_compliance_standards_data
 
 
 #==============================================================================

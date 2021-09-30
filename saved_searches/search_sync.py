@@ -16,22 +16,30 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
     o_tenant = tenant_saved_searches[0]
     clone_tenants = tenant_saved_searches[1:]
 
+    added_searches = []
+    deleted_searches = []
+
     if addMode:
+        
         #Compare saved searches across tenants and add missing ones
         #Loop over the saved searches of each tenant
         for index, d_tenant in enumerate(clone_tenants):
+            added = 0
             saved_search_to_add = []
             for o_saved_search in o_tenant:
                 if o_saved_search['searchName'] not in [d_ss['searchName'] for d_ss in d_tenant]:
                     saved_search_to_add.append(o_saved_search)
             for search in tqdm(saved_search_to_add, desc='Adding Saved Searches', leave=False):
                 run_and_save_search(tenant_sessions[index + 1], search, logger)
+                added += 1
+            added_searches.append(added)
 
     #Saved searches don't seem to be able to updated so no reason to look for changes among searches
 
     if delMode:
         #Delete saved searches
         for index, d_tenant in enumerate(clone_tenants):
+            deleted = 0
             saved_search_to_delete = []
             for d_saved_search in d_tenant:
                 if d_saved_search['searchName'] not in [o_ss['searchName'] for o_ss in o_tenant]:
@@ -40,6 +48,10 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
                 logger.debug('API - Deleteing saved search')
                 s_id = search['id']
                 tenant_sessions[index + 1].request('DELETE', f'/search/history/{s_id}', status_ignore=[204])
+                deleted += 1
+            deleted_searches.append(deleted)
+
+    return added_searches, deleted_searches, {}
 
 #==============================================================================
 

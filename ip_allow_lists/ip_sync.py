@@ -3,7 +3,7 @@ from sdk.color_print import c_print
 
 def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
     added_networks = []
-    added_cidrs = []
+    added_network_cidrs = []
     added_logins = []
     updated_network_cidrs = []
     updated_logins = []
@@ -31,21 +31,25 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         #Upload networks to clone tenants
         for index, networks in enumerate(trusted_networks_delta):
             tenant_session = clone_tenant_sessions[index]
-            ip_add.add_networks(tenant_session, networks, logger)
+            added = ip_add.add_networks(tenant_session, networks, logger)
+            added_networks.append(added)
 
     #Get trusted networks that need to be updated=========================================================
     if addMode:
         #Add cidr blocks to networks as needed
         for index, cln_network in enumerate(clone_networks):
-            ip_compare.compare_each_network_cidr_and_add(tenant_sessions[index + 1], src_network, cln_network, logger)
+            added = ip_compare.compare_each_network_cidr_and_add(tenant_sessions[index + 1], src_network, cln_network, logger)
+            added_network_cidrs.append(added)
     if delMode:
         #Delete cidr blocks from networks as needed
         for index, cln_network in enumerate(clone_networks):
-            ip_compare.compare_each_network_cidr_and_delete(tenant_sessions[index + 1], src_network, cln_network, logger)
+            deleted = ip_compare.compare_each_network_cidr_and_delete(tenant_sessions[index + 1], src_network, cln_network, logger)
+            deleted_network_cidrs.append(deleted)
     if upMode:
         #Update description of network ips
         for index, cln_network in enumerate(clone_networks):
-            ip_compare.compare_each_network_cidr_and_update(tenant_sessions[index + 1], src_network, cln_network, logger)
+            updated = ip_compare.compare_each_network_cidr_and_update(tenant_sessions[index + 1], src_network, cln_network, logger)
+            updated_network_cidrs.append(updated)
     
 
     #Trusted Login IP Sync===============================================================================
@@ -68,7 +72,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         #Upload login IPs to clone tenants
         for index, ips in enumerate(login_ips_delta):
             tenant_session = clone_tenant_sessions[index]
-            ip_add.add_login_ips(tenant_session, ips, logger)
+            added = ip_add.add_login_ips(tenant_session, ips, logger)
+            added_logins.append(added)
 
     if upMode:
         login_ips_delta = []
@@ -79,7 +84,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
         for index, ips in enumerate(login_ips_delta):
             tenant_session = clone_tenant_sessions[index]
-            ip_update.update_login_ips(tenant_session, ips, login_ips_list[index + 1], logger)
+            updated = ip_update.update_login_ips(tenant_session, ips, login_ips_list[index + 1], logger)
+            updated_logins.append(updated)
 
     if delMode:
         login_ips_delta = []
@@ -90,9 +96,12 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
         for index, ips in enumerate(login_ips_delta):
             tenant_session = clone_tenant_sessions[index]
-            ip_delete.delete_login_ips(tenant_session, ips,  login_ips_list[index + 1], logger)
+            deleted = ip_delete.delete_login_ips(tenant_session, ips,  login_ips_list[index + 1], logger)
+            deleted_logins.append(deleted)
 
     logger.info('Finished syncing IP Allow Lists')
+
+    return added_networks, added_network_cidrs, added_logins, updated_network_cidrs, updated_logins, deleted_network_cidrs, deleted_logins, {}
 
 if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions

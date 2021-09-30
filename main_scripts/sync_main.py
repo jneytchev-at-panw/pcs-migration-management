@@ -58,25 +58,46 @@ def sync(tenant_sessions: list, modes: dict, logger):
             run_summary.update(updated_profiles=updated)
 
         if 'ip' == mode:
-            added_networks, added_cidrs, added_logins, updated_network_cidrs, updated_logins, deleted_network_cidrs, deleted_logins, ip_sync_data = ip_sync.sync(tenant_sessions, modes['ip'].get('add', True), modes['ip'].get('update', True), False, logger)
+            added_networks, added_network_cidrs, added_logins, updated_network_cidrs, updated_logins, deleted_network_cidrs, deleted_logins, ip_sync_data = ip_sync.sync(tenant_sessions, modes['ip'].get('add', True), modes['ip'].get('update', True), False, logger)
+            run_summary.update(added_networks=added_networks)
+            run_summary.update(added_networks_cidrs=added_network_cidrs)
+            run_summary.update(added_login_ips=added_logins)
+            run_summary.update(updated_network_cidrs=updated_network_cidrs)
+            run_summary.update(updated_login_ips=updated_logins)
 
         if 'compliance' == mode:
-            cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
-        
+            added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections, cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
+            run_summary.update(added_standards=added_standards)
+            run_summary.update(added_requirements=added_requirements)
+            run_summary.update(added_sections=added_sections)
+            run_summary.update(updated_standards=updated_standards)
+            run_summary.update(updated_requirements=updated_requirements)
+            run_summary.update(updated_sections=updated_sections)
+
         if 'search' == mode:
-            search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
+            added_searches, deleted_searches, search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
+            run_summary.update(added_searches=added_searches)
         
         if 'policy' == mode:
-            plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), modes['policy'].get('update', True), False, logger)
+            added, updated, deleted, updated_default, plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), modes['policy'].get('update', True), False, logger)
+            run_summary.update(added_policies=added)
+            run_summary.update(updated_policies=updated)
+            run_summary.update(updated_default_policies=updated_default)
         
         if 'alert' == mode:
-            alr_sync_data = alr_sync.sync(tenant_sessions, modes['alert'].get('add', True), modes['alert'].get('update', True), False, logger)
+            added, updated, deleted, alr_sync_data = alr_sync.sync(tenant_sessions, modes['alert'].get('add', True), modes['alert'].get('update', True), False, logger)
+            run_summary.update(added_alerts=added)
+            run_summary.update(updated_alerts=updated)
         
         if 'anomaly' == mode:
-            ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
+            added, updated, deleted, ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
+            run_summary.update(added_anomaly=added)
+            run_summary.update(updated_anomaly=updated)
+            run_summary.update(deleted_anomaly=deleted)
         
         if 'settings' == mode:
-            set_sync.sync(tenant_sessions, logger)
+            updated = set_sync.sync(tenant_sessions, logger)
+            run_summary.update(updated_enterprise_settings=updated)
 
     #DELETEING - Order based on dependencies
     mode_list = mode_list[::-1]

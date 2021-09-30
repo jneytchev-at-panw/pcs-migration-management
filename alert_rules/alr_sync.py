@@ -11,6 +11,10 @@ def sync(tenant_sessions, addMode, upMode, delMode, logger):
     For each tenant_session, migrates all alert rules
     '''
 
+    added_alert_rules = []
+    updated_alert_rules = []
+    deleted_alert_rules = []
+        
     #Get all alert rules
     tenant_alert_rules = []
     tenant_account_groups = []
@@ -37,6 +41,7 @@ def sync(tenant_sessions, addMode, upMode, delMode, logger):
     tenant_cln_alr_rls = tenant_alert_rules[1:]
 
     if addMode:
+        added = 0
         #Get alert rules to add----------------------------------------------------
         tenant_alr_rls_to_add = []
         for cln_alr_rls in tenant_cln_alr_rls:
@@ -55,8 +60,12 @@ def sync(tenant_sessions, addMode, upMode, delMode, logger):
         for index, alr_rls in enumerate(translated_alr_rls_to_add):
             session = tenant_sessions[index + 1]
             alr_add.add_alert_rules(session, alr_rls, logger)
+            added += 1
+        added_alert_rules.append(added)
+    
 
     if upMode:
+        updated = 0
         #Get alert rules to update-------------------------------------------------
         tenant_cln_plcs = tenant_policies_list[1:]
         tenant_alr_rls_to_update = []
@@ -67,8 +76,11 @@ def sync(tenant_sessions, addMode, upMode, delMode, logger):
         #Update the alert rules
         for i, alert_rules in enumerate(tenant_alr_rls_to_update):
             alr_update.update_alert_rules(tenant_sessions[i + 1], alert_rules, logger)
+            updated += 1
+        updated_alert_rules.append(updated)
     
     if delMode:
+        deleted = 0
         #Get Alert Rules to delete-------------------------------------------------
         tenant_alr_rls_to_delete = []
         for cln_alr_rls in tenant_cln_alr_rls:
@@ -79,10 +91,14 @@ def sync(tenant_sessions, addMode, upMode, delMode, logger):
         for index, alr_rls in enumerate(tenant_alr_rls_to_delete):
             session = tenant_sessions[index + 1]
             alr_delete.delete_alert_rules(session, alr_rls, logger)
+            deleted += 1
+        deleted_alert_rules.append(deleted)
 
 
 
     logger.info('Finished syncing Alert Rules')
+
+    return added_alert_rules, updated_alert_rules, deleted_alert_rules, {}
 
 if __name__ == '__main__':
     from sdk import load_config

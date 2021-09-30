@@ -18,6 +18,7 @@ def compare_trusted_networks(source_networks, clone_networks):
 
 #Sync
 def compare_each_network_cidr_and_add(session, source_networks, clone_networks, logger):
+    added = 0
     #Define lists
     for src_network in source_networks:
         #Check if all cidr blocks are present
@@ -34,9 +35,13 @@ def compare_each_network_cidr_and_add(session, source_networks, clone_networks, 
             networkUuid = new_network['uuid']
             logger.debug(f'API - Adding CIDRs to network {net_name}')
             session.request('POST', f'/allow_list/network/{networkUuid}/cidr', json=cidr)
+            added += 1
+
+    return added
 
 #Sync
 def compare_each_network_cidr_and_update(session, source_networks, clone_networks, logger):
+    updated = 0
     for src_network in source_networks:
         for cln_network in clone_networks:
             #Check if all cidr blocks are present
@@ -53,9 +58,13 @@ def compare_each_network_cidr_and_update(session, source_networks, clone_network
                 c_id = cidr['uuid']
                 logger.debug(f'API - Updating CIDR on network {name}')
                 session.request('PUT', f'/allow_list/network/{networkUuid}/cidr/{c_id}', json=cidr)
+                updated += 1
+
+    return updated
 
 #Sync
 def compare_each_network_cidr_and_delete(session, source_networks, clone_networks, logger):
+    deleted += 1
     networks_delta = []
     for src_network in source_networks:
         for cln_network in clone_networks:
@@ -73,6 +82,7 @@ def compare_each_network_cidr_and_delete(session, source_networks, clone_network
                     cidrUuid = cidr['uuid']
                     logger.debug(f'API - Deleting CIDR from network: \'{name}\'')
                     session.request('DELETE', f'/allow_list/network/{networkUuid}/cidr/{cidrUuid}')
+                    deleted += 1
 
 #Sync
 # def compare_cidr_lists(src_cidrs: list, cln_cidrs: list):
