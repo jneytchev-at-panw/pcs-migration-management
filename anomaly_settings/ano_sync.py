@@ -74,7 +74,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
             for t_list in tqdm(tenant, desc='Deleteing Trusted IP Lists', leave=False):
                 ano_update.delete_trusted_list(tenant_sessions[index + 1], t_list, logger)
                 deleted += 1
-        deleted_list.append(deleted)
+        deleted_lists.append(deleted)
 
     logger.info('Finished syncing Anomaly Settings')
 

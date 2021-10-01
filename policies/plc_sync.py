@@ -23,13 +23,11 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         #Get delta from original tenant policies and clone tenant policies
         policies_to_add = plc_compare.compare_original_to_clones(tenant_sessions, tenant_custom_policies, logger)
 
-        added = 0
         #Upload policies to clone tenants
         for index, policies in enumerate(policies_to_add):
             tenant_session = clone_tenant_sessions[index]
-            plc_add.add_custom_policies(tenant_session, tenant_sessions[0], policies, logger)
-            added += 1
-        added_policies.append(added)
+            added = plc_add.add_custom_policies(tenant_session, tenant_sessions[0], policies, logger)
+            added_policies.append(added)
 
     if upMode: 
         #Get policies to update
@@ -39,9 +37,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         #Update policies
         for index, policies in enumerate(policies_to_update):
             session = clone_tenant_sessions[index]
-            plc_update.update_custom_policies(session, tenant_sessions[0], policies, logger)
-            updated += 1
-        updated_policies.append(updated)
+            updated = plc_update.update_custom_policies(session, tenant_sessions[0], policies, logger)
+            updated_policies.append(updated)
 
     if delMode:
         #Get policies to delete
@@ -51,9 +48,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         #Delete polices
         for index, policies in enumerate(policies_to_delete):
             session = clone_tenant_sessions[index]
-            plc_delete.delete_policies(session, policies, logger)
-            deleted += 1
-        deleted_policies.append(deleted)
+            deleted = plc_delete.delete_policies(session, policies, logger)
+            deleted_policies.append(deleted)
 
     if upMode:
         #Sync default policy
@@ -61,7 +57,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
     logger.info('Finished syncing Policies')
 
-    return added_policies, updated_policies, deleted_policies, updated_default_policies
+    return added_policies, updated_policies, deleted_policies, updated_default_policies, {}
 
 if __name__ == '__main__':
     tenant_sessions = load_config.load_config_create_sessions()

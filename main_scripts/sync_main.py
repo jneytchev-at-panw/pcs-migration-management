@@ -101,55 +101,76 @@ def sync(tenant_sessions: list, modes: dict, logger):
 
     #DELETEING - Order based on dependencies
     mode_list = mode_list[::-1]
+    #Cloud accounts need to be deleted before account groups
+    if 'cloud' in mode_list and 'account' in mode_list:
+        mode_list[len(mode_list)-1], mode_list[len(mode_list)-2] = mode_list[len(mode_list)-2], mode_list[len(mode_list)-1]
+
     for mode in tqdm(mode_list, desc='SYNC DELETE STATUS'):
         if 'anomaly' == mode:
             if modes['anomaly'].get('delete', False):
-                ano_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, ano_sync_data = ano_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_anomaly=deleted)
 
         if 'alert' == mode:
             if modes['alert'].get('delete', False):
-                alr_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, alr_sync_data = alr_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_alerts=deleted)
 
         if 'policy' == mode:
             if modes['policy'].get('delete', False):
-                plc_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, updated_default, plc_sync_data = plc_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_policies=deleted)
 
         if 'search' == mode:
             if modes['search'].get('delete', False):
-                search_sync.sync(tenant_sessions, False, True, logger)
+                added_searches, deleted_searches, search_sync_data = search_sync.sync(tenant_sessions, False, True, logger)
+                run_summary.update(deleted_searches=deleted_searches)
 
         if 'compliance' == mode:
             if modes['compliance'].get('delete', False):
-                cmp_sync.sync(tenant_sessions, False, False, True, logger, cmp_sync_data)
+                added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections, cmp_sync_data = cmp_sync.sync(tenant_sessions, False, False, True, logger, cmp_sync_data)
+                run_summary.update(deleted_standards=deleted_standards)
+                run_summary.update(deleted_requirements=deleted_requirements)
+                run_summary.update(deleted_sections=deleted_sections)
 
         if 'ip' == mode:
             if modes['ip'].get('delete', False):
-                ip_sync.sync(tenant_sessions, False, False, True, logger)
+                added_networks, added_network_cidrs, added_logins, updated_network_cidrs, updated_logins, deleted_network_cidrs, deleted_logins, ip_sync_data = ip_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_network_cidrs=deleted_network_cidrs)
+                run_summary.update(deleted_logins=deleted_logins)
 
         if 'user' == mode:
             if modes['user'].get('delete', False):
-                usr_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, usr_sync_data = usr_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_profiles=deleted)
 
         if 'role' == mode:
             if modes['role'].get('delete', False):
-                role_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, role_sync_data = role_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_roles=deleted)
 
         if 'resource' == mode:
             if modes['resource'].get('delete', False):
-                rsc_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, rsc_sync_data = rsc_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_resource_lists=deleted)
 
         if 'cloud' == mode:
             if modes['cloud'].get('delete', False):
-                cld_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, cld_sync_data = cld_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_cloud_accounts=deleted)
 
         if 'account' == mode:
             if modes['account'].get('delete', False):
-                acc_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, acc_sync_data = acc_sync.sync(tenant_sessions, False, False, True, logger)
+                run_summary.update(deleted_cloud_accounts=deleted)
+
     
     c_print('************************', color='green')
     c_print('Finished syncing tenants', color='green')
     c_print('************************', color='green')
     print()
+
+    print(run_summary)
 
 if __name__ == '__main__':
     sync()
