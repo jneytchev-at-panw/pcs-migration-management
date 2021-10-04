@@ -45,6 +45,10 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         for index, cln_network in enumerate(clone_networks):
             deleted = ip_compare.compare_each_network_cidr_and_delete(tenant_sessions[index + 1], src_network, cln_network, logger)
             deleted_network_cidrs.append(deleted)
+    else:
+        for index in clone_networks:
+            deleted_network_cidrs.append(0)
+
     if upMode:
         #Update description of network ips
         for index, cln_network in enumerate(clone_networks):
@@ -98,6 +102,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
             tenant_session = clone_tenant_sessions[index]
             deleted = ip_delete.delete_login_ips(tenant_session, ips,  login_ips_list[index + 1], logger)
             deleted_logins.append(deleted)
+    else:
+        for index in clone_login_ips:
+            deleted_logins.append(0)
 
     logger.info('Finished syncing IP Allow Lists')
 

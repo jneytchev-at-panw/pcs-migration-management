@@ -88,7 +88,9 @@ def sync(tenant_sessions, addMode, upMode, delMode, logger):
             session = tenant_sessions[index + 1]
             deleted = alr_delete.delete_alert_rules(session, alr_rls, logger)
             deleted_alert_rules.append(deleted)
-
+    else:
+        for index in tenant_cln_alr_rls:
+            deleted_alert_rules.append(0)
 
 
     logger.info('Finished syncing Alert Rules')

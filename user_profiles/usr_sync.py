@@ -65,6 +65,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         for index, users in enumerate(tenant_users_to_delete):
             deleted = usr_delete.delete_user_profiles(tenant_sessions[index + 1], users, logger)
             deleted_profiles.append(deleted)
+    else:
+        for index in tenant_sessions[1:]:
+            deleted_profiles.append(0)
 
     logger.info('Finished syncing User Profiles')
 

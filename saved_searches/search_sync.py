@@ -50,6 +50,9 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
                 tenant_sessions[index + 1].request('DELETE', f'/search/history/{s_id}', status_ignore=[204])
                 deleted += 1
             deleted_searches.append(deleted)
+    else:
+        for index in clone_tenants:
+            deleted_searches.append(0)
 
     return added_searches, deleted_searches, {}
 

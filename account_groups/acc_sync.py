@@ -56,6 +56,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
             session = tenant_sessions[index + 1]
             deleted = acc_delete.delete_account_groups(session, cln_acc_grps, logger)
             deleted_account.append(deleted)
+    else:
+        for index in tenant_sessions[1:]:
+            deleted_account.append(0)
         
 
     logger.info('Finished syncing Account Groups')

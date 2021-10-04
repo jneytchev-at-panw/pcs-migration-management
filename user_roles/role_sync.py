@@ -43,6 +43,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
             session = clone_tenant_sessions[index]
             deleted = role_delete.delete_roles(session, roles, logger)
             deleted_roles.append(deleted)
+    else:
+        for index in tenant_sessions[1:]:
+            deleted_roles.append(0)
 
     logger.info('Finished syncing User Roles')
 

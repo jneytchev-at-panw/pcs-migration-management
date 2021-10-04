@@ -75,6 +75,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
                 ano_update.delete_trusted_list(tenant_sessions[index + 1], t_list, logger)
                 deleted += 1
         deleted_lists.append(deleted)
+    else:
+        for index in trusted_lists_list:
+            deleted_lists.append(0)
 
     logger.info('Finished syncing Anomaly Settings')
 

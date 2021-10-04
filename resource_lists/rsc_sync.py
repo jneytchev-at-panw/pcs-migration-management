@@ -58,6 +58,9 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         for index, rsc_lists in enumerate(cln_tenant_rsc_lists_to_delete):
             deleted = rsc_delete.delete_resource_lists(tenant_sessions[index + 1], rsc_lists, logger)
             deleted_resource_lists.append(deleted)
+    else:
+        for index in tenant_sessions[1:]:
+            deleted_resource_lists.append(0)
 
     logger.info('Finished migrateding Resource Lists')
 

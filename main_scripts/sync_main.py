@@ -36,26 +36,31 @@ def sync(tenant_sessions: list, modes: dict, logger):
             added, updated, deleted, cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
             run_summary.update(added_cloud_accounts=added)
             run_summary.update(updated_cloud_accounts=updated)
+            run_summary.update(deleted_cloud_accounts=deleted)
             
         if 'account' == mode:
             added, updated, deleted, acc_sync_data = acc_sync.sync(tenant_sessions, modes['account'].get('add', True), modes['account'].get('update', True), False, logger)
             run_summary.update(added_account_groups=added)
             run_summary.update(updated_account_groups=updated)
+            run_summary.update(deleted_account_groups=deleted)
         
         if 'resource' == mode:
             added, updated, deleted, rsc_sync_data = rsc_sync.sync(tenant_sessions, modes['resource'].get('add', True), modes['resource'].get('update', True), False, logger)
             run_summary.update(added_resource_lists=added)
             run_summary.update(updated_resource_lists=updated)
+            run_summary.update(deleted_resource_lists=deleted)
         
         if 'role' == mode:
             added, updated, deleted, role_sync_data = role_sync.sync(tenant_sessions, modes['role'].get('add', True), modes['role'].get('update', True), False, logger)
             run_summary.update(added_roles=added)
             run_summary.update(updated_roles=updated)
+            run_summary.update(deleted_roles=deleted)
         
         if 'user' == mode:
             added, updated, deleted, usr_sync_data = usr_sync.sync(tenant_sessions, modes['user'].get('add', True), modes['user'].get('update', True), False, logger)
             run_summary.update(added_profiles=added)
             run_summary.update(updated_profiles=updated)
+            run_summary.update(deleted_profiles=deleted)
 
         if 'ip' == mode:
             added_networks, added_network_cidrs, added_logins, updated_network_cidrs, updated_logins, deleted_network_cidrs, deleted_logins, ip_sync_data = ip_sync.sync(tenant_sessions, modes['ip'].get('add', True), modes['ip'].get('update', True), False, logger)
@@ -64,6 +69,8 @@ def sync(tenant_sessions: list, modes: dict, logger):
             run_summary.update(added_login_ips=added_logins)
             run_summary.update(updated_network_cidrs=updated_network_cidrs)
             run_summary.update(updated_login_ips=updated_logins)
+            run_summary.update(deleted_network_cidrs=deleted_network_cidrs)
+            run_summary.update(deleted_logins=deleted_logins)
 
         if 'compliance' == mode:
             added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections, cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
@@ -73,21 +80,27 @@ def sync(tenant_sessions: list, modes: dict, logger):
             run_summary.update(updated_standards=updated_standards)
             run_summary.update(updated_requirements=updated_requirements)
             run_summary.update(updated_sections=updated_sections)
+            run_summary.update(deleted_standards=deleted_standards)
+            run_summary.update(deleted_requirements=deleted_requirements)
+            run_summary.update(deleted_sections=deleted_sections)
 
         if 'search' == mode:
             added_searches, deleted_searches, search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
             run_summary.update(added_searches=added_searches)
+            run_summary.update(deleted_searches=deleted_searches)
         
         if 'policy' == mode:
             added, updated, deleted, updated_default, plc_sync_data = plc_sync.sync(tenant_sessions, modes['policy'].get('add', True), modes['policy'].get('update', True), False, logger)
             run_summary.update(added_policies=added)
             run_summary.update(updated_policies=updated)
             run_summary.update(updated_default_policies=updated_default)
+            run_summary.update(deleted_policies=deleted)
         
         if 'alert' == mode:
             added, updated, deleted, alr_sync_data = alr_sync.sync(tenant_sessions, modes['alert'].get('add', True), modes['alert'].get('update', True), False, logger)
             run_summary.update(added_alerts=added)
             run_summary.update(updated_alerts=updated)
+            run_summary.update(deleted_alerts=deleted)
         
         if 'anomaly' == mode:
             added, updated, deleted, ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
@@ -171,6 +184,50 @@ def sync(tenant_sessions: list, modes: dict, logger):
     print()
 
     print(run_summary)
+
+    clone_tenant_sessions = tenant_sessions[1:]
+    for index in range(len(clone_tenant_sessions)):
+        tenant = clone_tenant_sessions[index]
+
+        added_cloud_accounts = run_summary.get('added_cloud_accounts')
+        updated_cloud_accounts = run_summary.get('updated_cloud_accounts')
+        deleted_cloud_accounts = run_summary.get('deleted_cloud_accounts')
+
+        added_account_groups = run_summary.get('added_account_groups')
+        updated_account_groups = run_summary.get('updated_account_groups')
+        deleted_account_groups = run_summary.get('deleted_account_groups')
+
+        added_resource_lists = run_summary.get('added_resource_lists')
+        updated_resource_lists = run_summary.get('updated_resource_lists')
+        added_roles = run_summary.get('added_roles')
+        updated_roles = run_summary.get('updated_roles')
+        added_profiles = run_summary.get('added_profiles')
+        updated_profiles = run_summary.get('updated_profiles')
+        added_networks = run_summary.get('added_networks')
+        added_networks_cidrs = run_summary.get('added_networks_cidrs')
+        added_login_ips = run_summary.get('added_login_ips')
+        updated_network_cidrs = run_summary.get('updated_network_cidrs')
+        updated_login_ips = run_summary.get('updated_login_ips')
+        added_standards = run_summary.get('added_standards')
+        added_requirements = run_summary.get('added_requirements')
+        added_sections = run_summary.get('added_sections')
+        updated_standards = run_summary.get('updated_standards')
+        updated_requirements = run_summary.get('updated_requirements')
+        updated_sections = run_summary.get('updated_sections')
+        added_searches = run_summary.get('added_searches')
+        added_policies = run_summary.get('added_policies')
+        updated_policies = run_summary.get('updated_policies')
+        updated_default_policies = run_summary.get('updated_default_policies')
+        added_alerts = run_summary.get('added_alerts')
+        updated_alerts = run_summary.get('updated_alerts')
+        added_anomaly = run_summary.get('added_anomaly')
+        updated_anomaly = run_summary.get('updated_anomaly')
+        updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
+
+        print('RUN SUMMARY')
+        print(f'Added {added_cloud_accounts[index]} Cloud Accounts')
+        print(f'Updated {updated_cloud_accounts[index]} Cloud Accounts')
+        print(f'Deleted {deleted_cloud_accounts} Cloud Accounts')
 
 if __name__ == '__main__':
     sync()

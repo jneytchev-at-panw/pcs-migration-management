@@ -44,6 +44,8 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
                 accounts_to_delete = cld_compare.get_accounts_to_delete(source_tenant_cloud_accounts, clone_tenants_cloud_accounts[index])
                 deleted = cld_delete.delete_accounts(cln_tenant_sessions[index], accounts_to_delete, logger)
                 deleted_cloud.append(deleted)
+            else:
+                deleted_cloud.append(0)
 
     return added_cloud, updated_cloud, deleted_cloud, {}
 
