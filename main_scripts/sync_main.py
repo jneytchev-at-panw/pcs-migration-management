@@ -183,8 +183,6 @@ def sync(tenant_sessions: list, modes: dict, logger):
     c_print('************************', color='green')
     print()
 
-    print(run_summary)
-
     clone_tenant_sessions = tenant_sessions[1:]
     for index in range(len(clone_tenant_sessions)):
         tenant = clone_tenant_sessions[index]
