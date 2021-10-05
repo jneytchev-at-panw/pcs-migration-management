@@ -199,35 +199,120 @@ def sync(tenant_sessions: list, modes: dict, logger):
 
         added_resource_lists = run_summary.get('added_resource_lists')
         updated_resource_lists = run_summary.get('updated_resource_lists')
+        deleted_resource_lists = run_summary.get('deleted_resource_lists')
+
         added_roles = run_summary.get('added_roles')
         updated_roles = run_summary.get('updated_roles')
+        deleted_roles = run_summary.get('deleted_roles')
+
         added_profiles = run_summary.get('added_profiles')
         updated_profiles = run_summary.get('updated_profiles')
+        deleted_profiles = run_summary.get('deleted_profiles')
+
         added_networks = run_summary.get('added_networks')
         added_networks_cidrs = run_summary.get('added_networks_cidrs')
         added_login_ips = run_summary.get('added_login_ips')
         updated_network_cidrs = run_summary.get('updated_network_cidrs')
         updated_login_ips = run_summary.get('updated_login_ips')
+        deleted_network_cidrs = run_summary.get('deleted_network_cidrs')
+        deleted_logins = run_summary.get('deleted_logins')
+
         added_standards = run_summary.get('added_standards')
         added_requirements = run_summary.get('added_requirements')
         added_sections = run_summary.get('added_sections')
         updated_standards = run_summary.get('updated_standards')
         updated_requirements = run_summary.get('updated_requirements')
         updated_sections = run_summary.get('updated_sections')
+        deleted_standards = run_summary.get('deleted_standards')
+        deleted_requirements = run_summary.get('deleted_requirements')
+        deleted_sections = run_summary.get('deleted_sections')
+
         added_searches = run_summary.get('added_searches')
+        deleted_searches = run_summary.get('deleted_searches')
+
         added_policies = run_summary.get('added_policies')
         updated_policies = run_summary.get('updated_policies')
         updated_default_policies = run_summary.get('updated_default_policies')
+        deleted_policies = run_summary.get('deleted_policies')
+
         added_alerts = run_summary.get('added_alerts')
         updated_alerts = run_summary.get('updated_alerts')
+        deleted_alerts = run_summary.get('deleted_alerts')
+
         added_anomaly = run_summary.get('added_anomaly')
         updated_anomaly = run_summary.get('updated_anomaly')
+        deleted_anomaly = run_summary.get('deleted_anomaly')
+
         updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
 
-        print('RUN SUMMARY')
-        print(f'Added {added_cloud_accounts[index]} Cloud Accounts')
-        print(f'Updated {updated_cloud_accounts[index]} Cloud Accounts')
-        print(f'Deleted {deleted_cloud_accounts} Cloud Accounts')
+        logger.info(f'RUN SUMMARY FOR TENANT {tenant.tenant}')
+
+        logger.info(f'Added {count(added_cloud_accounts, index)} Cloud Accounts')
+        logger.info(f'Updated {count(updated_cloud_accounts, index)} Cloud Accounts')
+        logger.info(f'Deleted {count(deleted_cloud_accounts, index)} Cloud Accounts')
+
+        logger.info(f'Added {count(added_account_groups, index)} Cloud Account Groups')
+        logger.info(f'Updated {count(updated_account_groups, index)} Cloud Acccount Groups')
+        logger.info(f'Deleted {count(deleted_account_groups, index)} Cloud Account Groups')
+
+        logger.info(f'Added {count(added_resource_lists, index)} Resource Lists')
+        logger.info(f'Updated {count(updated_resource_lists, index)} Resource Lists')
+        logger.info(f'Deleted {count(deleted_resource_lists, index)} Resource Lists')
+
+        logger.info(f'Added {count(added_roles, index)} User Roles')
+        logger.info(f'Updated {count(updated_roles, index)} User Roles')
+        logger.info(f'Deleted {count(deleted_roles, index)} User Roles')
+
+        logger.info(f'Added {count(added_profiles, index)} User Profiles')
+        logger.info(f'Updated {count(updated_profiles, index)} User Profiles')
+        logger.info(f'Deleted {count(deleted_profiles, index)} User Profiles')
+
+        logger.info(f'Added {count(added_networks, index)} Networks')
+        logger.info(f'Added {count(added_networks_cidrs, index)} Network CIDRs')
+        logger.info(f'Added {count(added_login_ips, index)} Login IPs')
+        logger.info(f'Updated {count(updated_network_cidrs, index)} Network CIDRs')
+        logger.info(f'Updated {count(updated_login_ips, index)} Login IPs')
+        logger.info(f'Deleted {count(deleted_network_cidrs, index)} Network CIDRs')
+        logger.info(f'Deleted {count(deleted_logins, index)} Login IPs')
+
+        logger.info(f'Added {count(added_standards, index)} Compliance Standards')
+        logger.info(f'Added {count(added_requirements, index)} Compliance Requirements')
+        logger.info(f'Added {count(added_sections, index)} Compliance Sections')
+        logger.info(f'Updated {count(updated_standards, index)} Compliance Standards')
+        logger.info(f'Updated {count(updated_requirements, index)} Compliance Requirements')
+        logger.info(f'Updated {count(updated_sections, index)} Compliance Sections')
+        logger.info(f'Deleted {count(deleted_standards, index)} Compliance Standards')
+        logger.info(f'Deleted {count(deleted_requirements, index)} Compliance Requirements')
+        logger.info(f'Deleted {count(deleted_sections, index)} Compliance Sections')
+
+        logger.info(f'Added {count(added_searches, index)} Saved Searches')
+        logger.info(f'Deleted {count(deleted_searches, index)} Saved Searches')
+
+        logger.info(f'Added {count(added_policies, index)} Custom Policies')
+        logger.info(f'Updated {count(updated_policies, index)} Custom Policies')
+        logger.info(f'Updated {count(updated_default_policies, index)} Default Policies')
+        logger.info(f'Deleted {count(deleted_policies, index)} Custom Policies')
+
+        logger.info(f'Added {count(added_alerts, index)} Alert Rules')
+        logger.info(f'Updated {count(updated_alerts, index)} Alert Rules')
+        logger.info(f'Deleted {count(deleted_alerts, index)} Alert Rules')
+
+        logger.info(f'Added {count(added_anomaly, index)} Anomaly Lists')
+        logger.info(f'Updated {count(updated_anomaly, index)} Anomaly Lists')
+        logger.info(f'Deleted {count(deleted_anomaly, index)} Anomaly Lists')
+
+        updated_enter_set = count(updated_enterprise_settings, index)
+        if updated_enter_set == 0:
+            updated_enter_set = False
+        logger.info(f'Updated enterprise settings T/F: {updated_enter_set}')
+
+#Helper function for Run Summary
+def count(count_list: list, index: int):
+    try:
+        val = count_list[index]
+        return val
+    except:
+        return 0
 
 if __name__ == '__main__':
     sync()

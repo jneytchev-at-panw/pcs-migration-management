@@ -51,7 +51,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
             deleted = plc_delete.delete_policies(session, policies, logger)
             deleted_policies.append(deleted)
     else:
-        for index in tenant_custom_policies:
+        for index in tenant_custom_policies[1:]:
             deleted_policies.append(0)
 
     if upMode:
