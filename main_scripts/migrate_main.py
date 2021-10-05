@@ -136,27 +136,37 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
 
 
-        
+        #Run Summary Output. Outputs to logger and to standard out
         logger.info(f'RUN SUMMARY FOR TENANT {tenant.tenant}')
-        logger.info(f'Added {added_cloud_accounts[index]} cloud accounts')
-        logger.info(f'Added {added_account_groups[index]} cloud account groups')
-        logger.info(f'Added {added_resource_lists[index]} resource lists')
-        logger.info(f'Added {added_user_roles[index]} user roles')
-        logger.info(f'Added {added_user_profiles[index]} user profiles')
-        logger.info(f'Added {added_networks[index]} trusted networks')
-        logger.info(f'Added {added_cidrs[index]} trusted network cidrs')
-        logger.info(f'Added {added_login_ips[index]} trusted login ips')
-        logger.info(f'Added {added_compliance_standards[index]} compliance standards')
-        logger.info(f'Added {added_compliance_requirements[index]} compliance requirements')
-        logger.info(f'Added {added_compliance_sections[index]} compliance sections')
-        logger.info(f'Added {added_custom_policies[index]} custom policies')
-        logger.info(f'Updated {updated_default_policies[index]} default policies')
-        logger.info(f'Added {added_alert_rules[index]} alert rules')
-        logger.info(f'Added {added_trusted_lists[index]} anomaly trusted lists')
-        logger.info(f'Updated enterprise settings T/F: {updated_enterprise_settings[index]}')
 
-    
+        logger.info(f'Added {count(added_cloud_accounts, index)} Cloud Accounts')
+        logger.info(f'Added {count(added_account_groups, index)} Cloud Account Groups')
+        logger.info(f'Added {count(added_resource_lists, index)} Resource Lists')
+        logger.info(f'Added {count(added_user_roles, index)} User Roles')
+        logger.info(f'Added {count(added_user_profiles, index)} User Profiles')
+        logger.info(f'Added {count(added_networks, index)} Trusted Networks')
+        logger.info(f'Added {count(added_cidrs, index)} Trusted Network CIDRs')
+        logger.info(f'Added {count(added_login_ips, index)} Trusted Login IPs')
+        logger.info(f'Added {count(added_compliance_standards, index)} Compliance Standards')
+        logger.info(f'Added {count(added_compliance_requirements, index)} Compliance Requirements')
+        logger.info(f'Added {count(added_compliance_sections, index)} Compliance Sections')
+        logger.info(f'Added {count(added_custom_policies, index)} Custom Policies')
+        logger.info(f'Updated {count(updated_default_policies, index)} Default Policies')
+        logger.info(f'Added {count(added_alert_rules, index)} Alert Rules')
+        logger.info(f'Added {count(added_trusted_lists, index)} Anomaly Trusted Lists')
 
+        updated_enter_set = count(updated_enterprise_settings, index)
+        if updated_enter_set == 0:
+            updated_enter_set = False
+        logger.info(f'Updated enterprise settings T/F: {updated_enter_set}')
+
+#Helper function for Run Summary
+def count(count_list: list, index: int):
+    try:
+        val = count_list[index]
+        return val
+    except:
+        return 0
 
 if __name__ == '__main__':
     migrate()
