@@ -18,7 +18,7 @@ def add_networks(session, networks, logger):
             res = session.request('POST', '/allow_list/network', json=network)
             added += 1
             data = res.json()
-            add_network_cidrs(session, data, network['cidr'])
+            add_network_cidrs(session, data, network.get('cidrs'), logger)
     else:
         logger.info(f'No Trusted Alert IP Networks to add for tenant: \'{session.tenant}\'')
 

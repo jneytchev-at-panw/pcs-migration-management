@@ -34,6 +34,13 @@ def migrate(tenant_sessions, logger):
         added = ip_add.add_networks(session, networks, logger)
         tenant_networks_added.append(added)
 
+    #Updated the lists of networks after one or more has been added.
+    #Get trusted network ips from all tenants
+    tenant_trusted_alert_networks = []
+    for session in tenant_sessions:
+        networks = ip_get.get_trusted_networks(session, logger)
+        tenant_trusted_alert_networks.append(networks)
+
     #Update the cidr blocks of all networks in each tenant
     #Define lists
     source_tenant = tenant_trusted_alert_networks[0]
