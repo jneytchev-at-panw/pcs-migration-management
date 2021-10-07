@@ -43,7 +43,7 @@ def get_azure_credentials(cloud_accounts: list, logger:object):
                     account_id = account['id']
                     info.update({
                         account_id:{
-                            'private_key':terraform['key']
+                            'key':terraform['key']
                             }
                         })
             except:

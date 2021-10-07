@@ -105,7 +105,7 @@ def add_aws(session: object, account: dict, logger:object, redlock_ignore: list=
 
 def add_azure(session: object, account: dict, azure_keys: dict, logger:object, redlock_ignore: list=None) -> bool:
     if account['cloudAccount']['accountId'] in azure_keys:
-        account.update(key=azure_keys[account['cloudAccount']['accountId']])
+        account.update(key=azure_keys[account['cloudAccount']['accountId']]['key'])
 
     account['cloudAccount'].update(groupIds=[])
 
