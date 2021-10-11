@@ -58,6 +58,7 @@ def perform_config(session, search, logger):
         "timeRange": search['timeRange']
     }
 
+    
     logger.debug('API - Performing config search')
     response = session.request("POST", "/search/config", json=payload)
 
@@ -142,8 +143,14 @@ def perform_network(session, search, logger):
     if 'cloudType' in search:
         payload.update(name=search['cloudType'])
 
-    logger.debug('API - Performing network search')
-    response = session.request("POST", "/search", json=payload)
+    query = payload.get('query')
+    response = None
+    if 'from iam' in query:
+        logger.debug('API - Performing config IAM search')
+        response = session.request("POST", "/api/v1/permission", json=payload)
+    else:
+        logger.debug('API - Performing network search')
+        response = session.request("POST", "/search", json=payload)
     
     if response.status_code == 200:
         return save_search(session, response.json(), search, logger)
