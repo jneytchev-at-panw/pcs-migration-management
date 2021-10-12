@@ -78,12 +78,12 @@ def compare_settings(network_settings_list):
         for cln_setting in cln_settings:
             src_settings = source_settings_dict.items()
             for src_setting in src_settings:
-                if src_setting[1]['policyName'] == cln_setting[1]['policyName']:
-                    if src_setting[1]['alertDisposition'] != cln_setting[1]['alertDisposition']:
+                if src_setting[1].get('policyName','-0') == cln_setting[1].get('policyName','-1'):
+                    if src_setting[1].get('alertDisposition') != cln_setting[1].get('alertDisposition'):
                         settings_to_update.append(src_setting)
                         break
                     if 'trainingModelThreshold' in src_setting[1]:
-                        if src_setting[1]['trainingModelThreshold'] != cln_setting[1].get('trainingModelThreshold'):
+                        if src_setting[1].get('trainingModelThreshold') != cln_setting[1].get('trainingModelThreshold'):
                             settings_to_update.append(src_setting)
                             break
                     
