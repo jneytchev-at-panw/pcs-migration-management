@@ -103,10 +103,12 @@ def sync(tenant_sessions: list, modes: dict, logger):
             run_summary.update(deleted_alerts=deleted)
         
         if 'anomaly' == mode:
-            added, updated, deleted, ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
+            added, updated, deleted, updated_network_settings, updated_ueba_settings, ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
             run_summary.update(added_anomaly=added)
             run_summary.update(updated_anomaly=updated)
             run_summary.update(deleted_anomaly=deleted)
+            run_summary.update(updated_ueba_settings=updated_ueba_settings)
+            run_summary.update(updated_network_settings=updated_network_settings)
         
         if 'settings' == mode:
             updated = set_sync.sync(tenant_sessions, logger)
@@ -121,7 +123,7 @@ def sync(tenant_sessions: list, modes: dict, logger):
     for mode in tqdm(mode_list, desc='SYNC DELETE STATUS'):
         if 'anomaly' == mode:
             if modes['anomaly'].get('delete', False):
-                added, updated, deleted, ano_sync_data = ano_sync.sync(tenant_sessions, False, False, True, logger)
+                added, updated, deleted, updated_network_settings, updated_ueba_settings, ano_sync_data = ano_sync.sync(tenant_sessions, False, False, True, logger)
                 run_summary.update(deleted_anomaly=deleted)
 
         if 'alert' == mode:
@@ -240,6 +242,8 @@ def sync(tenant_sessions: list, modes: dict, logger):
         added_anomaly = run_summary.get('added_anomaly')
         updated_anomaly = run_summary.get('updated_anomaly')
         deleted_anomaly = run_summary.get('deleted_anomaly')
+        updated_network_settings = run_summary.get('updated_network_settings')
+        updated_ueba_settings = run_summary.get('updated_ueba_settings')
 
         updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
 
@@ -295,6 +299,8 @@ def sync(tenant_sessions: list, modes: dict, logger):
         logger.info(f'Updated {count(updated_alerts, index)} Alert Rules')
         logger.info(f'Deleted {count(deleted_alerts, index)} Alert Rules')
 
+        logger.info(f'Updated {count(updated_network_settings, index)} Anomaly Network Settings')
+        logger.info(f'Updated {count(updated_ueba_settings, index)} Anomaly UEBA Settings')
         logger.info(f'Added {count(added_anomaly, index)} Anomaly Lists')
         logger.info(f'Updated {count(updated_anomaly, index)} Anomaly Lists')
         logger.info(f'Deleted {count(deleted_anomaly, index)} Anomaly Lists')

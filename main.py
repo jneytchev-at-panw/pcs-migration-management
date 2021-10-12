@@ -208,6 +208,7 @@ def main(file_mode, logger):
             'user': {},
             'ip': {},
             'compliance': {},
+            'search': {},
             'policy': {},
             'alert': {},
             'anomaly': {},
@@ -230,6 +231,7 @@ def main(file_mode, logger):
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'user')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'ip')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'compliance')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'search')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'policy')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'alert')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'anomaly')

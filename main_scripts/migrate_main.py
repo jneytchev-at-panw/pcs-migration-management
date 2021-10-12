@@ -10,6 +10,7 @@ from user_roles import role_migrate
 from user_profiles import usr_migrate
 from ip_allow_lists import ip_migrate
 from compliance_standards import cmp_migrate
+from saved_searches import search_sync
 from policies import plc_migrate_custom
 from policies import plc_migrate_default
 from alert_rules import alr_migrate
@@ -84,6 +85,11 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
             run_summary.update(added_compliance_requirements=requirements_added)
             run_summary.update(added_compliance_sections=sections_added)
 
+        #SAVED SEARCHE MIGRATE
+        if 'search' == mode:
+            added_searches, deleted_searches, search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
+            run_summary.update(added_searches=added_searches)
+            run_summary.update(deleted_searches=deleted_searches)
         
         #POLICY MIGRATE
         if 'policy' == mode:
@@ -98,10 +104,13 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
             added = alr_migrate.migrate(tenant_sessions, logger)
             run_summary.update(added_alert_rules=added)
             
-        
+        #ANOMALY SETTINGS MIGRATE
         if 'anomaly' == mode:
-            added_trusted_lists, updated, deleted, anomaly_data = ano_sync.sync(tenant_sessions, True, False, False, logger)
-            run_summary.update(added_trusted_lists=added_trusted_lists)
+            added, updated, deleted, updated_network_settings, updated_ueba_settings, ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
+            run_summary.update(added_anomaly=added)
+            run_summary.update(updated_anomaly=updated)
+            run_summary.update(updated_ueba_settings=updated_ueba_settings)
+            run_summary.update(updated_network_settings=updated_network_settings)
 
 
         if 'settings' == mode:
@@ -119,22 +128,37 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         tenant = clone_tenant_sessions[index]
 
         added_cloud_accounts = run_summary.get('added_cloud_accounts')
+
         added_account_groups = run_summary.get('added_account_groups')
+
         added_resource_lists = run_summary.get('added_resource_lists')
+
         added_user_roles = run_summary.get('added_user_roles')
+
         added_user_profiles = run_summary.get('added_user_profiles')
+
         added_networks = run_summary.get('added_networks')
         added_cidrs = run_summary.get('added_cidrs')
         added_login_ips = run_summary.get('added_login_ips')
+
         added_compliance_standards = run_summary.get('added_compliance_standards')
         added_compliance_requirements = run_summary.get('added_compliance_requirements')
         added_compliance_sections = run_summary.get('added_compliance_sections')
-        added_custom_policies = run_summary.get('added_custom_policies')
-        updated_default_policies = run_summary.get('updated_default_policies')
-        added_alert_rules = run_summary.get('added_alert_rules')
-        added_trusted_lists = run_summary.get('added_trusted_lists')
-        updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
 
+        added_searches = run_summary.get('added_searches')
+
+        added_custom_policies = run_summary.get('added_custom_policies')
+
+        updated_default_policies = run_summary.get('updated_default_policies')
+
+        added_alert_rules = run_summary.get('added_alert_rules')
+
+        added_anomaly = run_summary.get('added_anomaly')
+        updated_anomaly = run_summary.get('updated_anomaly')
+        updated_network_settings = run_summary.get('updated_network_settings')
+        updated_ueba_settings = run_summary.get('updated_ueba_settings')
+
+        updated_enterprise_settings = run_summary.get('updated_enterprise_settings')
 
         #Run Summary Output. Outputs to logger and to standard out
         logger.info(f'RUN SUMMARY FOR TENANT {tenant.tenant}')
@@ -150,10 +174,15 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         logger.info(f'Added {count(added_compliance_standards, index)} Compliance Standards')
         logger.info(f'Added {count(added_compliance_requirements, index)} Compliance Requirements')
         logger.info(f'Added {count(added_compliance_sections, index)} Compliance Sections')
+        logger.info(f'Added {count(added_searches, index)} Saved Searches')
         logger.info(f'Added {count(added_custom_policies, index)} Custom Policies')
         logger.info(f'Updated {count(updated_default_policies, index)} Default Policies')
         logger.info(f'Added {count(added_alert_rules, index)} Alert Rules')
-        logger.info(f'Added {count(added_trusted_lists, index)} Anomaly Trusted Lists')
+
+        logger.info(f'Updated {count(updated_network_settings, index)} Anomaly Network Settings')
+        logger.info(f'Updated {count(updated_ueba_settings, index)} Anomaly UEBA Settings')
+        logger.info(f'Added {count(added_anomaly, index)} Anomaly Lists')
+        logger.info(f'Updated {count(updated_anomaly, index)} Anomaly Lists')
 
         updated_enter_set = count(updated_enterprise_settings, index)
         if updated_enter_set == 0:

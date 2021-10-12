@@ -24,7 +24,12 @@ class Session:
             }
         self.retries = 5
         self.retry_statuses = [429, 500, 502, 503, 504]
-        logger.info(f'Session created for tenant: {tenant_name}')
+        if self.token != 'BAD':
+            logger.info(f'Session created for tenant: {tenant_name}')
+        else:
+            logger.error(f'Session creation failed for tenant: {tenant_name}')
+            logger.info('Exiting...')
+            quit()
 
 #==============================================================================
 
@@ -49,7 +54,14 @@ class Session:
         }
 
         self.logger.debug('API - Generating session token.')
-        response = requests.request("POST", url, headers=headers, json=payload)
+        response = object()
+        try:
+            response = requests.request("POST", url, headers=headers, json=payload)
+        except:
+            self.logger.error('Failed to connect to API.')
+            self.logger.warning('Make sure any offending VPNs are disabled.')
+            self.logger.info('Exiting...')
+            quit()
 
         self.logger.debug(f'{url}')
 

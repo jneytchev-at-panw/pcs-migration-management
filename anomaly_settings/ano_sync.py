@@ -4,6 +4,8 @@ from tqdm import tqdm
 
 def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logger):
     tenant_added_trusted_lists = []
+    updated_network_settings = []
+    updated_ueba_settings = []
     updated_lists = []
     deleted_lists = []
 
@@ -18,10 +20,12 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         settings_to_update = ano_compare.compare_settings(network_settings_list)
 
         #Update settings
+        updated_network = 0
         for index, tenant in enumerate(settings_to_update):
             for n_setting in tqdm(tenant, desc='Updating Anomaly Network Settings', leave=False):
                 ano_update.update_setting(tenant_sessions[index + 1], n_setting[0], n_setting[1], logger)
-                pass
+                updated_network += 1
+        updated_network_settings.append(updated_network)
 
     #Get UEBA settings----
     ueba_settings_list = []
@@ -34,10 +38,13 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
         settings_to_update = ano_compare.compare_settings(ueba_settings_list)
 
         #Update settings
+        updated_ueba= 0
         for index, tenant in enumerate(settings_to_update):
             for n_setting in tqdm(tenant, desc='Updating Anomaly UEBA Settings', leave=False):
                 ano_update.update_setting(tenant_sessions[index + 1], n_setting[0], n_setting[1], logger)
-                pass
+                updated_ueba += 1
+                
+        updated_ueba_settings.append(updated_ueba)
 
     #Update settings
 
@@ -81,7 +88,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
 
     logger.info('Finished syncing Anomaly Settings')
 
-    return tenant_added_trusted_lists, updated_lists, deleted_lists, {}
+    return tenant_added_trusted_lists, updated_lists, deleted_lists, updated_network_settings, updated_ueba_settings, {}
 
 
 if __name__ == '__main__':

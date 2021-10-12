@@ -4,7 +4,11 @@ def get_all_network_settings(session: object, logger):
     params = {'type':'Network'}
     logger.debug('API - Getting all anomaly settings')
     res = session.request('GET', '/anomalies/settings', params=params)
-    data = res.json()
+    data = {}
+    try:
+        data = res.json()
+    except:
+        data = {}
 
     return data
 
@@ -12,21 +16,33 @@ def get_all_ueba_settings(session: object, logger):
     params = {'type':'UEBA'}
     logger.debug('API - Getting all anomaly settings')
     res = session.request('GET', '/anomalies/settings', params=params)
-    data = res.json()
+    data = {}
+    try:
+        data = res.json()
+    except:
+        data = {}
 
     return data
 
 def get_setting(session: object, plc_id: str, logger):
     logger.debug('API - Getting anomaly setting')
     res = session.request('GET', f'/anomalies/settings/{plc_id}')
-    data = res.json()
+    data = {}
+    try:
+        data = res.json()
+    except:
+        data = {}
     
     return data
 
 def get_trusted_lists(session: object, logger):
     logger.debug('API - Getting anomaly trusted list')
     res = session.request('GET', '/anomalies/trusted_list')
-    data = res.json()
+    data = {}
+    try:
+        data = res.json()
+    except:
+        data = {}
 
     return data
 

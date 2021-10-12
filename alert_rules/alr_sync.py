@@ -51,8 +51,9 @@ def sync(tenant_sessions, addMode, upMode, delMode, logger):
         translated_alr_rls_to_add = []
         tenant_cln_acc_grps =  tenant_account_groups[1:]
         tenant_cln_rsc_lists = tenant_resource_lists[1:]
+        tenant_cln_plcs = tenant_policies_list[1:]
         for i, alr_rls in enumerate(tenant_alr_rls_to_add):
-            translated = alr_translate.translate_dependencies(alr_rls, tenant_account_groups[0], tenant_cln_acc_grps[i], tenant_resource_lists[0], tenant_cln_rsc_lists[i])
+            translated = alr_translate.translate_dependencies(alr_rls, tenant_account_groups[0], tenant_cln_acc_grps[i], tenant_resource_lists[0], tenant_cln_rsc_lists[i], tenant_policies_list[0], tenant_cln_plcs[i])
             translated_alr_rls_to_add.append(translated)
 
         #Add alert rules
