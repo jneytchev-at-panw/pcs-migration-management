@@ -12,7 +12,7 @@ In all but a few cases, the name of an entity is its only cross tenant identifie
 
 ### Cloud Accounts
 
-GCP and Azure Cloud Accounts can not be migrated without the user supplying the credentials. For security reasons, the Prisma Cloud API does not return GCP or Azure credentials. To overcome this, please supply the Terraform JSON file to the ‘cloud_credentials/gcp’ or the ‘cloud_credentials/azure’ folder and name the terraform file to be the exact same name of the Cloud Accounts name in Prisma Cloud, spaces included. For best results, copy and paste the cloud accounts name into the filename to ensure sameness.
+GCP and Azure Cloud Accounts can not be migrated without the user supplying the credentials. For security reasons, the Prisma Cloud API does not return GCP or Azure credentials. To overcome this, please supply the Service Account Key JSON file to the ‘cloud_credentials/gcp’ or the ‘cloud_credentials/azure’ folder and name the terraform file to be the exact same name of the Cloud Accounts name in Prisma Cloud, spaces included. For best results, copy and paste the cloud accounts name into the filename to ensure sameness.
 
 Oracle Cloud (OCI) Accounts are not supported by this script at this time.
 
@@ -36,7 +36,7 @@ Install the required Python Libraries with pip3:
 
 Get your Prisma Cloud Access Key, Secret Key and App URL ready. The script will ask you for them during setup.
 
-If you intend to migrate/sync cloud accounts, please add the terraform json file for each Azure and GCP cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
+If you intend to migrate/sync cloud accounts, please add the Service Account Key JSON file for each Azure and GCP cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
 ![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
 ![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true)  
 
@@ -64,7 +64,7 @@ You can also install the dependencies quickly by using Python’s package manage
 
 Get your Prisma Cloud Access Key, Secret Key and App URL ready. The script will ask you for them during setup.
 
-If you intend to migrate/sync cloud accounts, please add the terraform json file for each Azure and GCP cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
+If you intend to migrate/sync cloud accounts, Service Account Key JSON file for each Azure and GCP cloud account into the cloud credentials directory and into the appropriate subfolder. Rename each terraform file so that the file name matches the cloud accounts name in Prisma Cloud.  
 ![GCP Cloud Account Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/gcp_cloud_account.png?raw=true)  
 ![Cloud Credentials Directory Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/cloud_cred_dir.png?raw=true) 
 
