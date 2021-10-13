@@ -319,10 +319,12 @@ if __name__ =='__main__':
     file_mode = False
     terminal_logging = True
     
-    if '-yaml' in sys.argv:
+    args = [el.lower() for el in sys.argv]
+
+    if '-yaml' in args:
         file_mode = True
 
-    if '-quiet' in sys.argv:
+    if '-quiet' in args:
         terminal_logging = False
 
     #Configure logging output
