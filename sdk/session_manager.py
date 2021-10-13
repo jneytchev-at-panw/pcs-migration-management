@@ -22,8 +22,8 @@ class Session:
             'content-type': 'application/json; charset=UTF-8',
             'x-redlock-auth': self.token
             }
-        self.retries = 5
-        self.retry_statuses = [429, 500, 502, 503, 504]
+        self.retries = 6
+        self.retry_statuses = [401, 429, 500, 502, 503, 504]
         if self.token != 'BAD':
             logger.info(f'Session created for tenant: {tenant_name}')
         else:
@@ -118,14 +118,17 @@ class Session:
             self.logger.success('SUCCESS')
             return res
         
-        if res.status_code == 401:
-            self.logger.warning('Token expired. Generating new Token and retrying.')
-            self.api_login()
-            self.logger.debug(f'{url}')
-            res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
+        # if res.status_code == 401:
+        #     self.logger.warning('Token expired. Generating new Token and retrying.')
+        #     self.api_login()
+        #     self.logger.debug(f'{url}')
+        #     res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
 
         retries = 0
         while res.status_code in self.retry_statuses and retries < self.retries:
+            if res.status_code == 401:
+                self.logger.warning('Token expired. Generating new Token and retrying.')
+                self.api_login()
             self.logger.warning(f'Retrying request. Code {res.status_code}.')
             self.logger.debug(f'{url}')
             res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
