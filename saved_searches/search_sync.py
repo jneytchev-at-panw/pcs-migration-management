@@ -132,13 +132,15 @@ def perform_event(session, search, logger):
 #==============================================================================
 
 def perform_network(session, search, logger):
-    #FIXME
+    '''
+    Performs a networks search
+    '''
     
     #Build payload object with values that are given
     payload =  {}
 
     payload.update(query=search['query'])
-    payload.update(timeRange=search['searchModel']['timeRange'])
+    payload.update(timeRange=search['timeRange'])
     
     if 'default' in search:
         payload.update(default=search['default'])
@@ -155,8 +157,14 @@ def perform_network(session, search, logger):
     if 'cloudType' in search:
         payload.update(name=search['cloudType'])
 
-    logger.debug('API - Performing network search')
-    response = session.request("POST", "/search", json=payload)
+    query = payload.get('query')
+    response = None
+    if 'from iam' in query:
+        logger.debug('API - Performing config IAM search')
+        response = session.request("POST", "/api/v1/permission", json=payload)
+    else:
+        logger.debug('API - Performing network search')
+        response = session.request("POST", "/search", json=payload)
     
     if response.status_code == 200:
         return save_search(session, response.json(), search, logger)

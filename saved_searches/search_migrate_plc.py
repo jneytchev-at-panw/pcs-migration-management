@@ -120,7 +120,6 @@ def perform_network(session, search, logger):
     '''
     Performs a networks search
     '''
-    #FIXME
     
     #Build payload object with values that are given
     payload =  {}
