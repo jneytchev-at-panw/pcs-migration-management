@@ -35,7 +35,7 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
                 account_type = account['accountType']
                 account_name = account['name']
                 account_id = account['accountId']
-
+            res = 'BAD'
             if cloud_type == 'aws':
                 res = add_aws(session, account, logger, redlock_ignore)
             if cloud_type == 'azure':
@@ -45,35 +45,36 @@ def add_accounts(session: object, accounts: list, azure_account_keys: dict,
             if cloud_type== 'alibaba_cloud':
                 res = add_alibaba(session, account, logger, redlock_ignore)
 
-            try:
-                if res.status_code != 200:
-                    if 'x-redlock-status' in res.headers:
-                        if  redlock_ignore[0] in res.headers['x-redlock-status']:
-                            logger.error('FAILED')
-                            logger.warning(f'{cloud_type} cloud account \'{account_name}\'::\'{account_id}\' already onboarded to application stack.')
-                            logger.error('not_account_owner')
-                        if redlock_ignore[1] in res.headers['x-redlock-status']:
-                            logger.error('FAILED')
-                            logger.warning(f'Incorrect or invalid credentials for {cloud_type} account {account_name}::{account_id}.')
-                            logger.error('project_id_credential_mismatch')
-                        if redlock_ignore[2] in res.headers['x-redlock-status']:
-                            logger.error('FAILED')
-                            logger.warning('Data security not enabled on this tenant')
-                            logger.error('data_security_not_enabled_for_tenant')
-                        if redlock_ignore[3] in res.headers['x-redlock-status']:
-                            logger.error('FAILED')
-                            logger.warning('Problem with GCP Organization Key - No viewer permission')
-                            logger.error('organization_viewer_permission_required')
-                        if redlock_ignore[4] in res.headers['x-redlock-status']:
-                            logger.error('FAILED')
-                            logger.warning('Problem with GCP Project Key - No viewer permission')
-                            logger.error('organization_viewer_permission_required')
+            if res != 'BAD':
+                try:
+                    if res.status_code != 200:
+                        if 'x-redlock-status' in res.headers:
+                            if  redlock_ignore[0] in res.headers['x-redlock-status']:
+                                logger.error('FAILED')
+                                logger.warning(f'{cloud_type} cloud account \'{account_name}\'::\'{account_id}\' already onboarded to application stack.')
+                                logger.error('not_account_owner')
+                            if redlock_ignore[1] in res.headers['x-redlock-status']:
+                                logger.error('FAILED')
+                                logger.warning(f'Incorrect or invalid credentials for {cloud_type} account {account_name}::{account_id}.')
+                                logger.error('project_id_credential_mismatch')
+                            if redlock_ignore[2] in res.headers['x-redlock-status']:
+                                logger.error('FAILED')
+                                logger.warning('Data security not enabled on this tenant')
+                                logger.error('data_security_not_enabled_for_tenant')
+                            if redlock_ignore[3] in res.headers['x-redlock-status']:
+                                logger.error('FAILED')
+                                logger.warning('Problem with GCP Organization Key - No viewer permission')
+                                logger.error('organization_viewer_permission_required')
+                            if redlock_ignore[4] in res.headers['x-redlock-status']:
+                                logger.error('FAILED')
+                                logger.warning('Problem with GCP Project Key - No viewer permission')
+                                logger.error('organization_viewer_permission_required')
 
-                    logger.error(f'Cloud Account \'{account_name}\'::\'{account_id}\' failed to onboard.')
-                else:
-                    accounts_added += 1
-            except:
-                logger.critical('No responce from Prisma Cloud')
+                        logger.error(f'Cloud Account \'{account_name}\'::\'{account_id}\' failed to onboard.')
+                    else:
+                        accounts_added += 1
+                except:
+                    logger.critical('No responce from Prisma Cloud')
     else:
         logger.info(f'No Cloud Accounts to add for tenant: \'{session.tenant}\'')
 
@@ -104,8 +105,16 @@ def add_aws(session: object, account: dict, logger:object, redlock_ignore: list=
 #==============================================================================
 
 def add_azure(session: object, account: dict, azure_keys: dict, logger:object, redlock_ignore: list=None) -> bool:
+    acc_name = account.get('cloudAccount', {}).get('name')
+    
+    
     if account['cloudAccount']['accountId'] in azure_keys:
         account.update(key=azure_keys[account['cloudAccount']['accountId']]['key'])
+
+    if '***' in account.get('key'):
+        logger.warning(f'No Keys for Azure account \'{acc_name}\'')
+        logger.warning('Not onboarding account')
+        return 'BAD'
 
     account['cloudAccount'].update(groupIds=[])
 
@@ -120,7 +129,7 @@ def add_azure(session: object, account: dict, azure_keys: dict, logger:object, r
     
     querystring = {"skipStatusChecks":1}
 
-    logger.debug('API - Add Azure Account: ', account['cloudAccount']['name'], '::', account['cloudAccount']['accountId'])
+    logger.debug('API - Add Azure Account: ', acc_name, '::', account['cloudAccount']['accountId'])
     response = session.request("POST", '/cloud/azure', json=account, params=querystring, redlock_ignore=redlock_ignore)
     
     return response
