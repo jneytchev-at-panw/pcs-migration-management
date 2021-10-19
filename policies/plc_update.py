@@ -4,6 +4,7 @@ from sdk.color_print import c_print
 from tqdm import tqdm
 
 def update_custom_policies(tenant_session: object, source_tenant_session: object, policies: dict, logger):
+    updated = 0
     if policies:
         logger.info(f'Updateing Custom Policies for tenant: \'{tenant_session.tenant}\'')
 
@@ -34,6 +35,9 @@ def update_custom_policies(tenant_session: object, source_tenant_session: object
 
             logger.debug(f'API - Updating policy: {name}')
             tenant_session.request('PUT', f'/policy/{plc_id}', policy)
+            updated += 1
+            
+        return updated
     else:
         logger.info(f'No Custom Policies to update for tenant: \'{tenant_session.tenant}\'')
 
