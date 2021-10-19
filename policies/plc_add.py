@@ -61,6 +61,10 @@ def update_default_policy(tenant_session: object, policy: dict, logger):
     #The ID of the compliance standards needs to be updated if there is compliance data
     if 'complianceMetadata' in policy:
         complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
+        if complianceMetadata == "BAD":
+            logger.warning(f'Compliance Data not migrated for policy \'{name}\'. Unable to update')
+            #Skip updating this policy
+            return 'BAD'
         policy.update(complianceMetadata=complianceMetadata)
 
     logger.debug(f'API - Updating policy: {name}')
@@ -78,6 +82,8 @@ def build_compliance_metadata(compliance_metadata: dict, translate: object):
     for el in compliance_metadata:
         if 'complianceId' in el:
             cmp_id = translate.translate_compliance_id(el['standardName'], el['requirementId'], el['sectionId'])
+            if cmp_id == 'BAD':
+                return 'BAD'
             el.update(complianceId = cmp_id)
 
             modified_compliance_metadata.append(el)

@@ -30,8 +30,9 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
                 if o_saved_search['searchName'] not in [d_ss['searchName'] for d_ss in d_tenant]:
                     saved_search_to_add.append(o_saved_search)
             for search in tqdm(saved_search_to_add, desc='Adding Saved Searches', leave=False):
-                run_and_save_search(tenant_sessions[index + 1], search, logger)
-                added += 1
+                res = run_and_save_search(tenant_sessions[index + 1], search, logger)
+                if res != 'BAD':
+                    added += 1
             added_searches.append(added)
 
     #Saved searches don't seem to be able to updated so no reason to look for changes among searches
@@ -61,9 +62,9 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
 def run_and_save_search(session, old_search, logger):
     #This functions calles the appropriate run RQL API
     #depending on the type of search
-    if 'config' in old_search['query'].split(' ')[0]:
+    if 'config from' in old_search['query']:
         return perfrom_config(session, old_search, logger)
-    elif 'audit_event' in old_search['query'].split(' ')[0]:
+    elif 'event from' in old_search['query']:
         return perform_event(session, old_search, logger)
     else: #Network
         return perform_network(session, old_search, logger)
@@ -76,9 +77,12 @@ def perfrom_config(session, search, logger):
         "timeRange": search['searchModel']['timeRange']
     }
 
-
-    logger.debug('API - Performing config search')
-    response = session.request("POST", "/search/config", json=payload)
+    if 'from iam' in search['query']:
+        logger.debug('API - Performing config IAM search')
+        response = session.request("POST", "/api/v1/permission", json=payload)
+    else:
+        logger.debug('API - Performing config search')
+        response = session.request("POST", "/search/config", json=payload)
 
     if response.status_code == 200:
         return save_search(session, response.json(), search, logger)
@@ -204,7 +208,13 @@ def save_search(session, new_search, old_search, logger):
     if response.status_code != 200 and 'duplicate_search_name' in response.headers['x-redlock-status']:
         logger.debug('FAILED')
         logger.info('Search already saved. Getting ID')
-        return get_saved_search_id_by_name(session, old_search['name'], logger)
+        if 'searchName' in old_search:
+            return get_saved_search_id_by_name(session, old_search.get('searchName'), logger)
+        elif 'name' in old_search:
+            return get_saved_search_id_by_name(session, old_search.get('name'), logger) 
+        else:
+            logger.debug(old_search)
+            return 'BAD'
 
     if response.status_code == 200:
         data = response.json()

@@ -3,6 +3,7 @@ from sdk.load_config import load_config_create_sessions
 
 class Translate:
     def __init__(self, session, logger):
+        logger.debug('API - Getting Policy Compliance data')
         self.new_plc_cmp_standards = session.request('GET', '/policy/compliance').json()
         self.logger = logger
 
@@ -20,7 +21,7 @@ class Translate:
         except:
             self.logger.error(f'ERROR. Compliance Standard {standardName} not yet migrated')
 
-            return ""
+            return "BAD"
 
         for el in complianceData:
             if el['requirementId'] == requirementId and el['sectionId'] == sectionId:

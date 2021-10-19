@@ -36,31 +36,30 @@ def migrate_search(tenant_session: object, original_session: object, rule: str, 
 #==============================================================================
 
 def run_and_save_search(session, old_search, logger):
-    '''
-    This functions calles the appropriate run RQL API
-    depending on the type of search
-    '''
-    if old_search['searchType'] == 'config':
-        return perform_config(session, old_search, logger)
-    elif old_search['searchType'] == 'audit_event':
+    #This functions calles the appropriate run RQL API
+    #depending on the type of search
+    if 'config from' in old_search['query']:
+        return perfrom_config(session, old_search, logger)
+    elif 'event from' in old_search['query']:
         return perform_event(session, old_search, logger)
     else: #Network
         return perform_network(session, old_search, logger)
 
 #==============================================================================
 
-def perform_config(session, search, logger):
-    '''
-    Performs a config search.
-    '''
+def perfrom_config(session, search, logger):
+    timeRange = search.get('timeRange')
     payload = {
         "query": search['query'],
-        "timeRange": search['timeRange']
+        "timeRange": search.get('searchModel',{}).get('timeRange', timeRange)
     }
 
-    
-    logger.debug('API - Performing config search')
-    response = session.request("POST", "/search/config", json=payload)
+    if 'from iam' in search['query']:
+        logger.debug('API - Performing config IAM search')
+        response = session.request("POST", "/api/v1/permission", json=payload)
+    else:
+        logger.debug('API - Performing config search')
+        response = session.request("POST", "/search/config", json=payload)
 
     if response.status_code == 200:
         return save_search(session, response.json(), search, logger)
@@ -193,7 +192,13 @@ def save_search(session, new_search, old_search, logger):
     
     if response.status_code != 200 and 'duplicate_search_name' in response.headers['x-redlock-status']:
         logger.info('Search already saved. Getting ID')
-        return get_saved_search_id_by_name(session, old_search['name'], logger)
+        if 'searchName' in old_search:
+            return get_saved_search_id_by_name(session, old_search.get('searchName'), logger)
+        elif 'name' in old_search:
+            return get_saved_search_id_by_name(session, old_search.get('name'), logger) 
+        else:
+            logger.debug(old_search)
+            return 'BAD'
 
     if response.status_code == 200:
         data = response.json()

@@ -1,4 +1,4 @@
-from policies import plc_get, plc_add
+from policies import plc_get, plc_add, plc_update
 from sdk.color_print import c_print
 from tqdm import tqdm
 
@@ -52,8 +52,9 @@ def migrate_builtin_policies(tenant_sessions: list, logger):
                     #If there is a difference between the source tenant policy and the destination tenant policy, then update the policy
                     # if plc['severity'] != old_plc['severity'] or plc['labels'] != old_plc['labels'] or plc['rule'] != old_plc['rule'] or compFlag:
                     if plc['severity'] != old_plc['severity'] or labels != o_labels or plc['rule'] != old_plc['rule'] or compFlag:
-                        plc_add.update_default_policy(tenant_sessions[index + 1], old_plc, logger)
-                        added += 1
+                        res = plc_add.update_default_policy(tenant_sessions[index + 1], old_plc, logger)
+                        if res != 'BAD':
+                            added += 1
         tenant_updated_policies.append(added)
 
     logger.info('Finished migrating Default Policies')
@@ -63,7 +64,7 @@ def migrate_builtin_policies(tenant_sessions: list, logger):
 if __name__ == '__main__':
     from sdk.load_config import load_config_create_sessions
     tenant_sessions = load_config_create_sessions()
-
+    
     migrate_builtin_policies(tenant_sessions)
 
 
