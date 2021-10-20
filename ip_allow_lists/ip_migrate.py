@@ -49,16 +49,16 @@ def migrate(tenant_sessions, logger):
         added = 0
         for src_network in source_tenant:
             #Check if all cidr blocks are present
-            new_network = [network for network in tenant if network['name'] == src_network['name']][0]
+            new_network = [network for network in tenant if network.get('name') == src_network.get('name')][0]
             if not new_network:
                 #network would have just been added, can't update it here
                 break
             cidr_to_add = []
-            for cidr in src_network['cidrs']:
-                if cidr['cidr'] not in [n_cidr['cidr'] for n_cidr in new_network['cidrs']]:
+            for cidr in src_network.get('cidrs'):
+                if cidr.get('cidr') not in [n_cidr.get('cidr') for n_cidr in new_network.get('cidrs')]:
                     cidr_to_add.append(cidr)
-            net_name = src_network['name']
-            added += ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network['uuid'], cidr_to_add, logger)
+            net_name = src_network.get('name')
+            added += ip_add.add_network_allow_list_cidrs(tenant_sessions[index + 1], new_network.get('uuid'), cidr_to_add, logger)
         tenant_cidrs_added.append(added)
 
 

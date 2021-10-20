@@ -27,7 +27,7 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
             added = 0
             saved_search_to_add = []
             for o_saved_search in o_tenant:
-                if o_saved_search['searchName'] not in [d_ss['searchName'] for d_ss in d_tenant]:
+                if o_saved_search.get('searchName') not in [d_ss.get('searchName') for d_ss in d_tenant]:
                     saved_search_to_add.append(o_saved_search)
             for search in tqdm(saved_search_to_add, desc='Adding Saved Searches', leave=False):
                 res = run_and_save_search(tenant_sessions[index + 1], search, logger)
@@ -43,11 +43,11 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
             deleted = 0
             saved_search_to_delete = []
             for d_saved_search in d_tenant:
-                if d_saved_search['searchName'] not in [o_ss['searchName'] for o_ss in o_tenant]:
+                if d_saved_search.get('searchName') not in [o_ss.get('searchName') for o_ss in o_tenant]:
                     saved_search_to_delete.append(d_saved_search)
             for search in tqdm(saved_search_to_delete, desc='Deleting Saved Searches', leave=False):
                 logger.debug('API - Deleteing saved search')
-                s_id = search['id']
+                s_id = search.get('id')
                 tenant_sessions[index + 1].request('DELETE', f'/search/history/{s_id}', status_ignore=[204])
                 deleted += 1
             deleted_searches.append(deleted)
@@ -62,9 +62,9 @@ def sync(tenant_sessions: list, addMode: bool, delMode: bool, logger):
 def run_and_save_search(session, old_search, logger):
     #This functions calles the appropriate run RQL API
     #depending on the type of search
-    if 'config from' in old_search['query']:
+    if 'config from' in old_search.get('query'):
         return perfrom_config(session, old_search, logger)
-    elif 'event from' in old_search['query']:
+    elif 'event from' in old_search.get('query'):
         return perform_event(session, old_search, logger)
     else: #Network
         return perform_network(session, old_search, logger)
@@ -73,11 +73,11 @@ def run_and_save_search(session, old_search, logger):
 
 def perfrom_config(session, search, logger):
     payload = {
-        "query": search['query'],
-        "timeRange": search['searchModel']['timeRange']
+        "query": search.get('query'),
+        "timeRange": search.get('searchModel',{}).get('timeRange')
     }
 
-    if 'from iam' in search['query']:
+    if 'from iam' in search.get('query'):
         logger.debug('API - Performing config IAM search')
         response = session.request("POST", "/api/v1/permission", json=payload)
     else:
@@ -92,7 +92,6 @@ def perfrom_config(session, search, logger):
 #==============================================================================
 
 def perform_event(session, search, logger):
-    #FIXME
     payload = {
         "filters": [],
         "limit": 100,
@@ -105,16 +104,16 @@ def perform_event(session, search, logger):
     }
     
     if 'filters' in search:
-        payload.update(filters=search['filters'])
+        payload.update(filters=search.get('filters'))
 
     if 'groupBy' in search:
-        payload.update(groupBy=search['groupBy'])
+        payload.update(groupBy=search.get('groupBy'))
 
     # if 'id' in search:
     #     payload.update(id=search['id'])
 
     if 'limit' in search:
-        payload.update(limit=search['limit'])
+        payload.update(limit=search.get('limit'))
 
     if 'query' in search:
         payload.update(query=search['query'])
@@ -122,8 +121,8 @@ def perform_event(session, search, logger):
     if 'sort' in search:
         payload.update(sort=search['sort'])
 
-    if 'timeRange' in search:
-        payload.update(timeRange=search['searchModel']['timeRange'])
+    timeRange = search.get('timeRange', {})
+    payload.update(timeRange=search.get('searchModel', {}).get('timeRange', timeRange))
 
     logger.debug('API - Performing event search')
     response = session.request("POST", "/search/event", json=payload)
@@ -143,8 +142,9 @@ def perform_network(session, search, logger):
     #Build payload object with values that are given
     payload =  {}
 
-    payload.update(query=search['query'])
-    payload.update(timeRange=search['timeRange'])
+    payload.update(query=search.get('query'))
+    timeRange = search.get('timeRange', {})
+    payload.update(timeRange=search.get('searchModel', {}).get('timeRange', timeRange))
     
     if 'default' in search:
         payload.update(default=search['default'])
@@ -218,7 +218,7 @@ def save_search(session, new_search, old_search, logger):
 
     if response.status_code == 200:
         data = response.json()
-        return data['id']
+        return data.get('id')
     else:
         logger.debug(old_search)
         return 'BAD'

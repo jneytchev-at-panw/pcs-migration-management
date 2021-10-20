@@ -7,11 +7,11 @@ def delete_login_ips(session, ips, dst_ips, logger):
         logger.info(f'Deleting Trusted Login IPs from tenant: \'{session.tenant}\'')
 
         for ip in tqdm(ips, desc='Deleteing Login IPs', leave=False):
-            name = ip['name']
+            name = ip.get('name')
             #Translate ID
             l_id = ''
-            if name in [i['name'] for i in dst_ips]:
-                l_id = [i['id'] for i in dst_ips if i['name'] == name]
+            if name in [i.get('name') for i in dst_ips]:
+                l_id = [i.get('id') for i in dst_ips if i.get('name') == name]
                 if l_id:
                     l_id = l_id[0]
             logger.debug('API - Update login allow IP')

@@ -20,8 +20,8 @@ def get_ip_ciders(session: object, network: object, logger:object):
     Gets CIDR list for the supplied network
     '''
 
-    name = network['name']
-    networkUuid = network['uuid']
+    name = network.get('name')
+    networkUuid = network.get('uuid')
     logger.debug(f'API - Getting CIDR lists for Network: \'{name}\'')
     res = session.request('GET', f'/network/{networkUuid}')
     data = res.json()

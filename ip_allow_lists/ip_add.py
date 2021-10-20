@@ -35,7 +35,7 @@ def add_network_cidrs(session, network, cidrs, logger):
     if cidrs:
         logger.info(f'Adding Network CIDRs to tenant: \'{session.tenant}\'')
 
-        networkUuid = network['uuid']
+        networkUuid = network.get('uuid')
         name = network['name']
         for cidr in tqdm(cidrs, desc='Adding Network CIDRs', leave=False):
             #upload each cider in a network

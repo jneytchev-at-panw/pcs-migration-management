@@ -7,11 +7,11 @@ def update_login_ips(session, ips, dst_ips, logger):
         logger.info(f'Updating Login IPs for tenant: \'{session.tenant}\'')
 
         for ip in tqdm(ips, desc='Updating Login IPs', leave=False):
-            name = ip['name']
+            name = ip.get('name')
             #Translate ID
             l_id = ''
-            if name in [i['name'] for i in dst_ips]:
-                l_id = [i['id'] for i in dst_ips if i['name'] == name][0]
+            if name in [i.get('name') for i in dst_ips]:
+                l_id = [i.get('id') for i in dst_ips if i.get('name') == name][0]
             ip.pop('id')
             ip.pop('lastModifiedTs')
             logger.debug('API - Update login allow IP')
