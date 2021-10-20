@@ -17,6 +17,7 @@ class Session:
         self.a_key = a_key
         self.s_key = s_key
         self.api_url = api_url
+        self.prismaId = ''
         self.token = self.api_login()
         self.headers = {
             'content-type': 'application/json; charset=UTF-8',
@@ -63,17 +64,20 @@ class Session:
             self.logger.info('Exiting...')
             quit()
 
-        self.logger.debug(f'{url}')
 
         #Results
         if response.status_code == 200:
             self.logger.success('SUCCESS')
-            token = response.json()['token']
+            data = response.json()
+            self.prismaId = data.get('customerNames')[0].get('prismaId')
+
+            token = data.get('token')
             self.token = token
             self.headers = {
             'content-type': 'application/json; charset=UTF-8',
             'x-redlock-auth': token
             }
+            
             return token
         elif response.status_code == 401:
             self.logger.error('FAILED')
