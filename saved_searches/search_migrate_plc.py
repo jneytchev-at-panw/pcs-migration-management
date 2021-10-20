@@ -102,8 +102,8 @@ def perform_event(session, search, logger):
     if 'sort' in search:
         payload.update(sort=search['sort'])
 
-    if 'timeRange' in search:
-        payload.update(timeRange=search['timeRange'])
+    timeRange = search.get('timeRange', {})
+    payload.update(timeRange=search.get('searchModel', {}).get('timeRange', timeRange))
 
     logger.debug('API - Performing event search')
     response = session.request("POST", "/search/event", json=payload)
@@ -124,7 +124,8 @@ def perform_network(session, search, logger):
     payload =  {}
 
     payload.update(query=search['query'])
-    payload.update(timeRange=search['timeRange'])
+    timeRange = search.get('timeRange', {})
+    payload.update(timeRange=search.get('searchModel', {}).get('timeRange', timeRange))
     
     if 'default' in search:
         payload.update(default=search['default'])
