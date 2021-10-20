@@ -72,7 +72,6 @@ def perform_event(session, search, logger):
     '''
     Performs an event search
     '''
-    #FIXME
     payload = {
         "filters": [],
         "limit": 100,
