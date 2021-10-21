@@ -53,20 +53,22 @@ def load_sessions(file_mode: bool, logger):
     '''
 
     tenant_sessions = load_config_create_sessions(file_mode, logger)
+    tenant_sessions[10]#FIXME THIS IS JUST TO TEST ERROR WRAPPER FOR LOGGER
 
+    tenant_ids = [tenant.prismaId for tenant in tenant_sessions]
+    if len(tenant_ids) != len(set(tenant_ids)):
+        logger.critical('Duplicate Tenant Detected')
+        c_print('Duplicate tenant found. Exiting...', color='red')
+        quit()
+
+    tenant_urls = [tenant.api_url for tenant in tenant_sessions]
     same_stack = False
-    for session in tenant_sessions:
-        current = session.api_url
-        found = 0
-
-        for session2 in tenant_sessions:
-            if current == session2.api_url:
-                found += 1
-
-        if found > 1:
-            same_stack = True
-            c_print('WARNING: One or more tenants are an the same stack.', color='yellow')
-            c_print('Some tenant components may not migrate/sync properly. eg Cloud Accounts.', color='yellow')
+    if len(tenant_urls) != len(set(tenant_urls)):
+        logger.warning('Same Stack Detected')
+        c_print('WARNING: One or more tenants are an the same stack.', color='yellow')
+        c_print('Some tenant components may not migrate/sync properly. eg Cloud Accounts.', color='yellow')
+        logger.warning('Some tenant components may not migrate/sync properly. eg Cloud Accounts.')
+        same_stack = True
 
     return(tenant_sessions, same_stack)
 
@@ -152,6 +154,7 @@ def get_sync_mode_settings(sync_modes, module):
 
 #==============================================================================
 
+@logger.catch
 def main(file_mode, logger):
     print()
     c_print('PRISMA CLOUD TENANT MIGRATION AND CENTRAL MANAGEMENT TOOL', color='blue')
