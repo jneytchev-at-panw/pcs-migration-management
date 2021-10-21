@@ -57,7 +57,9 @@ def load_sessions(file_mode: bool, logger):
     tenant_ids = [tenant.prismaId for tenant in tenant_sessions]
     if len(tenant_ids) != len(set(tenant_ids)):
         logger.critical('Duplicate Tenant Detected')
+        logger.warning('Make sure source and destination tenants are all unique')
         c_print('Duplicate tenant found. Exiting...', color='red')
+        c_print('Make sure your source and destination tenants are all unique.', color='yellow')
         quit()
 
     tenant_urls = [tenant.api_url for tenant in tenant_sessions]
