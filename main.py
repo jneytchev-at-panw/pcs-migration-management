@@ -53,7 +53,6 @@ def load_sessions(file_mode: bool, logger):
     '''
 
     tenant_sessions = load_config_create_sessions(file_mode, logger)
-    tenant_sessions[10]#FIXME THIS IS JUST TO TEST ERROR WRAPPER FOR LOGGER
 
     tenant_ids = [tenant.prismaId for tenant in tenant_sessions]
     if len(tenant_ids) != len(set(tenant_ids)):
