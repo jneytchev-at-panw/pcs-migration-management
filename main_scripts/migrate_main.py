@@ -46,77 +46,113 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
     run_summary = {}
 
     for mode in tqdm(mode_list, desc='MIGRATION STATUS'):
-        #CLOUD ACCOUNT MIGRATE
-        if 'cloud' == mode:
-            added = cld_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_cloud_accounts=added)
+        #CLOUD ACCOUNT MIGRATE-------------------------------------------------
+        try:
+            if 'cloud' == mode:
+                added = cld_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_cloud_accounts=added)
+        except Exception as error:
+            logger.exception(error)
 
-        #ACCOUNT GROUPS MIGRATE
-        if 'account' == mode:
-            added = acc_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_account_groups=added)
 
-        #RESOURCE LIST MIGRATE
-        if 'resource' == mode:
-            added = rsc_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_resource_lists=added)
+        #ACCOUNT GROUPS MIGRATE------------------------------------------------
+        try:
+            if 'account' == mode:
+                added = acc_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_account_groups=added)
+        except Exception as error:
+            logger.exception(error)
 
-        #USER ROLES MIGRATE
-        if 'role' == mode:
-            added = role_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_user_roles=added)
+        #RESOURCE LIST MIGRATE-------------------------------------------------
+        try:
+            if 'resource' == mode:
+                added = rsc_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_resource_lists=added)
+        except Exception as error:
+            logger.exception(error)
 
-        #USERS MIGRATE
-        if 'user' == mode:
-            added = usr_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_user_profiles=added)
+        #USER ROLES MIGRATE----------------------------------------------------
+        try:
+            if 'role' == mode:
+                added = role_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_user_roles=added)
+        except Exception as error:
+            logger.exception(error)
+
+        #USERS MIGRATE---------------------------------------------------------
+        try:
+            if 'user' == mode:
+                added = usr_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_user_profiles=added)
+        except Exception as error:
+            logger.exception(error)
         
-        #TRUSTED IP MIGRATE
-        if 'ip' == mode:
-            tenant_networks_added, tenant_cidrs_added, tenant_login_ips_added = ip_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_networks=tenant_networks_added)
-            run_summary.update(added_cidrs=tenant_cidrs_added)
-            run_summary.update(added_login_ips=tenant_login_ips_added) 
+        #TRUSTED IP MIGRATE----------------------------------------------------
+        try:
+            if 'ip' == mode:
+                tenant_networks_added, tenant_cidrs_added, tenant_login_ips_added = ip_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_networks=tenant_networks_added)
+                run_summary.update(added_cidrs=tenant_cidrs_added)
+                run_summary.update(added_login_ips=tenant_login_ips_added)
+        except Exception as error:
+            logger.exception(error) 
 
-        #COMPLIANCE MIGRATE
-        if 'compliance' == mode:
-            standards_added, requirements_added, sections_added = cmp_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_compliance_standards=standards_added)
-            run_summary.update(added_compliance_requirements=requirements_added)
-            run_summary.update(added_compliance_sections=sections_added)
+        #COMPLIANCE MIGRATE----------------------------------------------------
+        try:
+            if 'compliance' == mode:
+                standards_added, requirements_added, sections_added = cmp_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_compliance_standards=standards_added)
+                run_summary.update(added_compliance_requirements=requirements_added)
+                run_summary.update(added_compliance_sections=sections_added)
+        except Exception as error:
+            logger.exception(error)
 
-        #SAVED SEARCHE MIGRATE
-        if 'search' == mode:
-            added_searches, deleted_searches, search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
-            run_summary.update(added_searches=added_searches)
-            run_summary.update(deleted_searches=deleted_searches)
+        #SAVED SEARCH MIGRATE--------------------------------------------------
+        try:
+            if 'search' == mode:
+                added_searches, deleted_searches, search_sync_data = search_sync.sync(tenant_sessions, modes['search'].get('add', True), False, logger)
+                run_summary.update(added_searches=added_searches)
+                run_summary.update(deleted_searches=deleted_searches)
+        except Exception as error:
+            logger.exception(error)
         
-        #POLICY MIGRATE
-        if 'policy' == mode:
-            added = plc_migrate_custom.migrate_custom_policies(tenant_sessions, logger)
-            run_summary.update(added_custom_policies=added)
+        #POLICY MIGRATE--------------------------------------------------------
+        try:
+            if 'policy' == mode:
+                added = plc_migrate_custom.migrate_custom_policies(tenant_sessions, logger)
+                run_summary.update(added_custom_policies=added)
 
-            added = plc_migrate_default.migrate_builtin_policies(tenant_sessions, logger)
-            run_summary.update(updated_default_policies=added)
+                added = plc_migrate_default.migrate_builtin_policies(tenant_sessions, logger)
+                run_summary.update(updated_default_policies=added)
+        except Exception as error:
+            logger.exception(error)
         
-        #ALERT RULES MIGRATE
-        if 'alert' == mode:
-            added = alr_migrate.migrate(tenant_sessions, logger)
-            run_summary.update(added_alert_rules=added)
+        #ALERT RULES MIGRATE---------------------------------------------------
+        try:
+            if 'alert' == mode:
+                added = alr_migrate.migrate(tenant_sessions, logger)
+                run_summary.update(added_alert_rules=added)
+        except Exception as error:
+            logger.exception(error)
             
-        #ANOMALY SETTINGS MIGRATE
-        if 'anomaly' == mode:
-            added, updated, deleted, updated_network_settings, updated_ueba_settings, ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
-            run_summary.update(added_anomaly=added)
-            run_summary.update(updated_anomaly=updated)
-            run_summary.update(updated_ueba_settings=updated_ueba_settings)
-            run_summary.update(updated_network_settings=updated_network_settings)
+        #ANOMALY SETTINGS MIGRATE----------------------------------------------
+        try:
+            if 'anomaly' == mode:
+                added, updated, deleted, updated_network_settings, updated_ueba_settings, ano_sync_data = ano_sync.sync(tenant_sessions, modes['anomaly'].get('add', True), modes['anomaly'].get('update', True), False, logger)
+                run_summary.update(added_anomaly=added)
+                run_summary.update(updated_anomaly=updated)
+                run_summary.update(updated_ueba_settings=updated_ueba_settings)
+                run_summary.update(updated_network_settings=updated_network_settings)
+        except Exception as error:
+            logger.exception(error)
 
-
-        if 'settings' == mode:
-            #Enterprise settings
-            updated = set_sync.sync(tenant_sessions, logger)
-            run_summary.update(updated_enterprise_settings=updated)
+        #Enterprise settings---------------------------------------------------
+        try:
+            if 'settings' == mode:
+                updated = set_sync.sync(tenant_sessions, logger)
+                run_summary.update(updated_enterprise_settings=updated)
+        except Exception as error:
+            logger.exception(error)
 
     c_print('**************************', color='green')
     c_print('Finished migrating tenants', color='green')
