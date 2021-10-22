@@ -22,7 +22,7 @@ Integrations can not be migrated by this script. All Alert Rules that rely on ex
 
 ### Modules
 
-Currently, modules are not supported in any meaningful way. You are able to migrate/sync IAM policies and saved searches but other modules and module functionality is not supported at this time. For example, if you try to migrate a custom policy or saved search from a module like Microsegmentation, you will encounter errors.  Fortunately, module support is on the roadmap for this tool.
+Currently, modules configuration migration/sync is not supported. You are able to migrate/sync IAM Policies and Saved Searches as well as Cloud Accounts that use Data Security. However other modules and module functionality are not supported at this time. For example, if you try to migrate a custom policy or saved search from a module like Microsegmentation, you will encounter errors.  Fortunately, module support is on the roadmap for this tool.
 
 ### Trusted Login IPs
 
