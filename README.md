@@ -37,7 +37,7 @@ Clone this project from github onto the machine of your choice. This script requ
 This script relies on 4 external Python libraries:  
 Requests - An installation guide can be found here: https://docs.python-requests.org/en/master/  
 PyYAML - An installation guide can be found here: https://pyyaml.org/  
-Loguru - An installation guide can be found here: https://github.com/Delgan/loguru
+Loguru - An installation guide can be found here: https://github.com/Delgan/loguru  
 tqdm - An installation guide can be found here: https://github.com/tqdm/tqdm
 
 You can also install the dependencies quickly by using Python’s package manager and the supplied requirements file.
