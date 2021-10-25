@@ -64,7 +64,7 @@ Once you have selected a mode you will be prompted to do a full migration or a f
 
 There are also two command line arguments that can be used. -yaml and -quiet.
 
--yaml Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials.
+-yaml Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials. When you do this for the first time, the script will walk you through a set up process and a tenant_credentials.yml file will be created. The next time the script is run with the -yaml flag, this file will be read from and the tenants will be loaded in automatically. If you need to make a change to this file to update the tenants that are being managed by the script, you can manually edit tenant_credentials.yml or delete it and run the script to re-do the setup process. 
 
 -quiet Hides the logging output and only shows progress bars in the terminal output.
 
