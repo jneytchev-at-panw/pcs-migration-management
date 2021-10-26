@@ -155,17 +155,17 @@ def load_config_create_sessions(file_mode, logger):
 
     if file_mode:
         #Open and load config file
-        if not path.exists('credentials.yml'):
+        if not path.exists('tenant_credentials.yml'):
             #Create credentials yml file
             c_print('No credentials file found. Generating...', color='yellow')
             print()
             credentials = get_credentials_from_user()
 
-            with open('credentials.yml', 'w') as yml_file:
+            with open('tenant_credentials.yml', 'w') as yml_file:
                 for tenant in credentials:
                     yaml.dump(tenant, yml_file, default_flow_style=False)
 
-        with open("credentials.yml", "r") as file:
+        with open("tenant_credentials.yml", "r") as file:
             cfg = yaml.load(file, Loader=yaml.BaseLoader)
 
         #Parse cfg for tenant names and create tokens for each tenant
