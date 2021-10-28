@@ -38,6 +38,7 @@ def add_custom_policies(tenant_session, source_tenant_session, policies, logger)
                 complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
                 if complianceMetadata == 'BAD':
                     #Skip this policy
+                    logger.warning(f"Compliance Data not found. Unable to migrate policy \'{name}\'")
                     continue
                 policy.update(complianceMetadata=complianceMetadata)
 
