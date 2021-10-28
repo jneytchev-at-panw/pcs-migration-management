@@ -104,7 +104,7 @@ def get_credentials_from_user():
 
     valid = False
     while not valid:
-        c_print('Enter credentials for the source tenant. (The tenant the other \'clone\' tennats will replicate)', color='blue')
+        c_print('Enter credentials for the source tenant. (The tenant the other \'clone\' tenats will replicate)', color='blue')
         print()
         src_name, src_a_key, src_s_key, src_url = get_tenant_credentails()
         
