@@ -36,6 +36,9 @@ def add_custom_policies(tenant_session, source_tenant_session, policies, logger)
             #The ID of the compliance standards needs to be updated if there is compliance data
             if 'complianceMetadata' in policy:
                 complianceMetadata = build_compliance_metadata(policy['complianceMetadata'], translate)
+                if complianceMetadata == 'BAD':
+                    #Skip this policy
+                    continue
                 policy.update(complianceMetadata=complianceMetadata)
 
             logger.debug(f'API - Adding {p_type} policy: {name}')
