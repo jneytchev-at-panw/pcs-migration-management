@@ -4,6 +4,7 @@ import yaml
 from sdk.session_manager import Session
 from sdk.color_print import c_print
 import requests
+import json
 
 def validate_credentials(a_key, s_key, url) -> bool:
     '''
@@ -144,6 +145,29 @@ def get_credentials_from_user():
             get_clone = False
 
     return credentials
+
+def load_yaml(file_name, logger):
+    with open(file_name, "r") as file:
+        cfg = yaml.load(file, Loader=yaml.BaseLoader)
+
+    credentials = cfg['credentials']
+    mode = cfg['mode']
+    modes = json.loads(cfg['modes'])
+    #Parse cfg for tenant names and create tokens for each tenant
+    tenant_sessions = []
+    for tenant in credentials:
+        tenant_name = ''
+        tenant_keys = tenant.keys()
+        for name in tenant_keys:
+            tenant_name = name     
+
+        a_key = tenant[tenant_name]['access_key']
+        s_key = tenant[tenant_name]['secret_key']
+        api_url = tenant[tenant_name]['api_url']
+
+        tenant_sessions.append(Session(tenant_name, a_key, s_key, api_url, logger))
+
+    return tenant_sessions, mode, modes
 
 def load_config_create_sessions(file_mode, logger):
     '''

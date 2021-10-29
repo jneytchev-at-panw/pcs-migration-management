@@ -5,6 +5,9 @@ from tqdm import tqdm
 from main_scripts import migrate_main, sync_main
 from sdk.color_print import c_print
 from sdk.load_config import load_config_create_sessions
+from sdk import load_config
+import os
+import yaml
 
 
 #Build the dictionary used for sync to determin if the module should support the update, add and delete operations
@@ -152,6 +155,144 @@ def get_sync_mode_settings(sync_modes, module):
     print()
 
     return sync_modes
+
+#==============================================================================
+
+def build_yaml(file_name, logger):
+    #Get credentials
+    tenant_credentials = load_config.get_credentials_from_user()
+
+    migrate_mode_flag = False
+    migrate_mode_config = {}
+
+    sync_mode_flag = False
+    sync_mode_config = {}
+
+    #Get answer to config questions
+    c_print('You will now be asked a series of questions so you can customize the operations this script will perform.', color='blue')
+    c_print('This script supports two main modes, Migration and Sync.The Migration mode is intended to be used when you', color='blue')
+    c_print('are copying data from a full tenant to an empty or mostly empty tenant or tenants. The Sync mode is intended', color='blue')
+    c_print('to be used when you want to Add, Update, and Delete elements from one or more clone tenants so that those', color='blue')
+    c_print('clone tenants will become identical to your source tenant. The Sync mode does a deep search of all involved', color='blue')
+    c_print('tenants so that even the smallest change will be detected and reflected across all managed tenants.', color='blue')
+    print()
+    print()
+
+    #Run the script based on user responces to the following prompts
+    mode = input('Do you want to MIGRATE or SYNC? (M/S): ')
+    print()
+
+    #Select migrate mode or sync mode
+    mode = mode.lower() 
+    if mode == 'm' or mode == 'migrate':#--------------------------------------------------
+        #Get migration settings from the user
+        c_print('A full migration will migrate all components of the Prisma Cloud Tenant that are supported by this script.', color='blue')
+        c_print('Selecting \'No\' will allow you to customize which components are migrated.', color='blue')
+        print()
+        migrate_type = input('Do you want to do a full migration? (Y/N): ')
+        print()
+        migrate_type = migrate_type.lower()
+
+        migrate_modes = {
+            'cloud': {},
+            'account': {},
+            'resource': {},
+            'role': {},
+            'user': {},
+            'ip': {},
+            'compliance': {},
+            'search': {},
+            'policy': {},
+            'alert': {},
+            'anomaly': {},
+            'settings': {}
+        }
+        
+        if migrate_type == 'y' or migrate_type == 'yes':
+            #Return settings
+            migrate_mode_flag = True
+            migrate_mode_config = migrate_modes
+        else:
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'cloud')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'account')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'resource')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'role')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'user')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'ip')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'compliance')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'search')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'policy')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'alert')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'anomaly')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'settings')
+            
+            #Return settings
+            migrate_mode_flag = True
+            migrate_mode_config = migrate_modes
+
+    else:#---------------------------------------------------------------------------------
+        c_print('A full sync will do Add and Update operations on all components of the Prisma Cloud Tenant that are supported by this script.', color='blue')
+        c_print('Selecting \'No\' will allow you to customize the components that are synced and the operations that are performed.', color='blue')
+        print()
+        migrate_type = input('Do you want to do a full Sync? (Y/N): ')
+        print()
+        migrate_type = migrate_type.lower()
+
+        sync_modes = {
+            'cloud': {},
+            'account': {},
+            'resource': {},
+            'role': {},
+            'user': {},
+            'ip': {},
+            'compliance': {},
+            'search': {},
+            'policy': {},
+            'alert': {},
+            'anomaly': {},
+            'settings': {}
+        }
+
+        if migrate_type == 'y' or migrate_type == 'yes':
+            #Return Sync settings
+            sync_mode_flag = True
+            sync_mode_config = sync_modes
+
+        else:
+            sync_modes = get_sync_mode_settings(sync_modes, 'cloud')
+            sync_modes = get_sync_mode_settings(sync_modes, 'account')
+            sync_modes = get_sync_mode_settings(sync_modes, 'resource')
+            sync_modes = get_sync_mode_settings(sync_modes, 'role')
+            sync_modes = get_sync_mode_settings(sync_modes, 'user')
+            sync_modes = get_sync_mode_settings(sync_modes, 'ip')
+            sync_modes = get_sync_mode_settings(sync_modes, 'compliance')
+            sync_modes = get_sync_mode_settings(sync_modes, 'search')
+            sync_modes = get_sync_mode_settings(sync_modes, 'policy')
+            sync_modes = get_sync_mode_settings(sync_modes, 'alert')
+            sync_modes = get_sync_mode_settings(sync_modes, 'anomaly')
+            sync_modes = get_sync_mode_settings(sync_modes, 'settings')
+
+            #Return Sync settings
+            sync_mode_flag = True
+            sync_mode_config = sync_modes
+
+    yaml_dict = {}
+
+    if sync_mode_flag:
+        yaml_dict = {
+            'credentials': tenant_credentials,
+            'mode': 'sync',
+            'modes': json.dumps(sync_mode_config, separators=(',', ':'))
+        }
+    else:
+        yaml_dict = {
+            'credentials': tenant_credentials,
+            'mode': 'migrate',
+            'modes': json.dumps(migrate_mode_config, separators=(',', ':'))
+        }
+
+    with open(file_name, 'w') as yml_file:
+        yaml.dump(yaml_dict, yml_file, default_flow_style=False)
 
 #==============================================================================
 
@@ -325,7 +466,7 @@ if __name__ =='__main__':
     
     args = [el.lower() for el in sys.argv]
 
-    if '-yaml' in args:
+    if '-creds' in args:
         file_mode = True
 
     if '-quiet' in args:
@@ -341,6 +482,38 @@ if __name__ =='__main__':
 
     logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True, level='BAR')
     logger.add('logs/{time:DD-MM-YYYY_HH:mm:ss}.log', level='TRACE')
+
+
+    #No user interaction mode, only reads from a yaml
+    if '-yaml' in args:
+        file_to_load = ''
+        try:
+            file_to_load = args[args.index('-yaml') + 1]
+        except:
+            c_print('No YAML input file specified. Exiting...', color='red')
+            quit()
+        if not os.path.exists(file_to_load):
+            c_print('YAML input file not found. Generating then running...', color='yellow')
+            print()
+
+            build_yaml(file_to_load, logger)
+
+            tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
+            if mode=='migrate':
+                migrate_main.migrate(tenant_sessions, modes, logger)
+            else:
+                sync_main.sync(tenant_sessions, modes, logger)
+
+        else:
+            tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
+            if mode=='migrate':
+                migrate_main.migrate(tenant_sessions, modes, logger)
+            else:
+                sync_main.sync(tenant_sessions, modes, logger)
+        #Done
+        quit()
+
+        
 
     #Call main function
     main(file_mode, logger)
