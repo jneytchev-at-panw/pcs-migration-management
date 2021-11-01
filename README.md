@@ -62,13 +62,15 @@ You will be prompted to run the script in Migrate or Sync mode.
 
 Once you have selected a mode you will be prompted to do a full migration or a full sync. If you select YES then all Prisma Cloud components that are supported by this script will be migrated or synced across the tenants the script has access too. If you select NO then you will be asked to pick and choose what Prisma Cloud components will be migrated or synced with this script. You will also be able to selectively enable Add, Update, and Delete operations for sync mode through this customization menu.
 
-There are also two command line arguments that can be used. -yaml and -quiet.
+There are also three command line arguments that can be used. -yaml, -creds, and -quiet.
 
--yaml Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials. When you do this for the first time, the script will walk you through a set up process and a tenant_credentials.yml file will be created. The next time the script is run with the -yaml flag, this file will be read from and the tenants will be loaded in automatically. If you need to make a change to this file to update the tenants that are being managed by the script, you can manually edit tenant_credentials.yml or delete it and run the script to re-do the setup process. 
+-yaml allows YAML config files to be created that allow this script to be run without any user input being required after the script as started. You have to supply the name of the config file you want to store your script runtime settings in as a command line argument following the -yaml flag. If you supply a file that does not exist, the script will create the file and ask you the necessary setup questions. If you supply an existing valid config file, the script will run with your customized settings without any further user input
+
+--creds Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials. When you do this for the first time, the script will walk you through a set up process and a tenant_credentials.yml file will be created. The next time the script is run with the -yaml flag, this file will be read from and the tenants will be loaded in automatically. If you need to make a change to this file to update the tenants that are being managed by the script, you can manually edit tenant_credentials.yml or delete it and run the script to re-do the setup process. 
 
 -quiet Hides the logging output and only shows progress bars in the terminal output.
 
-`python3 main.py -yaml`
+`python3 main.py -creds`
 
 ## Overview and Other Information
 
