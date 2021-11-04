@@ -66,11 +66,15 @@ There are also three command line arguments that can be used. -yaml, -creds, and
 
 -yaml allows YAML config files to be created that allow this script to be run without any user input being required after the script as started. You have to supply the name of the config file you want to store your script runtime settings in as a command line argument following the -yaml flag. If you supply a file that does not exist, the script will create the file and ask you the necessary setup questions. If you supply an existing valid config file, the script will run with your customized settings without any further user input
 
---creds Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials. When you do this for the first time, the script will walk you through a set up process and a tenant_credentials.yml file will be created. The next time the script is run with the -yaml flag, this file will be read from and the tenants will be loaded in automatically. If you need to make a change to this file to update the tenants that are being managed by the script, you can manually edit tenant_credentials.yml or delete it and run the script to re-do the setup process. 
+`python3 main.py -yaml my_sync_settings.yml`  
 
--quiet Hides the logging output and only shows progress bars in the terminal output.
+--creds Allows plain text files to be created with tenant credentials so that you can run the script multiple times without re-entering credentials. When you do this for the first time, the script will walk you through a set up process and a tenant_credentials.yml file will be created. The next time the script is run with the -yaml flag, this file will be read from and the tenants will be loaded in automatically. If you need to make a change to this file to update the tenants that are being managed by the script, you can manually edit tenant_credentials.yml or delete it and run the script to re-do the setup process.  
 
-`python3 main.py -creds`
+`python3 main.py -creds`  
+
+-quiet Hides the logging output and only shows progress bars in the terminal output.  
+
+`python3 main.py -quiet -yaml my_sync_settings.yml`
 
 ## Overview and Other Information
 

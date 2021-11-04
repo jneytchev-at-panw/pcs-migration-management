@@ -490,8 +490,12 @@ if __name__ =='__main__':
         try:
             file_to_load = args[args.index('-yaml') + 1]
         except:
-            c_print('No YAML input file specified. Exiting...', color='red')
+            c_print('No YAML (.yml) input file specified. Exiting...', color='red')
             quit()
+        
+        if '.yml' not in file_to_load:
+            file_to_load = file_to_load + '.yml'
+
         if not os.path.exists(file_to_load):
             c_print('YAML input file not found. Generating then running...', color='yellow')
             print()
@@ -499,6 +503,7 @@ if __name__ =='__main__':
             build_yaml(file_to_load, logger)
 
             tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
+            
             if mode=='migrate':
                 migrate_main.migrate(tenant_sessions, modes, logger)
             else:
