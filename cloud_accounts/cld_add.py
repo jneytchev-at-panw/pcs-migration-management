@@ -2,15 +2,13 @@
 
 from tqdm import tqdm
 
-def add_accounts(session: object, accounts: list, azure_account_keys: dict,
+def add_accounts(accounts_added, session: object, accounts: list, azure_account_keys: dict,
                     gcp_account_keys: dict, logger: object) -> bool:
 
     #List of redlock errors to manually handle and have ignored by session.request
     redlock_ignore = ['not_account_owner', 'project_id_credential_mismatch', 'data_security_not_enabled_for_tenant', 'organization_viewer_permission_required', 'project_viewer_permission_required']
 
     tenant_name = session.tenant
-
-    accounts_added = 0
 
     if accounts:
         logger.info(f'Adding Cloud Accounts to tenant: \'{session.tenant}\'')
