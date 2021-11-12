@@ -1,5 +1,6 @@
 import requests
 from sdk.color_print import c_print
+import time
 
 class Session:
     def __init__(self, tenant_name: str, a_key: str, s_key: str, api_url: str, logger: object):
@@ -116,7 +117,7 @@ class Session:
 
         """
         self.logger.debug(f'{url}')
-        res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
+        res = self.request_wrapper(method, url, headers=self.headers, json=json, data=data, params=params)
         
         if res.status_code == 200 or res.status_code in status_ignore:
             self.logger.success('SUCCESS')
@@ -135,7 +136,7 @@ class Session:
                 self.api_login()
             self.logger.warning(f'Retrying request. Code {res.status_code}.')
             self.logger.debug(f'{url}')
-            res = requests.request(method, url, headers=self.headers, json=json, data=data, params=params)
+            res = self.request_wrapper(method, url, headers=self.headers, json=json, data=data, params=params)
             retries += 1
         
         if res.status_code == 200 or res.status_code in status_ignore:
@@ -200,3 +201,20 @@ class Session:
 
         #Call wrapper
         return self.api_call_wrapper(method, url, json=json, data=data, params=params, redlock_ignore=redlock_ignore, status_ignore=status_ignore)
+
+
+    def request_wrapper(self, method, url, headers, json, data, params):
+        counter = 1
+        r = ''
+        while r == '' and counter < self.retries:
+            counter += 1
+            try:
+                r = requests.request(method, url, headers=headers, json=json, data=data, params=params)
+                return r
+            except:
+                self.logger.error('Request failed, retrying...')
+                time.sleep(10)
+                continue
+            
+
+        return requests.request(method, url, headers=headers, json=json, data=data, params=params)
