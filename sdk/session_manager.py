@@ -213,7 +213,7 @@ class Session:
                 return r
             except:
                 self.logger.error('Request failed, retrying...')
-                time.sleep(10)
+                time.sleep(3)
                 continue
             
 
