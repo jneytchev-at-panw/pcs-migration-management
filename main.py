@@ -2,7 +2,7 @@ import json
 import sys
 from loguru import logger
 from tqdm import tqdm
-from main_scripts import migrate_main, sync_main
+from main_scripts import migrate_main, sync_main, single_migrate
 from sdk.color_print import c_print
 from sdk.load_config import load_config_create_sessions
 from sdk import load_config
@@ -458,6 +458,75 @@ def main(file_mode, logger):
             sync_main.sync(tenant_sessions, sync_modes, logger)
             return
 
+#==================================================================================
+
+def uuid_main(file_mode, logger):
+    
+    #Load JWT sessions from credentials.yaml
+    tenant_sessions, same_stack = load_sessions(file_mode, logger)
+
+    mode = input('Do you want to MIGRATE or SYNC? (M/S): ')
+    print()
+    
+    mode.lower()
+
+    if mode == 'm':
+        c_print('Please select the number coresponding with the type of component you want to migrate.')
+        c_print('1: Cloud Account')
+        c_print('2: Account Group')
+        c_print('3: Resource List')
+        c_print('4: User Role')
+        c_print('5: User Profile')
+        c_print('6: Trusted IP address')
+        c_print('7: Compliance Standard/Requirement/Section')
+        c_print('8: Saved Search')
+        c_print('9: Policy')
+        c_print('10 Alert Rule')
+        c_print('11: Anomaly Setting')
+        c_print('12: Enterprise Settings')
+        choice = input('Pick a number, 1-12: ')
+        done = False
+        while not done:
+            try:
+                choice = int(choice)
+                if choice < 1 or choice > 12:
+                    raise
+                done = True
+            except:
+                choice = input('Pick a number, 1-12: ')
+
+        entity_type = ''
+
+        if choice == 1:
+            entity_type = 'cloud'
+        elif choice == 2:
+            entity_type = 'account'
+        elif choice == 3:
+            entity_type = 'resource'
+        elif choice == 4:
+            entity_type = 'role'
+        elif choice == 5:
+            entity_type = 'user'
+        elif choice == 6:
+            entity_type = 'ip'
+        elif choice == 7:
+            entity_type = 'compliance'
+        elif choice == 8:
+            entity_type = 'search'
+        elif choice == 9:
+            entity_type = 'policy'
+        elif choice == 10:
+            entity_type = 'alert'
+        elif choice == 11:
+            entity_type = 'anomaly'
+        elif choice == 12:
+            entity_type = 'settings'
+
+        uuid = input('Please enter the uuid of the entity: ')
+
+        single_migrate.single_migrate(tenant_sessions, entity_type, uuid, logger)
+
+
 
 if __name__ =='__main__':
     #Command line arguments
@@ -499,15 +568,29 @@ if __name__ =='__main__':
         if not os.path.exists(file_to_load):
             c_print('YAML input file not found. Generating then running...', color='yellow')
             print()
-
-            build_yaml(file_to_load, logger)
-
-            tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
             
-            if mode=='migrate':
-                migrate_main.migrate(tenant_sessions, modes, logger)
+            if '-uuid' in args:
+                pass
+                #build_uuid_yaml()
+
+                #tenant_sessions, mode, entity_type, uuid, options = load_config.load_uuid_yaml()
+
+                if mode == 'migrate':
+                    single_migrate.single_migrate(tenant_sessions, entity_type, uuid, options, logger)
+                else:
+                    pass
+                    #single_sync.single_sync()
+                    
+
             else:
-                sync_main.sync(tenant_sessions, modes, logger)
+                build_yaml(file_to_load, logger)
+
+                tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
+            
+                if mode=='migrate':
+                    migrate_main.migrate(tenant_sessions, modes, logger)
+                else:
+                    sync_main.sync(tenant_sessions, modes, logger)
 
         else:
             tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
@@ -521,6 +604,9 @@ if __name__ =='__main__':
         
 
     #Call main function
-    main(file_mode, logger)
+    if '-uuid' in args:
+        uuid_main(file_mode, logger)
+    else:
+        main(file_mode, logger)
 
     #TODO Maybe run a clean up script and delete credentails files

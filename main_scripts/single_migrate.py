@@ -1,9 +1,10 @@
-def single_migrate(tenant_sessions, entity_type, uuid, options, logger):
-    #Get entity information
+from cloud_accounts import cld_single_migrate
 
+
+def single_migrate(tenant_sessions, entity_type, uuid, logger):
     try:
         if 'cloud' == entity_type:
-            pass
+            cld_single_migrate.single_migrate(tenant_sessions, uuid, logger)
     except Exception as error:
         logger.exception(error)
 
