@@ -522,7 +522,7 @@ def uuid_main(file_mode, logger):
         elif choice == 12:
             entity_type = 'settings'
 
-        uuid = input('Please enter the uuid of the entity: ')
+        uuid = input('Please enter the UUID/ID of the entity: ')
 
         single_migrate.single_migrate(tenant_sessions, entity_type, uuid, logger)
 

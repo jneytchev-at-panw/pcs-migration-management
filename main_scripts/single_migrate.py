@@ -1,4 +1,5 @@
 from cloud_accounts import cld_single_migrate
+from account_groups import acc_single_migrate
 
 
 def single_migrate(tenant_sessions, entity_type, uuid, logger):
@@ -10,7 +11,7 @@ def single_migrate(tenant_sessions, entity_type, uuid, logger):
 
     try:        
         if 'account' == entity_type:
-            pass
+            acc_single_migrate.single_migrate(tenant_sessions, uuid, logger)
     except Exception as error:
         logger.exception(error)
 

@@ -1,16 +1,20 @@
-from cloud_accounts import cld_get
+from cloud_accounts import cld_get, cld_add, cld_keys
 
 
 def single_migrate(tenant_sessions, uuid, logger):
-    tenant_cloud_accounts = [] 
-    for session in tenant_sessions:
-        cld_account_names = cld_get.get_names(session, logger)
+    account_to_migrate = {}
+    cld_account_names = cld_get.get_names(tenant_sessions[0], logger)
 
-        cld_accounts = []
-        for cld in cld_account_names:
-            cld_accounts.append(cld_get.get_all_info(session, cld, logger))
-        
-        tenant_cloud_accounts.append(cld_accounts)
-            
-
-        print(cld_accounts)
+    for cld in cld_account_names:
+        if cld.get('id') == uuid:
+            account_to_migrate = cld
+    
+    if account_to_migrate:
+        pass
+        account_to_migrate = cld_get.get_all_info(tenant_sessions[0], account_to_migrate, logger)
+        azure_account_keys = cld_keys.get_azure_credentials([account_to_migrate], logger)
+        gcp_account_keys = cld_keys.get_gcp_credentials([account_to_migrate], logger)
+        for session in tenant_sessions[1:]:
+            cld_add.add_accounts(session, [account_to_migrate], azure_account_keys, gcp_account_keys, logger)
+    else:
+        logger.warning(f'Could not find cloud account with ID of \'{uuid}\'')
