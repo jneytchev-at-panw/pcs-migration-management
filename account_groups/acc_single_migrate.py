@@ -12,4 +12,4 @@ def single_migrate(tenant_sessions, uuid, logger):
         for session in tenant_sessions[1:]:
             acc_add.add_account_groups(session, [acc_to_add], logger)
     else:
-        logger.warning(f'Could not find account group with UUID \'{uuid}\'')
+        logger.warning(f'Could not find Account Group with UUID \'{uuid}\'')

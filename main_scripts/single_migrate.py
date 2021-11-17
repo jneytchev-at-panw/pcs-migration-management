@@ -1,5 +1,8 @@
 from cloud_accounts import cld_single_migrate
 from account_groups import acc_single_migrate
+from resource_lists import rsc_single_migrate
+from user_roles import role_single_migrate
+from user_profiles import usr_single_migrate
 
 
 def single_migrate(tenant_sessions, entity_type, uuid, logger):
@@ -17,19 +20,19 @@ def single_migrate(tenant_sessions, entity_type, uuid, logger):
 
     try:        
         if 'resource' == entity_type:
-            pass
+            rsc_single_migrate.single_migrate(tenant_sessions, uuid, logger)
     except Exception as error:
         logger.exception(error)
 
     try:    
         if 'role' == entity_type:
-            pass
+            role_single_migrate.single_migrate(tenant_sessions, uuid, logger)
     except Exception as error:
         logger.exception(error)
 
     try:    
         if 'user' == entity_type:
-            pass
+            usr_single_migrate.single_migrate(tenant_sessions, uuid, logger)
     except Exception as error:
         logger.exception(error)
     
