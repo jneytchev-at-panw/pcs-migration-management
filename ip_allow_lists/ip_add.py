@@ -17,8 +17,9 @@ def add_networks(session, networks, logger):
             logger.debug('API - Adding Trusted Alert IP Network')
             res = session.request('POST', '/allow_list/network', json=network)
             added += 1
-            data = res.json()
-            add_network_cidrs(session, data, network.get('cidrs'), logger)
+            if res.status_code == 200 or res.status_code == 201:
+                data = res.json()
+                add_network_cidrs(session, data, network.get('cidrs'), logger)
     else:
         logger.info(f'No Trusted Alert IP Networks to add for tenant: \'{session.tenant}\'')
 
