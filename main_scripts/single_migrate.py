@@ -8,6 +8,7 @@ from compliance_standards import cmp_single_migrate
 from saved_searches import search_single_migrate
 from policies import plc_single_migrate
 from alert_rules import alr_single_migrate
+from anomaly_settings import ano_single_migrate
 
 
 def single_migrate(tenant_sessions, entity_type, uuid, logger):
@@ -73,6 +74,6 @@ def single_migrate(tenant_sessions, entity_type, uuid, logger):
 
     try:    
         if 'anomaly' == entity_type:
-            pass
+            ano_single_migrate.single_migrate(tenant_sessions, uuid, logger)
     except Exception as error:
         logger.exception(error)
