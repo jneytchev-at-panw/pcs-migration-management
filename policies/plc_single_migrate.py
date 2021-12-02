@@ -10,7 +10,7 @@ def single_migrate(tenant_sessions, uuid, logger):
             plc_to_add = plc
     
     if plc_to_add:
-        pass
-        #add it
+        for session in tenant_sessions[1:]:
+            plc_add.add_custom_policies(session, tenant_sessions[0], [plc_to_add], logger)
     else:
         logger.info(f'Could not find Custom Policy with UUID of \'{uuid}\'')
