@@ -483,8 +483,7 @@ def uuid_main(file_mode, logger):
         c_print('9: Policy')
         c_print('10 Alert Rule')
         c_print('11: Anomaly Setting')
-        c_print('12: Enterprise Settings')
-        choice = input('Pick a number, 1-12: ')
+        choice = input('Pick a number, 1-11: ')
         done = False
         while not done:
             try:
@@ -493,7 +492,7 @@ def uuid_main(file_mode, logger):
                     raise
                 done = True
             except:
-                choice = input('Pick a number, 1-12: ')
+                choice = input('Pick a number, 1-11: ')
 
         entity_type = ''
 
@@ -519,8 +518,6 @@ def uuid_main(file_mode, logger):
             entity_type = 'alert'
         elif choice == 11:
             entity_type = 'anomaly'
-        elif choice == 12:
-            entity_type = 'settings'
 
         uuid = input('Please enter the UUID/ID of the entity: ')
 
