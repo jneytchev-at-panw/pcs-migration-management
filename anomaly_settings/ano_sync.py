@@ -9,7 +9,7 @@ def sync(tenant_sessions: list, addMode: bool, upMode: bool, delMode: bool, logg
     updated_lists = []
     deleted_lists = []
 
-        #Get network settings----
+    #Get network settings----
     network_settings_list = []
     for session in tenant_sessions:
         data = ano_get.get_all_network_settings(session, logger)
