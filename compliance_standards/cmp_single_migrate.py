@@ -1,4 +1,4 @@
-from compliance_standards import cmp_add, cmp_get
+from compliance_standards import cmp_add, cmp_get, cmp_add
 from tqdm import tqdm
 
 def single_migrate(tenant_sessions, uuid, logger):
@@ -11,17 +11,13 @@ def single_migrate(tenant_sessions, uuid, logger):
     
 
     if cmp_type == 'std':
-        cmp_to_add = {}
+        std_to_add = {}
         res = source_session.request('GET', f'/compliance/{uuid}')
-        cmp_to_add = res.json()
+        std_to_add = res.json()
 
-        #Add compliance
-    elif cmp_type == 'req':
-        req_to_add = {}
-        res = source_session.request('GET', f'/compliance/requirement/{uuid}')
-        req_to_add = res.json()
-
-        #Add req
+        #Add standard
+        for session in tenant_sessions[1:]:
+            cmp_add.add_compliance_standard(session, std_to_add, logger)
     else:
         tenant_compliance_standards_lists = []
         for session in tenant_sessions:
@@ -57,26 +53,46 @@ def single_migrate(tenant_sessions, uuid, logger):
         
         source_compliance_standards = tenant_compliance_standards_data[0]
 
-        cmp_to_add = {}
-        req_to_add = {}
-        sec_to_add = {}
+
+        if cmp_type == 'req':
+            std_to_add_id = {}
+            req_to_add = {}
+
+            for std in source_compliance_standards:
+                if std['standard'].get('id') == uuid:
+                    logger.error('Standard found instead of section')
+                else:
+                    for req in std['requirements']:
+                        if req['requirement'].get('id') == uuid:
+                            std_to_add_id = std['standard'].get('id')
+                            req_to_add = req['requirement']
+
+            #Add requirement
+            for session in tenant_sessions[1:]:
+                cmp_add.add_requirement_to_standard(session, std_to_add_id, req_to_add, logger)
+
+            #Add req
+        else:
+
+            std_to_add_id = {}
+            req_to_add_id = {}
+            sec_to_add = {}
 
 
-        for std in source_compliance_standards:
-            if std['standard'].get('id') == uuid:
-                logger.error('Standard found instead of section')
-            else:
-                for req in std['requirements']:
-                    if req['requirement'].get('id') == uuid:
-                        logger.error('Requirement found instead of section')
-                    else:
-                        for sec in req['standards']:
-                            if sec.get('id') == uuid:
-                                cmp_to_add = std['standard']
-                                req_to_add = req['requirement']
-                                sec_to_add = sec
+            for std in source_compliance_standards:
+                if std['standard'].get('id') == uuid:
+                    logger.error('Standard found instead of section')
+                else:
+                    for req in std['requirements']:
+                        if req['requirement'].get('id') == uuid:
+                            logger.error('Requirement found instead of section')
+                        else:
+                            for sec in req['sections']:
+                                if sec.get('id') == uuid:
+                                    std_to_add_id = std['standard'].get('id')
+                                    req_to_add_id = req['requirement'].get('id')
+                                    sec_to_add = sec
 
-        #Add section
-
-
-        print(cmp_to_add)
+            #Add section
+            for session in tenant_sessions[1:]:
+                cmp_add.add_section_to_requirement(session, req_to_add_id, sec_to_add, logger)
