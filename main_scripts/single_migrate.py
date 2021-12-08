@@ -11,7 +11,7 @@ from alert_rules import alr_single_migrate
 from anomaly_settings import ano_single_migrate
 
 
-def single_migrate(tenant_sessions, entity_type, uuid, logger):
+def single_migrate(tenant_sessions, entity_type, uuid, cmp_type, logger):
     try:
         if 'cloud' == entity_type:
             cld_single_migrate.single_migrate(tenant_sessions, uuid, logger)
@@ -50,7 +50,7 @@ def single_migrate(tenant_sessions, entity_type, uuid, logger):
     
     try:
         if 'compliance' == entity_type:
-            cmp_single_migrate.single_migrate(tenant_sessions, uuid, logger)
+            cmp_single_migrate.single_migrate(tenant_sessions, uuid, cmp_type, logger)
     except Exception as error:
         logger.exception(error)
     

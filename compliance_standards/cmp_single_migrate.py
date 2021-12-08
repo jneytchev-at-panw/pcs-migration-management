@@ -1,23 +1,19 @@
 from compliance_standards import cmp_add, cmp_get, cmp_add
 from tqdm import tqdm
 
-def single_migrate(tenant_sessions, uuid, logger):
-    cmp_type = input('Migrate Compliance Standard, Requirement, or Section. (STD, REQ, SEC): ')
-
-    cmp_type = cmp_type.lower()
-
+def single_migrate(tenant_sessions, uuid, cmp_type, logger):
     source_session = tenant_sessions[0]
 
-    
 
     if cmp_type == 'std':
         std_to_add = {}
         res = source_session.request('GET', f'/compliance/{uuid}')
         std_to_add = res.json()
 
-        #Add standard
-        for session in tenant_sessions[1:]:
-            cmp_add.add_compliance_standard(session, std_to_add, logger)
+        if std_to_add:
+            #Add standard
+            for session in tenant_sessions[1:]:
+                cmp_add.add_compliance_standard(session, std_to_add, logger)
     else:
         tenant_compliance_standards_lists = []
         for session in tenant_sessions:
@@ -67,11 +63,11 @@ def single_migrate(tenant_sessions, uuid, logger):
                             std_to_add_id = std['standard'].get('id')
                             req_to_add = req['requirement']
 
-            #Add requirement
-            for session in tenant_sessions[1:]:
-                cmp_add.add_requirement_to_standard(session, std_to_add_id, req_to_add, logger)
+            if req_to_add:
+                #Add requirement
+                for session in tenant_sessions[1:]:
+                    cmp_add.add_requirement_to_standard(session, std_to_add_id, req_to_add, logger)
 
-            #Add req
         else:
 
             std_to_add_id = {}
@@ -92,7 +88,7 @@ def single_migrate(tenant_sessions, uuid, logger):
                                     std_to_add_id = std['standard'].get('id')
                                     req_to_add_id = req['requirement'].get('id')
                                     sec_to_add = sec
-
-            #Add section
-            for session in tenant_sessions[1:]:
-                cmp_add.add_section_to_requirement(session, req_to_add_id, sec_to_add, logger)
+            if sec_to_add:
+                #Add section
+                for session in tenant_sessions[1:]:
+                    cmp_add.add_section_to_requirement(session, req_to_add_id, sec_to_add, logger)
