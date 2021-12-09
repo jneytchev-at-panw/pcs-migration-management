@@ -11,6 +11,6 @@ def single_migrate(tenant_sessions, uuid, logger):
 
     if resource_list_to_add:
         for session in tenant_sessions[1:]:
-            rsc_add.add_resource_lists(session, [resource_lists_to_add], logger)
+            rsc_add.add_resource_lists(session, [resource_list_to_add], logger)
     else:
         logger.warning(f'Could not find Resource List with UUID of \'{uuid}\'')
