@@ -35,7 +35,7 @@ def single_migrate(tenant_sessions, uuid, logger):
         #Get alert rules to add
         tenant_alr_rls_to_add = []
         for _ in tenant_sessions[1:]:
-            tenant_alr_rls_to_add.append([alr])
+            tenant_alr_rls_to_add.append([alr_to_add])
 
         #Translte IDs in alert rules
         translated_alr_rls_to_add = []
