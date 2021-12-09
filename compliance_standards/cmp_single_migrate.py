@@ -74,6 +74,8 @@ def single_migrate(tenant_sessions, uuid, cmp_type, logger):
                         if std['standard'].get('name') == std_to_add_name:
                             std_to_add_id = std['standard'].get('id')
                     cmp_add.add_requirement_to_standard(session, std_to_add_id, req_to_add, logger)
+            else:
+                logger.info(f'Could not find Compliance Requirement with UUID of \'{uuid}\'')
 
         else:
             std_to_add_name = ''
@@ -105,3 +107,5 @@ def single_migrate(tenant_sessions, uuid, cmp_type, logger):
                                     req_to_add_id = req['requirement'].get('id')
                     
                     cmp_add.add_section_to_requirement(session, req_to_add_id, sec_to_add, logger)
+            else:
+                logger.info(f'Could not find Compliance Section with UUID of \'{uuid}\'')
