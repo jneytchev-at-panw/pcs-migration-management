@@ -48,9 +48,12 @@ def single_migrate(tenant_sessions, uuid, cmp_type, logger):
             tenant_compliance_standards_data.append(tenant_compliance)
         
         source_compliance_standards = tenant_compliance_standards_data[0]
+        
+        clone_compliance_standards = tenant_compliance_standards_data[1:]
 
 
         if cmp_type == 'req':
+            std_to_add_name = ''
             std_to_add_id = {}
             req_to_add = {}
 
@@ -60,17 +63,21 @@ def single_migrate(tenant_sessions, uuid, cmp_type, logger):
                 else:
                     for req in std['requirements']:
                         if req['requirement'].get('id') == uuid:
-                            std_to_add_id = std['standard'].get('id')
+                            std_to_add_name = std['standard'].get('name')
                             req_to_add = req['requirement']
 
             if req_to_add:
                 #Add requirement
-                for session in tenant_sessions[1:]:
+                for index, session in enumerate(tenant_sessions[1:]):
+                    #translate ID using name
+                    for std in clone_compliance_standards[index]:
+                        if std['standard'].get('name') == std_to_add_name:
+                            std_to_add_id = std['standard'].get('id')
                     cmp_add.add_requirement_to_standard(session, std_to_add_id, req_to_add, logger)
 
         else:
-
-            std_to_add_id = {}
+            std_to_add_name = ''
+            req_to_add_name = ''
             req_to_add_id = {}
             sec_to_add = {}
 
@@ -85,10 +92,16 @@ def single_migrate(tenant_sessions, uuid, cmp_type, logger):
                         else:
                             for sec in req['sections']:
                                 if sec.get('id') == uuid:
-                                    std_to_add_id = std['standard'].get('id')
-                                    req_to_add_id = req['requirement'].get('id')
+                                    std_to_add_name = std['standard'].get('name')
+                                    req_to_add_name = req['requirement'].get('name')
                                     sec_to_add = sec
             if sec_to_add:
                 #Add section
-                for session in tenant_sessions[1:]:
+                for index, session in enumerate(tenant_sessions[1:]):
+                    for std in clone_compliance_standards[index]:
+                        if std['standard'].get('name') == std_to_add_name:
+                            for req in std['requirements']:
+                                if req['requirement'].get('name') == req_to_add_name:
+                                    req_to_add_id = req['requirement'].get('id')
+                    
                     cmp_add.add_section_to_requirement(session, req_to_add_id, sec_to_add, logger)
