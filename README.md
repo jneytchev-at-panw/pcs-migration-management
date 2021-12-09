@@ -72,6 +72,14 @@ There are also three command line arguments that can be used. -yaml, -creds, and
 
 `python3 main.py -creds`  
 
+-uuid Allows for specifying a single entity's ID that will be migrated.
+
+`python3 main.py -uuid`
+
+You can of course combine run options for convenience.
+
+`python3 main.py -uuid -yaml my_uuid_migrate.yml`
+
 -quiet Hides the logging output and only shows progress bars in the terminal output.  
 
 `python3 main.py -quiet -yaml my_sync_settings.yml`
