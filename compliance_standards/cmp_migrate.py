@@ -1,6 +1,7 @@
 from compliance_standards import cmp_compare, cmp_get, cmp_add
 from sdk.color_print import c_print
 from tqdm import tqdm
+import threading
 
 def migrate(tenant_sessions: list, logger):
     '''
@@ -29,27 +30,20 @@ def migrate(tenant_sessions: list, logger):
     clone_compliance_standards_data = []
     for tenant in tqdm(clone_compliance_standards_to_migrate, desc='Getting Compliance Data', leave=False):
         tenant_compliance = []
-        for standard in tenant:
-            standard_dict = {}
-
-            requirements = []
-            requirements_data = cmp_get.get_compliance_requirement_list(tenant_sessions[0], standard, logger)
-
-            for requirement in requirements_data:
-                requirement_dict = {}
-                
-                sections = cmp_get.get_compliance_sections_list(tenant_sessions[0], requirement, logger)
-
-                requirement_dict.update(requirement=requirement)
-                requirement_dict.update(sections=sections)
-                
-                requirements.append(requirement_dict)
-
-            standard_dict.update(standard=standard)
-            standard_dict.update(requirements=requirements)
-
-            tenant_compliance.append(standard_dict)
         
+        pool = []
+
+        tenant_threads = break_into_threads(tenant)
+
+        for tenant_thread in tenant_threads:
+            x = threading.Thread(target=get_cmp_info, args=(tenant_compliance, tenant_thread, tenant_sessions[0], logger))
+            pool.append(x)
+            x.start()
+
+        for index, thread in enumerate(pool):
+            thread.join()
+            logger.info(f'Thread: \'{index}\' done')
+
         clone_compliance_standards_data.append(tenant_compliance)
 
     #Migrate compliance standards. First migrate over the standards and translate the UUIDs.
@@ -75,38 +69,12 @@ def migrate(tenant_sessions: list, logger):
         #Migrate compliance requirements
         added_reqs = 0
         added_secs = 0
-        for index2, standard in enumerate(tenant_standards):
-            requirements = standard['requirements']
-            std_id = standard['standard']['id']
-            
-            for requirement in requirements:
-                cmp_add.add_requirement_to_standard(tenant_sessions[index + 1], std_id, requirement['requirement'], logger)
-                added_reqs += 1
 
-            #Translate compliance IDs
-            clone_requirements = cmp_get.get_compliance_requirement_list(tenant_sessions[index+1], standard['standard'], logger)
-            for i in range(len(requirements)):
-                name = requirements[i]['requirement']['name']
-                for j in range(len(clone_requirements)):
-                    if clone_requirements[j]['name'] == name:
-                        new_id = clone_requirements[j]['id']
-                        requirements[i]['requirement'].update(id=new_id)
-                        break
+        #Break tenant_standards into thread
 
-            #Update requirements list with the list that has the new ids - maybe not needed but easy to do
-            tenant_standards[index2].update(requirements=requirements)
+        #Call add_cmp_thread function in a loop
 
-            #Migrate sections now that the requirement UUIDs have been updated
-            
-            for requirement in requirements:
-                req_id = requirement['requirement']['id']
-                sections = requirement['sections']
-                
-                for section in sections:
-                    cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, section, logger)
-                    added_secs += 1
         sections_added.append(added_secs)
-        
         requirements_added.append(added_reqs)
     
     logger.info('Finished migrating Compliance Standards')
@@ -114,6 +82,83 @@ def migrate(tenant_sessions: list, logger):
 
 
     return standards_added, requirements_added, sections_added
+
+
+#==============================================================================
+def add_cmp_thread(tenant_standards, added_reqs, added_secs, tenant_sessions, index, logger):
+    for index2, standard in enumerate(tenant_standards):
+        requirements = standard['requirements']
+        std_id = standard['standard']['id']
+        
+        for requirement in requirements:
+            cmp_add.add_requirement_to_standard(tenant_sessions[index + 1], std_id, requirement['requirement'], logger)
+            added_reqs += 1
+
+        #Translate compliance IDs
+        clone_requirements = cmp_get.get_compliance_requirement_list(tenant_sessions[index+1], standard['standard'], logger)
+        for i in range(len(requirements)):
+            name = requirements[i]['requirement']['name']
+            for j in range(len(clone_requirements)):
+                if clone_requirements[j]['name'] == name:
+                    new_id = clone_requirements[j]['id']
+                    requirements[i]['requirement'].update(id=new_id)
+                    break
+
+        #Update requirements list with the list that has the new ids - maybe not needed but easy to do
+        tenant_standards[index2].update(requirements=requirements)
+
+        #Migrate sections now that the requirement UUIDs have been updated
+        
+        for requirement in requirements:
+            req_id = requirement['requirement']['id']
+            sections = requirement['sections']
+            
+            for section in sections:
+                cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, section, logger)
+                added_secs += 1
+
+#==============================================================================
+def get_cmp_info(tenant_compliance, tenant, session, logger):
+    for standard in tenant:
+        standard_dict = {}
+
+        requirements = []
+        requirements_data = cmp_get.get_compliance_requirement_list(session, standard, logger)
+
+        for requirement in requirements_data:
+            requirement_dict = {}
+            
+            sections = cmp_get.get_compliance_sections_list(session, requirement, logger)
+
+            requirement_dict.update(requirement=requirement)
+            requirement_dict.update(sections=sections)
+            
+            requirements.append(requirement_dict)
+
+        standard_dict.update(standard=standard)
+        standard_dict.update(requirements=requirements)
+
+        tenant_compliance.append(standard_dict)
+
+
+#==============================================================================
+#Break list into equal sized chunks for threading        
+def break_into_threads(list_to_break):
+    max_threads = 10
+    thread_size = len(list_to_break) // max_threads
+    if thread_size < 1:
+        thread_size = 1
+    if max_threads > len(list_to_break):
+        max_threads = len(list_to_break)
+
+    thread_list = []
+    for i in range(max_threads):
+        start = i * thread_size
+        end = start + thread_size
+        items_for_thread = list_to_break[start:end]
+        thread_list.append(items_for_thread)
+
+    return thread_list
 
 #==============================================================================
 #Test code
