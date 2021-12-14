@@ -71,8 +71,17 @@ def migrate(tenant_sessions: list, logger):
         added_secs = 0
 
         #Break tenant_standards into thread
+        tenant_standards_treads = break_into_threads(tenant_standards)
 
-        #Call add_cmp_thread function in a loop
+        pool = []
+        for thread in tenant_standards_treads:
+            x = threading.Thread(target=add_cmp_thread, args=(thread, added_reqs, added_secs, tenant_sessions, index, logger))
+            pool.append(x)
+            x.start()
+
+        for index, thread in enumerate(pool):
+            thread.join()
+            logger.info(f'Thread: \'{index}\' done')
 
         sections_added.append(added_secs)
         requirements_added.append(added_reqs)
