@@ -3,13 +3,13 @@ from tqdm import tqdm
 from sdk.load_config import load_config_create_sessions
 from sdk.color_print import c_print
 
-from cloud_accounts import cld_migrate
+from cloud_accounts import cld_migrate, cld_migrate_thread
 from account_groups import acc_migrate
 from resource_lists import rsc_migrate
 from user_roles import role_migrate
 from user_profiles import usr_migrate
 from ip_allow_lists import ip_migrate
-from compliance_standards import cmp_migrate
+from compliance_standards import cmp_migrate, cmp_migrate_thread
 from saved_searches import search_sync
 from policies import plc_migrate_custom
 from policies import plc_migrate_default
@@ -29,7 +29,7 @@ from anomaly_settings import ano_sync
 #Policy
 #Alert Rules
 
-def migrate(tenant_sessions: list, modes: dict, logger: object):
+def migrate(tenant_sessions: list, modes: dict, use_threading: bool, logger: object):
     '''
     Accepts a dictionary of the migrate modes that are enabled and list of tenant session objects.
 
@@ -49,7 +49,11 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         #CLOUD ACCOUNT MIGRATE-------------------------------------------------
         try:
             if 'cloud' == mode:
-                added = cld_migrate.migrate(tenant_sessions, logger)
+                added = 0
+                if use_threading:
+                    added = cld_migrate_thread.migrate(tenant_sessions, logger)
+                else:
+                    added = cld_migrate.migrate(tenant_sessions, logger)
                 run_summary.update(added_cloud_accounts=added)
         except Exception as error:
             logger.exception(error)
@@ -100,7 +104,12 @@ def migrate(tenant_sessions: list, modes: dict, logger: object):
         #COMPLIANCE MIGRATE----------------------------------------------------
         try:
             if 'compliance' == mode:
-                standards_added, requirements_added, sections_added = cmp_migrate.migrate(tenant_sessions, logger)
+                standards_added, requirements_added, sections_added = (0,0,0)
+                if use_threading:
+                    standards_added, requirements_added, sections_added = cmp_migrate_thread.migrate(tenant_sessions, logger)
+                else:
+                    standards_added, requirements_added, sections_added = cmp_migrate.migrate(tenant_sessions, logger)
+                
                 run_summary.update(added_compliance_standards=standards_added)
                 run_summary.update(added_compliance_requirements=requirements_added)
                 run_summary.update(added_compliance_sections=sections_added)
