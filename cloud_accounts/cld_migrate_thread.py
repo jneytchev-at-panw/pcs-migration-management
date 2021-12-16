@@ -56,7 +56,7 @@ def migrate(tenant_sessions: list, logger: object):
         pool = []
         accounts_added = 0
         for accounts_to_add in thread_accounts_to_add:
-            x = threading.Thread(target=cld_add.add_accounts, args=(accounts_added, tenant_sessions[i+1], accounts_to_add,azure_account_keys, gcp_account_keys, logger))
+            x = threading.Thread(target=add_accounts_thread, args=(accounts_added, tenant_sessions[i+1], accounts_to_add, azure_account_keys, gcp_account_keys, logger))
             pool.append(x)
             x.start()
 
@@ -70,6 +70,11 @@ def migrate(tenant_sessions: list, logger: object):
     logger.info('Finished migrating Cloud Accounts')
 
     return tenant_accounts_added
+
+def add_accounts_thread(accounts_added, session, accounts_to_add, azure_account_keys, gcp_account_keys, logger):
+    accounts_added += cld_add.add_accounts(session, accounts_to_add, azure_account_keys, gcp_account_keys, logger)
+
+
 
 def get_cloud_info_thread(accounts_to_upload, tenant_cloud_accounts_to_add,tenant_sessions, logger):
     for i in range(len(tenant_cloud_accounts_to_add)):
