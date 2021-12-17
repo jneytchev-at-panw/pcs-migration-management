@@ -160,11 +160,15 @@ def break_into_threads(list_to_break):
     if max_threads > len(list_to_break):
         max_threads = len(list_to_break)
 
+
     thread_list = []
     for i in range(max_threads):
         start = i * thread_size
         end = start + thread_size
-        items_for_thread = list_to_break[start:end]
+        if i + 1 == max_threads:
+            items_for_thread = list_to_break[start:]
+        else:
+            items_for_thread = list_to_break[start:end]
         thread_list.append(items_for_thread)
 
     return thread_list
