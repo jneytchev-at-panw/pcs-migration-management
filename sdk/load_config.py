@@ -169,6 +169,30 @@ def load_yaml(file_name, logger):
 
     return tenant_sessions, mode, modes
 
+def load_uuid_yaml(file_name, logger):
+    with open(file_name, "r") as file:
+        cfg = yaml.load(file, Loader=yaml.BaseLoader)
+
+    credentials = cfg['credentials']
+    entity_type = cfg['type']
+    uuid = cfg['uuid']
+    cmp_type = cfg['cmp_type']
+
+    tenant_sessions = []
+    for tenant in credentials:
+        tenant_name = ''
+        tenant_keys = tenant.keys()
+        for name in tenant_keys:
+            tenant_name = name     
+
+        a_key = tenant[tenant_name]['access_key']
+        s_key = tenant[tenant_name]['secret_key']
+        api_url = tenant[tenant_name]['api_url']
+
+        tenant_sessions.append(Session(tenant_name, a_key, s_key, api_url, logger))
+
+    return tenant_sessions, entity_type, uuid, cmp_type
+
 def load_config_create_sessions(file_mode, logger):
     '''
     Reads config.yml and generates a list of tenants and tokens for those tenants.
