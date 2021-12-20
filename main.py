@@ -650,9 +650,9 @@ if __name__ =='__main__':
                 tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
             
                 if mode=='migrate':
-                    migrate_main.migrate(tenant_sessions, modes, logger)
+                    migrate_main.migrate(tenant_sessions, modes, use_threading, logger)
                 else:
-                    sync_main.sync(tenant_sessions, modes, logger)
+                    sync_main.sync(tenant_sessions, modes, use_threading, logger)
 
         else:
             if '-uuid' in args:
@@ -661,9 +661,9 @@ if __name__ =='__main__':
             else:
                 tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
                 if mode=='migrate':
-                    migrate_main.migrate(tenant_sessions, modes, logger)
+                    migrate_main.migrate(tenant_sessions, modes, use_threading, logger)
                 else:
-                    sync_main.sync(tenant_sessions, modes, logger)
+                    sync_main.sync(tenant_sessions, modes, use_threading, logger)
         #Done
         quit()
 
@@ -673,6 +673,6 @@ if __name__ =='__main__':
     if '-uuid' in args:
         uuid_main(file_mode, logger)
     else:
-        main(file_mode, logger)
+        main(file_mode, use_threading, logger)
 
     #TODO Maybe run a clean up script and delete credentails files
