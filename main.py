@@ -297,7 +297,7 @@ def build_yaml(file_name, logger):
 #==============================================================================
 
 @logger.catch
-def main(file_mode, logger):
+def main(file_mode, use_threading, logger):
     print()
     c_print('PRISMA CLOUD TENANT MIGRATION AND CENTRAL MANAGEMENT TOOL', color='blue')
     print()
@@ -334,7 +334,7 @@ def main(file_mode, logger):
             choice = choice.lower()
             if choice == 'y' or choice == 'yes':
                 #Call migrate module
-                migrate_main.migrate(tenant_sessions, migrate_modes_file, logger)
+                migrate_main.migrate(tenant_sessions, migrate_modes_file, use_threading, logger)
                 return
 
         #Get migration settings from the user
@@ -366,7 +366,7 @@ def main(file_mode, logger):
                 json.dump(migrate_modes, outfile)
 
             #Call migrate module
-            migrate_main.migrate(tenant_sessions, migrate_modes, logger)
+            migrate_main.migrate(tenant_sessions, migrate_modes, use_threading, logger)
             return
         else:
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'cloud')
@@ -387,7 +387,7 @@ def main(file_mode, logger):
                 json.dump(migrate_modes, outfile)
 
             #Call migrate module
-            migrate_main.migrate(tenant_sessions, migrate_modes, logger)
+            migrate_main.migrate(tenant_sessions, migrate_modes, use_threading, logger)
             return
 
     else:#---------------------------------------------------------------------------------
@@ -403,7 +403,7 @@ def main(file_mode, logger):
             choice = choice.lower()
             if choice == 'y' or choice == 'yes':
                 #Call sync module
-                sync_main.sync(tenant_sessions, sync_modes_file, logger)
+                sync_main.sync(tenant_sessions, sync_modes_file, use_threading, logger)
                 return
 
         c_print('A full sync will do Add and Update operations on all components of the Prisma Cloud Tenant that are supported by this script.', color='blue')
@@ -434,7 +434,7 @@ def main(file_mode, logger):
                 json.dump(sync_modes, outfile)
 
             #Call sync module
-            sync_main.sync(tenant_sessions, sync_modes, logger)
+            sync_main.sync(tenant_sessions, sync_modes, use_threading, logger)
             return
         else:
             sync_modes = get_sync_mode_settings(sync_modes, 'cloud')
@@ -455,7 +455,7 @@ def main(file_mode, logger):
                 json.dump(sync_modes, outfile)
 
             #Call sync module
-            sync_main.sync(tenant_sessions, sync_modes, logger)
+            sync_main.sync(tenant_sessions, sync_modes, use_threading, logger)
             return
 
 
@@ -463,6 +463,7 @@ if __name__ =='__main__':
     #Command line arguments
     file_mode = False
     terminal_logging = True
+    use_threading = False
     
     args = [el.lower() for el in sys.argv]
 
@@ -471,6 +472,9 @@ if __name__ =='__main__':
 
     if '-quiet' in args:
         terminal_logging = False
+
+    if '-thread' in args:
+        use_threading = True
 
     #Configure logging output
     logger.remove()
@@ -505,22 +509,22 @@ if __name__ =='__main__':
             tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
             
             if mode=='migrate':
-                migrate_main.migrate(tenant_sessions, modes, logger)
+                migrate_main.migrate(tenant_sessions, modes, use_threading, logger)
             else:
-                sync_main.sync(tenant_sessions, modes, logger)
+                sync_main.sync(tenant_sessions, modes, use_threading, logger)
 
         else:
             tenant_sessions, mode, modes = load_config.load_yaml(file_to_load, logger)
             if mode=='migrate':
-                migrate_main.migrate(tenant_sessions, modes, logger)
+                migrate_main.migrate(tenant_sessions, modes, use_threading, logger)
             else:
-                sync_main.sync(tenant_sessions, modes, logger)
+                sync_main.sync(tenant_sessions, modes, use_threading, logger)
         #Done
         quit()
 
         
 
     #Call main function
-    main(file_mode, logger)
+    main(file_mode, use_threading, logger)
 
     #TODO Maybe run a clean up script and delete credentails files

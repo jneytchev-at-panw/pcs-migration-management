@@ -3,7 +3,6 @@ from cloud_accounts import cld_get, cld_add, cld_keys, cld_compare
 def migrate(tenant_sessions: list, logger: object):
     '''
     Accepts a list of tenant session objects.
-
     Migrates all cloud accounts from the first tenant, (source tenant)
     to all other tenants (clone tenants).
     '''

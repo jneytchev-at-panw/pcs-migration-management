@@ -5,7 +5,6 @@ from tqdm import tqdm
 def migrate(tenant_sessions: list, logger):
     '''
     Accepts a list of tenant session objects.
-
     Gets a list of the top level compliance standards that are missing and migrates
     the missing compliance standard and all its requirements and sections. Does not
     search for and add missing requirements or sections. That is handled in the 

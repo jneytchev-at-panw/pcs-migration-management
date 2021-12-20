@@ -3,20 +3,20 @@ from tqdm import tqdm
 from sdk.load_config import load_config_create_sessions
 from sdk.color_print import c_print
 
-from cloud_accounts import cld_sync
+from cloud_accounts import cld_sync, cld_sync_thread
 from account_groups import acc_sync
 from resource_lists import rsc_sync
 from user_roles import role_sync
 from user_profiles import usr_sync
 from ip_allow_lists import ip_sync
-from compliance_standards import cmp_sync
+from compliance_standards import cmp_sync, cmp_sync_thread
 from saved_searches import search_sync
 from policies import plc_sync
 from alert_rules import alr_sync
 from anomaly_settings import ano_sync
 from enterprise_settings import set_sync
 
-def sync(tenant_sessions: list, modes: dict, logger):
+def sync(tenant_sessions: list, modes: dict, use_threading: bool, logger):
     '''
     Accepts the enabled sync modes dictionary and a list of tenant_session objects.
     
@@ -34,6 +34,12 @@ def sync(tenant_sessions: list, modes: dict, logger):
     for mode in tqdm(mode_list, desc='SYNC ADD/UPDATE STATUS'):
         try:
             if 'cloud' == mode:
+                added, updated, deleted = (0,0,0)
+                if use_threading:
+                    added, updated, deleted, cld_sync_data = cld_sync_thread.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
+                else:
+                    added, updated, deleted, cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
+
                 added, updated, deleted, cld_sync_data = cld_sync.sync(tenant_sessions, modes['cloud'].get('add', True), modes['cloud'].get('update', True), False, logger)
                 run_summary.update(added_cloud_accounts=added)
                 run_summary.update(updated_cloud_accounts=updated)
@@ -92,7 +98,11 @@ def sync(tenant_sessions: list, modes: dict, logger):
         
         try:
             if 'compliance' == mode:
-                added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections, cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
+                added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections, cmp_sync_data = (0,0,0,0,0,0,0,0,0,0)
+                if use_threading:
+                    added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections, cmp_sync_data = cmp_sync_thread.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
+                else:
+                    added_standards, added_requirements, added_sections, updated_standards, updated_requirements, updated_sections, deleted_standards, deleted_requirements, deleted_sections, cmp_sync_data = cmp_sync.sync(tenant_sessions, modes['compliance'].get('add', True), modes['compliance'].get('update', True), False, logger)
                 run_summary.update(added_standards=added_standards)
                 run_summary.update(added_requirements=added_requirements)
                 run_summary.update(added_sections=added_sections)
