@@ -1,5 +1,6 @@
 from ip_allow_lists import ip_get, ip_add
 
+#Used to migrate a single IP allow list based on its UUID
 def single_migrate(tenant_sessions, uuid, logger):
     source_networks = ip_get.get_trusted_networks(tenant_sessions[0], logger)
 

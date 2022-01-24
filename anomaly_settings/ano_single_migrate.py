@@ -1,5 +1,6 @@
 from anomaly_settings import ano_get, ano_update
 
+#Used to migrate a single anomaly setting based on its ID
 def single_migrate(tenant_sessions, uuid, logger):
     #Network section===========================================================
     src_network_settings = ano_get.get_all_network_settings(tenant_sessions[0], logger)

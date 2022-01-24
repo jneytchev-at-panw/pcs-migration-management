@@ -3,6 +3,7 @@ from account_groups import acc_get
 from resource_lists import rsc_get
 from policies import plc_get
 
+#Used to migrate a single alert rule based on its UUID
 def single_migrate(tenant_sessions, uuid, logger):
     alrs = alr_get.get_alert_rules(tenant_sessions[0], logger)
 

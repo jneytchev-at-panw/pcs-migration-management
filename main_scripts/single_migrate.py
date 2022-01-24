@@ -10,7 +10,7 @@ from policies import plc_single_migrate
 from alert_rules import alr_single_migrate
 from anomaly_settings import ano_single_migrate
 
-
+#Used to migrate a single resource based on its ID/UUID
 def single_migrate(tenant_sessions, entity_type, uuid, cmp_type, logger):
     try:
         if 'cloud' == entity_type:

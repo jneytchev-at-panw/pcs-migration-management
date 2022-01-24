@@ -1,5 +1,6 @@
 from account_groups import acc_get, acc_add
 
+#Used to migrate a single account group based on its UUID
 def single_migrate(tenant_sessions, uuid, logger):
     account_groups = acc_get.get_account_groups(tenant_sessions[0], logger)
 

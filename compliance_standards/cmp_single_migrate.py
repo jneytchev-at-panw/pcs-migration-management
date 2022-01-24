@@ -1,6 +1,7 @@
 from compliance_standards import cmp_add, cmp_get, cmp_add
 from tqdm import tqdm
 
+#Used to migrate a single compliance standard, section or requirement based on its ID
 def single_migrate(tenant_sessions, uuid, cmp_type, logger):
     source_session = tenant_sessions[0]
 

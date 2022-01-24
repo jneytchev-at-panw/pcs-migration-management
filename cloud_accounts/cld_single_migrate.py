@@ -1,6 +1,6 @@
 from cloud_accounts import cld_get, cld_add, cld_keys
 
-
+#Used to migrate a single cloud account based on its ID
 def single_migrate(tenant_sessions, uuid, logger):
     account_to_migrate = {}
     cld_account_names = cld_get.get_names(tenant_sessions[0], logger)
