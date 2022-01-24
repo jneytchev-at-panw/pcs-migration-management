@@ -62,9 +62,9 @@ You will be prompted to run the script in Migrate or Sync mode.
 
 Once you have selected a mode you will be prompted to do a full migration or a full sync. If you select YES then all Prisma Cloud components that are supported by this script will be migrated or synced across the tenants the script has access too. If you select NO then you will be asked to pick and choose what Prisma Cloud components will be migrated or synced with this script. You will also be able to selectively enable Add, Update, and Delete operations for sync mode through this customization menu.
 
-There are also three command line arguments that can be used. -yaml, -creds, and -quiet.
+There are also four command line arguments that can be used. -yaml, -creds, -uuid, and -quiet.
 
--yaml allows YAML config files to be created that allow this script to be run without any user input being required after the script as started. You have to supply the name of the config file you want to store your script runtime settings in as a command line argument following the -yaml flag. If you supply a file that does not exist, the script will create the file and ask you the necessary setup questions. If you supply an existing valid config file, the script will run with your customized settings without any further user input
+-yaml Allows YAML config files to be created that allow this script to be run without any user input being required after the script as started. You have to supply the name of the config file you want to store your script runtime settings in as a command line argument following the -yaml flag. If you supply a file that does not exist, the script will create the file and ask you the necessary setup questions. If you supply an existing valid config file, the script will run with your customized settings without any further user input. This feature enables this script to be run as a cron job.
 
 `python3 main.py -yaml my_sync_settings.yml`  
 
