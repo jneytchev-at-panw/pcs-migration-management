@@ -92,6 +92,8 @@ For example, to only move policies from one tenant to an other, respond with 'ye
 
 ![Migrate Policies Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/policy_migrate.png?raw=true) 
 
+Once you have finished answering the questions, the script will start the migration process. The last question asked is "Do you want to migrate Enterprise Settings? (Y/N):" an then the script will begin with the settings you have just configured. 
+
 ## Overview and Other Information
 
 This script supports two primary modes of operation, migrate and sync. The difference between the migrate and sync mode is as follows: Migrate mode assumes the destination tenant is empty or mostly empty. The migrate mode will not do checks/comparisons on nested values of entities. For example, if you are migrating compliance standards to an empty or mostly empty tenant. Migrate mode will only look at the top level compliance standard to determine if the compliance standard and its requirements and sections need to be brought over. In sync mode, the script would look through all of the compliance data and could find and add a single missing compliance section. This means that migrate mode is faster and sync mode is much slower but does a more thorough job. Sync mode also allows for components to be updated and even deleted. Migrate mode will only add components or update default components as that is the only change that can be made to default components on Prisma Cloud.

@@ -397,7 +397,7 @@ def main(file_mode, use_threading, logger):
         #Optional used saved settings file
         migrate_modes_file = load_migrate_modes()
         if migrate_modes_file:
-            c_print('Loading from saved settings will allow you to run the script with the same settings as the last time it was ran.', color='blue')
+            c_print('Loading from saved settings will allow you to run the script with the same settings as the last time it was run.', color='blue')
             c_print('If you wish to use the same settings as last time, then select \'Yes\'. If you wish to configure the script to', color='blue')
             c_print('run with new settings, then select \'No\'', color='blue')
             print()
