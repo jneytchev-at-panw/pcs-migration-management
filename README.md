@@ -84,6 +84,14 @@ You can of course combine run options for convenience.
 
 `python3 main.py -quiet -yaml my_sync_settings.yml`
 
+
+## Example Use Cases
+Many users only want to sync one or two entities accross multiple Tenants. This can be accomplished by only choosing the desired module during the scripts setup process.
+
+For example, to only move policies from one tenant to an other, respond with 'yes' to the Policies module, Compliance Data module, and the Saved Search Module. Policies rely on Compliance Data and Saved searches so that is why these have to be enabled along with the Policy module.
+
+
+
 ## Overview and Other Information
 
 This script supports two primary modes of operation, migrate and sync. The difference between the migrate and sync mode is as follows: Migrate mode assumes the destination tenant is empty or mostly empty. The migrate mode will not do checks/comparisons on nested values of entities. For example, if you are migrating compliance standards to an empty or mostly empty tenant. Migrate mode will only look at the top level compliance standard to determine if the compliance standard and its requirements and sections need to be brought over. In sync mode, the script would look through all of the compliance data and could find and add a single missing compliance section. This means that migrate mode is faster and sync mode is much slower but does a more thorough job. Sync mode also allows for components to be updated and even deleted. Migrate mode will only add components or update default components as that is the only change that can be made to default components on Prisma Cloud.
