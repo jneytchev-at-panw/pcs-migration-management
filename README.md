@@ -90,7 +90,7 @@ Many users only want to sync one or two entities accross multiple Tenants. This 
 
 For example, to only move policies from one tenant to an other, respond with 'yes' to the Policies module, Compliance Data module, and the Saved Search Module. Policies rely on Compliance Data and Saved searches so that is why these have to be enabled along with the Policy module.
 
-![Migrate Policies Example](https://github.com/adam-hamsuth/pc-migration-managment/blob/main/images/policy_migrate.png?raw=true) 
+![Migrate Policies Example](https://github.com/PaloAltoNetworks/pcs-migration-management/blob/main/images/policy_migrate.png) 
 
 Once you have finished answering the questions, the script will start the migration process. The last question asked is "Do you want to migrate Enterprise Settings? (Y/N):" an then the script will begin with the settings you have just configured. 
 
