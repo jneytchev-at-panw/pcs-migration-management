@@ -39,7 +39,9 @@ Anomaly Settings - 	  Depends on: Policies
 
 **This script does not make any modifications to the source/main tenant.**
 
-**The destination/clone tenant will be modified by the script. In Migrate mode, the clone tenant will only have elements added or updated - no items will be deleted. In Sync mode a deep nested search is performed to find all possible deltas between the tenants involved in the script. There is a setting that allows Sync mode to delete entities that are found on the clone tenant that do not exist on the source tenant. This option is disabled in “full sync” mode. To enable, you must manually select each Prisma Cloud component from the customization menu and by following the prompts, change the allowed operations to include delete mode.**
+**The destination/clone tenant will be modified by the script.  
+In Migrate mode, the clone tenant will only have elements added or updated - no items will be deleted.  
+In Sync mode a deep nested search is performed to find all possible deltas between the tenants involved in the script. There is a setting that allows Sync mode to delete entities that are found on the clone tenant that do not exist on the source tenant. This option is disabled in “full sync” mode. To enable, you must manually select each Prisma Cloud component from the customization menu and by following the prompts, change the allowed operations to include delete mode.**
 
 # Disclaimer
 
