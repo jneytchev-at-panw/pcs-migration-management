@@ -25,16 +25,27 @@ Many modules rely on other modules being run first due to dependencies that exis
 Prisma Cloud components that can be migrated and synced by this script:
 
 Cloud Accounts - 	Depends on: None
+
 Compliance Data -	Depends on: None
+
 Enterprise Settings - 	Depends on: None
+
 Resource Lists - 	Depends on: None
+
 Trusted IPs - 		Depends on: None
+
 Account Groups - 	Depends on: Cloud Accounts
+
 Saved Searches -	Depends on: Trusted IPs
+
 User Roles - 		Depends on: Account Groups, Resources List
+
 Users - 		Depends on: User Roles
+
 Policies - 		Depends on: Compliance Data, Saved Searches
+
 Alert Rules - 		Depends on: Account Groups, Resource Lists, Policies
+
 Anomaly Settings - 	Depends on: Policies
 
 **This script does not make any modifications to the source/main tenant.**
