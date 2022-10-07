@@ -24,7 +24,7 @@ Many modules rely on other modules being run first due to dependencies that exis
 
 Prisma Cloud components that can be migrated and synced by this script:
 
-Cloud Accounts - 	Depends on: None. 
+Cloud Accounts - 	Depends on: None  
 Compliance Data -	Depends on: None
 
 Enterprise Settings - 	Depends on: None
