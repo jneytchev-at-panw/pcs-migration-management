@@ -1,8 +1,49 @@
 # Tenant Lift and Shift / Tenant Central Management
 
-# Beta Disclaimer
+# Modes of Operation
 
-This script is in Beta and you may encounter bugs. Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant. Log files are now produced with each run so if you encounter any errors please include any associated log files.
+## Sync Mode
+
+Sync Mode is used to sync changes made to a “main” tenant across one or more “clone” tenants. 
+
+Sync mode was designed to allow for multiple Prisma Cloud tenants to be centrally managed by one main tenant. Sync mode is capable of adding, updating, and deleting (must manually enable) elements from Prisma Cloud tenants to ensure that any change made to the main tenant is propagated to the clone tenants.
+
+## Migrate Mode
+
+Migrate Mode is used to copy tenant data from an existing populated Prisma Cloud tenant to a new empty Prisma Cloud tenant. For example, if you have a test tenant and you want to create a second tenant for production, Migrate Mode can be used to initially configure the new tenant.  To keep the second tenant up to date as you make changes in the dev tenant, you would then use Sync Mode to migrate changes.
+
+## Supported Prisma Cloud Components
+
+The scripts customization menu allows you to do a “full” migration/sync or pick and choose which components you want to migrate/sync. See “Running Script” section for details.
+
+This script supports two primary modes of operation, migrate and sync. The difference between the migrate and sync mode is as follows: Migrate mode assumes the destination tenant is empty or mostly empty. The migrate mode will not do checks/comparisons on nested values of entities. For example, if you are migrating compliance standards to an empty or mostly empty tenant. Migrate mode will only look at the top level compliance standard to determine if the compliance standard and its requirements and sections need to be brought over. In sync mode, the script would look through all of the compliance data and could find and add a single missing compliance section. This means that migrate mode is faster and sync mode is much slower but does a more thorough job. Sync mode also allows for components to be updated and even deleted. Migrate mode will only add components or update default components as that is the only change that can be made to default components on Prisma Cloud.
+
+This script is divided up into modules that each migrate/sync one component of Prisma Cloud. For example, the cloud_migrate module handles the migration of Cloud Accounts.
+
+Many modules rely on other modules being run first due to dependencies that exist within prisma cloud. For example, the Users modules should only be run/migrated after the Roles module. Users belong to Roles and if the Roles do not exist on the tenant when the Users are migrated, the Users will all be placed into the default Role and not into the Roles they should be as the roles do not yet exist.
+
+Prisma Cloud components that can be migrated and synced by this script:
+
+Cloud Accounts - 	Depends on: None
+Compliance Data -	Depends on: None
+Enterprise Settings - 	Depends on: None
+Resource Lists - 	Depends on: None
+Trusted IPs - 		Depends on: None
+Account Groups - 	Depends on: Cloud Accounts
+Saved Searches -	Depends on: Trusted IPs
+User Roles - 		Depends on: Account Groups, Resources List
+Users - 		Depends on: User Roles
+Policies - 		Depends on: Compliance Data, Saved Searches
+Alert Rules - 		Depends on: Account Groups, Resource Lists, Policies
+Anomaly Settings - 	Depends on: Policies
+
+**This script does not make any modifications to the source/main tenant.**
+
+**The destination/clone tenant will be modified by the script. In Migrate mode, the clone tenant will only have elements added or updated - no items will be deleted. In Sync mode a deep nested search is performed to find all possible deltas between the tenants involved in the script. There is a setting that allows Sync mode to delete entities that are found on the clone tenant that do not exist on the source tenant. This option is disabled in “full sync” mode. To enable, you must manually select each Prisma Cloud component from the customization menu and by following the prompts, change the allowed operations to include delete mode.**
+
+# Disclaimer
+
+Please report any bugs you encounter so they can be fixed. Please include any relevant error messages, the modes/settings you were running the script in and any other information you believe to be relevant. Log files are now produced with each run so if you encounter any errors please include any associated log files.
 
 ## Conditions for Use / Caveats
 
@@ -22,7 +63,7 @@ Integrations can not be migrated by this script. All Alert Rules that rely on ex
 
 ### Modules
 
-Currently, modules configuration migration/sync is not supported. You are able to migrate/sync IAM Policies and Saved Searches as well as Cloud Accounts that use Data Security. However other modules and module functionality are not supported at this time. For example, if you try to migrate a custom policy or saved search from a module like Microsegmentation, you will encounter errors.  Fortunately, module support is on the roadmap for this tool.
+Currently, module configuration migration/sync is not supported (Data Security & Cloud Code Security.. You are able to migrate/sync IAM Policies and Saved Searches as well as Cloud Accounts that use Data Security. However other modules and module functionality are not supported at this time. For example, if you try to migrate a custom policy or saved search from a module like Microsegmentation, you will encounter errors.  Fortunately, module support is on the roadmap for this tool.
 
 ### Trusted Login IPs
 
@@ -94,36 +135,3 @@ For example, to only move policies from one tenant to an other, respond with 'ye
 
 Once you have finished answering the questions, the script will start the migration process. The last question asked is "Do you want to migrate Enterprise Settings? (Y/N):" an then the script will begin with the settings you have just configured. 
 
-## Overview and Other Information
-
-This script supports two primary modes of operation, migrate and sync. The difference between the migrate and sync mode is as follows: Migrate mode assumes the destination tenant is empty or mostly empty. The migrate mode will not do checks/comparisons on nested values of entities. For example, if you are migrating compliance standards to an empty or mostly empty tenant. Migrate mode will only look at the top level compliance standard to determine if the compliance standard and its requirements and sections need to be brought over. In sync mode, the script would look through all of the compliance data and could find and add a single missing compliance section. This means that migrate mode is faster and sync mode is much slower but does a more thorough job. Sync mode also allows for components to be updated and even deleted. Migrate mode will only add components or update default components as that is the only change that can be made to default components on Prisma Cloud.
-
-This script is divided up into modules that each migrate/sync one component of Prisma Cloud. For example, the cloud_migrate module handles the migration of Cloud Accounts.
-
-Many modules rely on other modules being run first due to dependencies that exist within prisma cloud. For example, the Users modules should only be run/migrated after the Roles module. Users belong to Roles and if the Roles do not exist on the tenant when the Users are migrated, the Users will all be placed into the default Role and not into the Roles they should be as the roles do not yet exist.
-
-Prisma Cloud components that can be migrated and synced by this script:
-
-Cloud Accounts - 	Depends on: None
-
-Account Groups - 	Depends on: Cloud Accounts
-
-Resource Lists - 	Depends on: None
-
-User Roles - 		Depends on: Account Groups, Resources List
-
-Users - 		Depends on: User Roles
-
-Trusted IPs - 		Depends on: None
-
-Saved Searches -	Depends on: Trusted IPs
-
-Compliance Data -	Depends on: None
-
-Policies - 		Depends on: Compliance Data, Saved Searches
-
-Alert Rules - 		Depends on: Account Groups, Resource Lists, Policies
-
-Anomaly Settings - 	Depends on: Policies
-
-Enterprise Settings - 	Depends on: None
