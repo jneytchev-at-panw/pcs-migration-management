@@ -39,7 +39,7 @@ Anomaly Settings - 	  Depends on: Policies
 
 **This script does not make any modifications to the source/main tenant.**
 
-**The destination/clone tenant will be modified by the script.**
+**The destination/clone tenant WILL be modified by the script.**
 
 **In Migrate mode, the clone tenant will only have elements added or updated - no items will be deleted.**
 
