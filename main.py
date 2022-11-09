@@ -387,7 +387,7 @@ def main(file_mode, use_threading, logger):
     print()
     print()
 
-    #Run the script based on user responces to the following prompts
+    #Run the script based on user responses to the following prompts
     mode = input('Do you want to MIGRATE or SYNC? (M/S): ')
     print()
 
@@ -439,6 +439,7 @@ def main(file_mode, use_threading, logger):
                 json.dump(migrate_modes, outfile)
 
             #Call migrate module
+            input('Configuration finished. Press "Enter" key to start... ')
             migrate_main.migrate(tenant_sessions, migrate_modes, use_threading, logger)
             return
         else:
@@ -509,6 +510,7 @@ def main(file_mode, use_threading, logger):
                 json.dump(sync_modes, outfile)
 
             #Call sync module
+            input('Configuration finished. Press "Enter" key to start... ')
             sync_main.sync(tenant_sessions, sync_modes, use_threading, logger)
             return
         else:
