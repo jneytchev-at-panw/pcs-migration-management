@@ -30,7 +30,6 @@ from anomaly_settings import ano_sync
 #Alert Rules
 
 def migrate(tenant_sessions: list, modes: dict, use_threading: bool, logger: object):
-    print(modes)
     '''
     Accepts a dictionary of the migrate modes that are enabled and list of tenant session objects.
 

@@ -26,9 +26,9 @@ def migrate(tenant_sessions: list, logger):
 
     #Get all requirements and sections for each standard. This is a deep nested search and takes some time
     clone_compliance_standards_data = []
-    for tenant in tqdm(clone_compliance_standards_to_migrate, desc='Getting Compliance Data', leave=False):
+    for tenant in tqdm(clone_compliance_standards_to_migrate, desc='Getting Compliance Data from each Tenant', leave=False):
         tenant_compliance = []
-        for standard in tenant:
+        for standard in tqdm(tenant, desc='Getting Compliance Standards', leave=False):
             standard_dict = {}
 
             requirements = []
@@ -53,10 +53,10 @@ def migrate(tenant_sessions: list, logger):
 
     #Migrate compliance standards. First migrate over the standards and translate the UUIDs.
     #Then migrate over the requirements and translate the UUIDS. Finnally migrate the sections.
-    for index, tenant_standards in enumerate(clone_compliance_standards_data):
+    for index, tenant_standards in tqdm(enumerate(clone_compliance_standards_data), desc='Adding Compliance Data for each Tenant', leave=False):
         #Migrate compliance standards
         added = 0
-        for standard in tenant_standards:
+        for standard in tqdm(tenant_standards, desc='Adding Compliance Standards', leave=False):
             cmp_add.add_compliance_standard(tenant_sessions[index + 1], standard['standard'], logger)
             added += 1
         standards_added.append(added)
@@ -74,11 +74,11 @@ def migrate(tenant_sessions: list, logger):
         #Migrate compliance requirements
         added_reqs = 0
         added_secs = 0
-        for index2, standard in enumerate(tenant_standards):
+        for index2, standard in tqdm(enumerate(tenant_standards), desc='Processing Compliance Standards', leave=False):
             requirements = standard['requirements']
             std_id = standard['standard']['id']
             
-            for requirement in requirements:
+            for requirement in tqdm(requirements, desc='Adding Compliance Requirements', leave=False):
                 cmp_add.add_requirement_to_standard(tenant_sessions[index + 1], std_id, requirement['requirement'], logger)
                 added_reqs += 1
 
@@ -97,11 +97,11 @@ def migrate(tenant_sessions: list, logger):
 
             #Migrate sections now that the requirement UUIDs have been updated
             
-            for requirement in requirements:
+            for requirement in tqdm(requirements, desc='Processing Compliance Requirements', leave=False):
                 req_id = requirement['requirement']['id']
                 sections = requirement['sections']
                 
-                for section in sections:
+                for section in tqdm(sections, desc='Adding Compliance Sections', leave=False):
                     cmp_add.add_section_to_requirement(tenant_sessions[index+1], req_id, section, logger)
                     added_secs += 1
         sections_added.append(added_secs)

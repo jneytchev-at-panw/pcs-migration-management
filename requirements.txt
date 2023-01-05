@@ -5,7 +5,7 @@ charset-normalizer==2.1.1
 idna==2.10
 loguru==0.5.3
 macholib==1.15
-pcpi==0.1.0
+pcpi==0.5.0
 pyinstaller==4.5.1
 pyinstaller-hooks-contrib==2021.3
 PyYAML==5.4.1
