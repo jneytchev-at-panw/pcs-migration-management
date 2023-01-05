@@ -4,10 +4,10 @@ from loguru import logger
 from tqdm import tqdm
 from main_scripts import migrate_main, sync_main, single_migrate
 from sdk.color_print import c_print
-from sdk.load_config import load_config_create_sessions
-from sdk import load_config
 import os
 import yaml
+from sdk import load_config
+from pcpi import session_loader
 
 
 #Build the dictionary used for sync to determin if the module should support the update, add and delete operations
@@ -55,7 +55,21 @@ def load_sessions(file_mode: bool, logger):
     Returns the tenant sessions, config settings, and a flag for same-stack syncing/migration detected.
     '''
 
-    tenant_sessions = load_config_create_sessions(file_mode, logger)
+    tenant_sessions = []
+
+    if file_mode:
+        session_manager = session_loader.load_multi_from_file(logger=logger)
+
+        for man in session_manager:
+            session = man.create_cspm_session()
+            tenant_sessions.append(session)
+    else:
+        session_manager = session_loader.load_multi_from_user(logger=logger)
+
+        for man in session_manager:
+            session = man.create_cspm_session()
+            tenant_sessions.append(session)
+
 
     tenant_ids = [tenant.prismaId for tenant in tenant_sessions]
     if len(tenant_ids) != len(set(tenant_ids)):
@@ -120,6 +134,8 @@ def msg_translate(module):
         msg = 'Saved Searches'
     elif module == 'policy':
         msg = 'Policies'
+    elif module == 'd_policy':
+        msg = 'Default Policies'
     elif module == 'alert':
         msg = 'Alert Rules'
     elif module == 'anomaly':
@@ -203,6 +219,7 @@ def build_yaml(file_name, logger):
             'compliance': {},
             'search': {},
             'policy': {},
+            'd_policy': {},
             'alert': {},
             'anomaly': {},
             'settings': {}
@@ -222,6 +239,7 @@ def build_yaml(file_name, logger):
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'compliance')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'search')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'policy')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'd_policy')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'alert')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'anomaly')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'settings')
@@ -375,7 +393,15 @@ def main(file_mode, use_threading, logger):
     print()
 
     #Load JWT sessions from credentials.yaml
-    tenant_sessions, same_stack = load_sessions(file_mode, logger)
+    # tenant_sessions, same_stack = load_sessions(file_mode, logger)
+    tenant_session_managers = []
+    if file_mode:
+        tenant_session_managers = session_loader.load_min_from_file(2, logger=logger)
+    else:
+        tenant_session_managers = session_loader.load_min_from_user(2, logger=logger)
+    tenant_sessions = []
+    for man in tenant_session_managers:
+        tenant_sessions.append(man.create_cspm_session())
 
     print()
     c_print('You will now be asked a series of questions so you can customize the operations this script will perform.', color='blue')
@@ -428,6 +454,7 @@ def main(file_mode, use_threading, logger):
             'compliance': {},
             'search': {},
             'policy': {},
+            'd_policy': {},
             'alert': {},
             'anomaly': {},
             'settings': {}
@@ -452,6 +479,7 @@ def main(file_mode, use_threading, logger):
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'compliance')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'search')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'policy')
+            migrate_modes = get_migrate_mode_settings(migrate_modes, 'd_policy')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'alert')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'anomaly')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'settings')
@@ -541,7 +569,10 @@ def main(file_mode, use_threading, logger):
 def uuid_main(file_mode, logger):
     
     #Load JWT sessions from credentials.yaml
-    tenant_sessions, same_stack = load_sessions(file_mode, logger)
+    tenant_sessions =  []
+    session_managers = session_loader.load_multi_from_file(logger=logger)
+    for man in session_managers:
+        tenant_sessions.append(man.create_cspm_session())
 
     c_print('Please select the number coresponding with the type of component you want to migrate.')
     c_print('1: Cloud Account')
@@ -593,20 +624,20 @@ def uuid_main(file_mode, logger):
 
     uuid = input('Please enter the UUID/ID of the entity: ')
 
-    single_migrate.single_migrate(tenant_sessions, entity_type, uuid, logger)
+    single_migrate.single_migrate(tenant_sessions, entity_type, uuid, 'std', logger)
 
 
 
 if __name__ =='__main__':
     #Command line arguments
-    file_mode = False
+    file_mode = True
     terminal_logging = True
     use_threading = False
     
     args = [el.lower() for el in sys.argv]
 
-    if '-creds' in args:
-        file_mode = True
+    if '-no_file' in args:
+        file_mode = False
 
     if '-quiet' in args:
         terminal_logging = False

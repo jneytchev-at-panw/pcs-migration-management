@@ -30,6 +30,7 @@ from anomaly_settings import ano_sync
 #Alert Rules
 
 def migrate(tenant_sessions: list, modes: dict, use_threading: bool, logger: object):
+    print(modes)
     '''
     Accepts a dictionary of the migrate modes that are enabled and list of tenant session objects.
 
@@ -130,7 +131,12 @@ def migrate(tenant_sessions: list, modes: dict, use_threading: bool, logger: obj
             if 'policy' == mode:
                 added = plc_migrate_custom.migrate_custom_policies(tenant_sessions, logger)
                 run_summary.update(added_custom_policies=added)
+        except Exception as error:
+            logger.exception(error)
 
+        #POLICY MIGRATE--------------------------------------------------------
+        try:
+            if 'd_policy' == mode:
                 added = plc_migrate_default.migrate_builtin_policies(tenant_sessions, logger)
                 run_summary.update(updated_default_policies=added)
         except Exception as error:

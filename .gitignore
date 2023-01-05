@@ -30,3 +30,4 @@ log_*.log
 
 workspace.code-workspace
 
+.DS*

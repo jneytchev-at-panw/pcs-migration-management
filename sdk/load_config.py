@@ -6,6 +6,8 @@ from sdk.color_print import c_print
 import requests
 import json
 
+from pcpi import saas_session_manager
+
 def validate_credentials(a_key, s_key, url) -> bool:
     '''
     This function creates a session with the supplied credentials to test 
@@ -165,7 +167,10 @@ def load_yaml(file_name, logger):
         s_key = tenant[tenant_name]['secret_key']
         api_url = tenant[tenant_name]['api_url']
 
-        tenant_sessions.append(Session(tenant_name, a_key, s_key, api_url, logger))
+        session_manager = saas_session_manager(tenant_name, a_key, s_key, api_url, logger)
+        session = session_manager.create_cspm_session()
+
+        tenant_sessions.append(session)
 
     return tenant_sessions, mode, modes
 
@@ -189,7 +194,10 @@ def load_uuid_yaml(file_name, logger):
         s_key = tenant[tenant_name]['secret_key']
         api_url = tenant[tenant_name]['api_url']
 
-        tenant_sessions.append(Session(tenant_name, a_key, s_key, api_url, logger))
+        session_man = saas_session_manager(tenant_name, a_key, s_key, api_url, logger)
+        session = session_man.create_cspm_session()
+
+        tenant_sessions.append(session)
 
     return tenant_sessions, entity_type, uuid, cmp_type
 

@@ -1,4 +1,5 @@
 def compare_alert_rules(src_ar: list, dst_ar: list):
+    print('++++', len(src_ar), len(dst_ar))
     ar_to_add = []
     # loops through src_ar (source tenant) to find the missing alert rules
     for item in src_ar:
