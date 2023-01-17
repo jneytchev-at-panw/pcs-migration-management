@@ -43,8 +43,9 @@ def add_custom_policies(tenant_session, source_tenant_session, policies, logger)
                 policy.update(complianceMetadata=complianceMetadata)
 
             logger.debug(f'API - Adding {p_type} policy: {name}')
-            tenant_session.request('POST', '/policy', json=policy)
-            added += 1
+            res = tenant_session.request('POST', '/policy', json=policy)
+            if res.status_code in tenant_session.success_status:
+                added += 1
     else:
         logger.info(f'No Custom Policies to add for tenant: \'{tenant_session.tenant}\'')
 
