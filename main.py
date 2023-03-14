@@ -445,7 +445,7 @@ def main(file_mode, use_threading, logger):
         migrate_type = migrate_type.lower()
 
         migrate_modes = {
-            'cloud': {},
+            # 'cloud': {},
             'account': {},
             'resource': {},
             'role': {},
@@ -470,7 +470,7 @@ def main(file_mode, use_threading, logger):
             migrate_main.migrate(tenant_sessions, migrate_modes, use_threading, logger)
             return
         else:
-            migrate_modes = get_migrate_mode_settings(migrate_modes, 'cloud')
+            # migrate_modes = get_migrate_mode_settings(migrate_modes, 'cloud')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'account')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'resource')
             migrate_modes = get_migrate_mode_settings(migrate_modes, 'role')
@@ -518,7 +518,7 @@ def main(file_mode, use_threading, logger):
         migrate_type = migrate_type.lower()
 
         sync_modes = {
-            'cloud': {},
+            # 'cloud': {},
             'account': {},
             'resource': {},
             'role': {},
@@ -542,7 +542,7 @@ def main(file_mode, use_threading, logger):
             sync_main.sync(tenant_sessions, sync_modes, use_threading, logger)
             return
         else:
-            sync_modes = get_sync_mode_settings(sync_modes, 'cloud')
+            # sync_modes = get_sync_mode_settings(sync_modes, 'cloud')
             sync_modes = get_sync_mode_settings(sync_modes, 'account')
             sync_modes = get_sync_mode_settings(sync_modes, 'resource')
             sync_modes = get_sync_mode_settings(sync_modes, 'role')

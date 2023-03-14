@@ -41,7 +41,8 @@ def add_network_cidrs(session, network, cidrs, logger):
         for cidr in tqdm(cidrs, desc='Adding Network CIDRs', leave=False):
             #upload each cider in a network
             logger.debug(f'API - Adding cidr blocks to network{name}')
-            session.request('POST', f'/network/{networkUuid}/cidr', json=cidr, redlock_ignore=['duplicate_public_network'])
+            session.request('POST', f'allow_list/network/{networkUuid}/cidr', json=cidr, redlock_ignore=['duplicate_public_network'])
+            # session.request('POST', f'network/{networkUuid}/cidr', json=cidr, redlock_ignore=['duplicate_public_network'])
     else:
         logger.info(f'No Network Cidrs to add for tenant: \'{session.tenant}\'')
 
