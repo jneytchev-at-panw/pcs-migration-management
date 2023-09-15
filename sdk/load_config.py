@@ -167,7 +167,7 @@ def load_yaml(file_name, logger):
         s_key = tenant[tenant_name]['secret_key']
         api_url = tenant[tenant_name]['api_url']
 
-        session_manager = saas_session_manager.CSPMSession(tenant_name, a_key, s_key, api_url, True, logger)
+        session_manager = saas_session_manager.SaaSSessionManager(tenant_name, a_key, s_key, api_url, True, logger)
         session = session_manager.create_cspm_session()
 
         tenant_sessions.append(session)
